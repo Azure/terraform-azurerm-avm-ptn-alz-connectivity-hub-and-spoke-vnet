@@ -23,7 +23,7 @@ provider "azurerm" {
 variable "starter_locations" {
   type        = list(string)
   description = "The default for Azure resources. (e.g 'uksouth')"
-  default = [ "uksouth", "ukwest" ]
+  default     = ["uksouth", "ukwest"]
 }
 
 variable "connectivity_resource_groups" {
@@ -90,7 +90,7 @@ variable "tags" {
 data "azurerm_client_config" "current" {}
 
 module "config" {
-  source = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating"
+  source           = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating"
   enable_telemetry = var.enable_telemetry
 
   starter_locations               = var.starter_locations
@@ -123,11 +123,11 @@ module "resource_groups" {
 
 # Build an implicit dependency on the resource groups
 locals {
+  hub_and_spoke_vnet_settings         = merge(module.config.hub_and_spoke_vnet_settings, local.resource_groups)
+  hub_and_spoke_vnet_virtual_networks = (merge({ vnets = module.config.hub_and_spoke_vnet_virtual_networks }, local.resource_groups)).vnets
   resource_groups = {
     resource_groups = module.resource_groups
   }
-  hub_and_spoke_vnet_settings         = merge(module.config.hub_and_spoke_vnet_settings, local.resource_groups)
-  hub_and_spoke_vnet_virtual_networks = (merge({ vnets = module.config.hub_and_spoke_vnet_virtual_networks }, local.resource_groups)).vnets
 }
 
 # This is the module call

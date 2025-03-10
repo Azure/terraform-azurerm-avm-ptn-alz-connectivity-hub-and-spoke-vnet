@@ -188,31 +188,31 @@ Version: 0.3.0
 
 Source: Azure/avm-res-network-dnsresolver/azurerm
 
-Version: 0.4.0
+Version: 0.7.2
 
 ### <a name="module_hub_and_spoke_vnet"></a> [hub\_and\_spoke\_vnet](#module\_hub\_and\_spoke\_vnet)
 
 Source: Azure/avm-ptn-hubnetworking/azurerm
 
-Version: 0.5.0
+Version: 0.5.2
 
 ### <a name="module_private_dns_zone_auto_registration"></a> [private\_dns\_zone\_auto\_registration](#module\_private\_dns\_zone\_auto\_registration)
 
 Source: Azure/avm-res-network-privatednszone/azurerm
 
-Version: 0.2.2
+Version: 0.3.2
 
 ### <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones)
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.7.1
+Version: 0.9.0
 
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 
 Source: Azure/avm-ptn-vnetgateway/azurerm
 
-Version: 0.6.2
+Version: 0.6.3
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

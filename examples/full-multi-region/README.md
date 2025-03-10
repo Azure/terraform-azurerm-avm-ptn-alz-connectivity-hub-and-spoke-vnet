@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
-# Default example
+# Multi-Region with Azure Firewall Example
 
-This deploys the module in its simplest form.
+Uses the standard tfvars file for the multi-region with azure firewall scenario.
 
 ```hcl
 terraform {
@@ -26,23 +26,27 @@ provider "azurerm" {
   features {}
 }
 
-provider "azurerm" {
-  features {}
-  alias = "connectivity"
+variable "starter_locations" {
+  type        = list(string)
+  description = "The default for Azure resources. (e.g 'uksouth')"
+  default     = ["uksouth", "ukwest"]
 }
 
-variable "custom_replacements" {
-  type = object({
-    names                      = optional(map(string), {})
-    resource_group_identifiers = optional(map(string), {})
-    resource_identifiers       = optional(map(string), {})
-  })
-  default = {
-    names                      = {}
-    resource_group_identifiers = {}
-    resource_identifiers       = {}
-  }
-  description = "Custom replacements"
+variable "connectivity_resource_groups" {
+  type = map(object({
+    name     = string
+    location = string
+  }))
+  default     = {}
+  description = <<DESCRIPTION
+A map of resource groups to create. These must be created before the connectivity module is applied.
+
+The following attributes are supported:
+
+  - name: The name of the resource group
+  - location: The location of the resource group
+
+DESCRIPTION
 }
 
 variable "hub_and_spoke_vnet_settings" {
@@ -71,7 +75,7 @@ variable "hub_and_spoke_vnet_virtual_networks" {
   }))
   default     = {}
   description = <<DESCRIPTION
-A map of hub networks to create. 
+A map of hub networks to create.
 
 The following attributes are supported:
 
@@ -79,57 +83,8 @@ The following attributes are supported:
   - virtual_network_gateways: (Optional) The virtual network gateway settings. Detailed information about the virtual network gateway can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-vnetgateway
   - private_dns_zones: (Optional) The private DNS zone settings. Detailed information about the private DNS zone can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-network-private-link-private-dns-zones
   - bastion: (Optional) The bastion host settings. Detailed information about the bastion can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-res-network-bastionhost/
-  
-DESCRIPTION
-}
-
-variable "management_resource_settings" {
-  type        = any
-  default     = {}
-  description = <<DESCRIPTION
-The settings for the management resources. Details of the settings can be found in the module documentation at https://registry.terraform.io/modules/Azure/avm-ptn-alz-management
-DESCRIPTION
-}
-
-variable "management_group_settings" {
-  type        = any
-  default     = {}
-  description = <<DESCRIPTION
-The settings for the management groups. Details of the settings can be found in the module documentation at https://registry.terraform.io/modules/Azure/avm-ptn-alz
-DESCRIPTION
-}
-
-variable "connectivity_type" {
-  type        = string
-  description = "The type of network connectivity technology to use for the private DNS zones"
-  default     = "hub_and_spoke_vnet"
-  validation {
-    condition     = contains(values(local.const.connectivity), var.connectivity_type)
-    error_message = "The connectivity type must be either 'hub_and_spoke_vnet', 'virtual_wan' or 'none'"
-  }
-}
-
-variable "connectivity_resource_groups" {
-  type = map(object({
-    name     = string
-    location = string
-  }))
-  default     = {}
-  description = <<DESCRIPTION
-A map of resource groups to create. These must be created before the connectivity module is applied.
-
-The following attributes are supported:
-
-  - name: The name of the resource group
-  - location: The location of the resource group
 
 DESCRIPTION
-}
-
-variable "enable_telemetry" {
-  type        = bool
-  default     = true
-  description = "Flag to enable/disable telemetry"
 }
 
 variable "tags" {
@@ -138,164 +93,57 @@ variable "tags" {
   description = "(Optional) Tags of the resource."
 }
 
-module "regions" {
-  source                    = "Azure/avm-utl-regions/azurerm"
-  version                   = "0.3.0"
-  use_cached_data           = false
-  availability_zones_filter = false
-  recommended_filter        = false
-  enable_telemetry          = var.enable_telemetry
-}
-
 data "azurerm_client_config" "current" {}
 
-locals {
-  regions = { for region in module.regions.regions_by_name : region.name => {
-    display_name = region.display_name
-    zones        = region.zones == null ? [] : region.zones
-    }
-  }
-}
+module "config" {
+  source           = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating"
+  enable_telemetry = var.enable_telemetry
 
-# Custom name replacements
-locals {
-  custom_names                = jsondecode(local.custom_names_json_final)
-  custom_names_json           = tostring(jsonencode(var.custom_replacements.names))
-  custom_names_json_final     = replace(replace(local.custom_names_json_templated, "\"[", "["), "]\"", "]")
-  custom_names_json_templated = templatestring(local.custom_names_json, local.built_in_replacements)
-}
+  starter_locations               = var.starter_locations
+  subscription_id_connectivity    = data.azurerm_client_config.current.subscription_id
+  subscription_id_identity        = data.azurerm_client_config.current.subscription_id
+  subscription_id_management      = data.azurerm_client_config.current.subscription_id
+  root_parent_management_group_id = ""
 
-locals {
-  custom_name_replacements = merge(local.built_in_replacements, local.custom_names)
-}
+  custom_replacements = var.custom_replacements
 
-# Custom resource group identifiers
-locals {
-  custom_resource_group_identifiers                = jsondecode(local.custom_resource_group_identifiers_json_final)
-  custom_resource_group_identifiers_json           = tostring(jsonencode(var.custom_replacements.resource_group_identifiers))
-  custom_resource_group_identifiers_json_final     = replace(replace(local.custom_resource_group_identifiers_json_templated, "\"[", "["), "]\"", "]")
-  custom_resource_group_identifiers_json_templated = templatestring(local.custom_resource_group_identifiers_json, local.custom_name_replacements)
+  connectivity_resource_groups        = var.connectivity_resource_groups
+  hub_and_spoke_vnet_settings         = var.hub_and_spoke_vnet_settings
+  hub_and_spoke_vnet_virtual_networks = var.hub_and_spoke_vnet_virtual_networks
+  management_resource_settings        = var.management_resource_settings
+  management_group_settings           = var.management_group_settings
+  tags                                = var.tags
 }
-
-locals {
-  custom_resource_group_replacements = merge(local.custom_name_replacements, local.custom_resource_group_identifiers)
-}
-
-# Custom resource identifiers
-locals {
-  custom_resource_identifiers                = jsondecode(local.custom_resource_identifiers_json_final)
-  custom_resource_identifiers_json           = tostring(jsonencode(var.custom_replacements.resource_identifiers))
-  custom_resource_identifiers_json_final     = replace(replace(local.custom_resource_identifiers_json_templated, "\"[", "["), "]\"", "]")
-  custom_resource_identifiers_json_templated = templatestring(local.custom_resource_identifiers_json, local.custom_resource_group_replacements)
-}
-
-# Resource Group Names
-locals {
-  resource_group_name_replacements = { for key, value in module.resource_groups : "connectivity_resource_group_${key}" => value.name }
-}
-
-locals {
-  final_replacements   = merge(local.interim_replacements, local.resource_group_name_replacements)
-  interim_replacements = merge(local.custom_resource_group_replacements, local.custom_resource_identifiers)
-}
-
-locals {
-  hub_and_spoke_vnet_gateway_default_skus = { for key, value in local.regions : key => length(value.zones) == 0 ? {
-    express_route = "Standard"
-    vpn           = "VpnGw1"
-    } : {
-    express_route = "ErGw1AZ"
-    vpn           = "VpnGw1AZ"
-    }
-  }
-}
-
-locals {
-  const = {
-    connectivity = {
-      virtual_wan        = "virtual_wan"
-      hub_and_spoke_vnet = "hub_and_spoke_vnet"
-      none               = "none"
-    }
-  }
-}
-
-locals {
-  connectivity_enabled                    = var.connectivity_type != local.const.connectivity.none
-  connectivity_hub_and_spoke_vnet_enabled = var.connectivity_type == local.const.connectivity.hub_and_spoke_vnet
-  connectivity_virtual_wan_enabled        = var.connectivity_type == local.const.connectivity.virtual_wan
-}
-
-locals {
-  hub_and_spoke_vnet_settings                        = jsondecode(local.hub_and_spoke_vnet_settings_json_final)
-  hub_and_spoke_vnet_settings_json                   = tostring(jsonencode(var.hub_and_spoke_vnet_settings))
-  hub_and_spoke_vnet_settings_json_final             = replace(replace(local.hub_and_spoke_vnet_settings_json_templated, "\"[", "["), "]\"", "]")
-  hub_and_spoke_vnet_settings_json_templated         = templatestring(local.hub_and_spoke_vnet_settings_json, local.final_replacements)
-  hub_and_spoke_vnet_virtual_networks                = local.connectivity_hub_and_spoke_vnet_enabled ? jsondecode(local.hub_and_spoke_vnet_virtual_networks_json_final) : {}
-  hub_and_spoke_vnet_virtual_networks_json           = tostring(jsonencode(var.hub_and_spoke_vnet_virtual_networks))
-  hub_and_spoke_vnet_virtual_networks_json_final     = replace(replace(local.hub_and_spoke_vnet_virtual_networks_json_templated, "\"[", "["), "]\"", "]")
-  hub_and_spoke_vnet_virtual_networks_json_templated = templatestring(local.hub_and_spoke_vnet_virtual_networks_json, local.final_replacements)
-}
-
-locals {
-  connectivity_resource_groups                = jsondecode(local.connectivity_resource_groups_json_final)
-  connectivity_resource_groups_json           = tostring(jsonencode(var.connectivity_resource_groups))
-  connectivity_resource_groups_json_final     = replace(replace(local.connectivity_resource_groups_json_templated, "\"[", "["), "]\"", "]")
-  connectivity_resource_groups_json_templated = templatestring(local.connectivity_resource_groups_json, local.interim_replacements)
-}
-
 
 module "resource_groups" {
   source  = "Azure/avm-res-resources-resourcegroup/azurerm"
   version = "0.2.0"
 
-  for_each = local.connectivity_resource_groups
+  for_each = module.config.connectivity_resource_groups
 
   name             = each.value.name
   location         = each.value.location
-  enable_telemetry = var.enable_telemetry
-  tags             = var.tags
-
-  providers = {
-    azurerm = azurerm.connectivity
-  }
+  enable_telemetry = false
+  tags             = module.config.tags
 }
 
-
+# Build an implicit dependency on the resource groups
 locals {
-  built_in_replacements = {
-    starter_location_01                                           = local.starter_location_01
-    starter_location_02                                           = local.starter_location_02
-    starter_location_01_availability_zones                        = jsonencode(local.regions[local.starter_location_01].zones)
-    starter_location_02_availability_zones                        = jsonencode(try(local.regions[local.starter_location_02].zones, null))
-    starter_location_01_virtual_network_gateway_sku_express_route = local.hub_and_spoke_vnet_gateway_default_skus[local.starter_location_01].express_route
-    starter_location_02_virtual_network_gateway_sku_express_route = try(local.hub_and_spoke_vnet_gateway_default_skus[local.starter_location_02].express_route, null)
-    starter_location_01_virtual_network_gateway_sku_vpn           = local.hub_and_spoke_vnet_gateway_default_skus[local.starter_location_01].vpn
-    starter_location_02_virtual_network_gateway_sku_vpn           = try(local.hub_and_spoke_vnet_gateway_default_skus[local.starter_location_02].vpn, null)
-    root_parent_management_group_id                               = data.azurerm_client_config.current.tenant_id
-    subscription_id_connectivity                                  = data.azurerm_client_config.current.subscription_id
-    subscription_id_identity                                      = data.azurerm_client_config.current.subscription_id
-    subscription_id_management                                    = data.azurerm_client_config.current.subscription_id
+  hub_and_spoke_vnet_settings         = merge(module.config.hub_and_spoke_vnet_settings, local.resource_groups)
+  hub_and_spoke_vnet_virtual_networks = (merge({ vnets = module.config.hub_and_spoke_vnet_virtual_networks }, local.resource_groups)).vnets
+  resource_groups = {
+    resource_groups = module.resource_groups
   }
-  starter_location_01 = "uksouth"
-  starter_location_02 = "ukwest"
 }
 
 # This is the module call
-# Do not specify location here due to the randomization above.
-# Leaving location as `null` will cause the module to use the resource group location
-# with a data source.
 module "test" {
   source = "../../"
 
   hub_and_spoke_networks_settings = local.hub_and_spoke_vnet_settings
   hub_virtual_networks            = local.hub_and_spoke_vnet_virtual_networks
-  enable_telemetry                = var.enable_telemetry
-  tags                            = var.tags
-
-  providers = {
-    azurerm = azurerm.connectivity
-  }
+  enable_telemetry                = false
+  tags                            = module.config.tags
 }
 ```
 
@@ -385,7 +233,7 @@ Description: Flag to enable/disable telemetry
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ### <a name="input_hub_and_spoke_vnet_settings"></a> [hub\_and\_spoke\_vnet\_settings](#input\_hub\_and\_spoke\_vnet\_settings)
 
@@ -443,6 +291,21 @@ Type: `any`
 
 Default: `{}`
 
+### <a name="input_starter_locations"></a> [starter\_locations](#input\_starter\_locations)
+
+Description: The default for Azure resources. (e.g 'uksouth')
+
+Type: `list(string)`
+
+Default:
+
+```json
+[
+  "uksouth",
+  "ukwest"
+]
+```
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: (Optional) Tags of the resource.
@@ -459,11 +322,11 @@ No outputs.
 
 The following Modules are called:
 
-### <a name="module_regions"></a> [regions](#module\_regions)
+### <a name="module_config"></a> [config](#module\_config)
 
-Source: Azure/avm-utl-regions/azurerm
+Source: github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating
 
-Version: 0.3.0
+Version:
 
 ### <a name="module_resource_groups"></a> [resource\_groups](#module\_resource\_groups)
 
