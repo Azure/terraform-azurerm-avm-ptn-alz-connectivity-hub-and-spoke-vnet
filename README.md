@@ -23,6 +23,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
+
 ## Resources
 
 The following resources are used by this module:
@@ -124,43 +126,51 @@ The following outputs are exported:
 
 ### <a name="output_dns_server_ip_addresses"></a> [dns\_server\_ip\_addresses](#output\_dns\_server\_ip\_addresses)
 
-Description: n/a
+Description: DNS server IP addresses for each hub virtual network.
 
 ### <a name="output_firewall_policy_ids"></a> [firewall\_policy\_ids](#output\_firewall\_policy\_ids)
 
-Description: n/a
+Description: Firewall policy IDs for each hub virtual network.
 
 ### <a name="output_firewall_private_ip_addresses"></a> [firewall\_private\_ip\_addresses](#output\_firewall\_private\_ip\_addresses)
 
-Description: n/a
+Description: Private IP addresses of the firewalls.
 
 ### <a name="output_firewall_public_ip_addresses"></a> [firewall\_public\_ip\_addresses](#output\_firewall\_public\_ip\_addresses)
 
-Description: n/a
+Description: Public IP addresses of the firewalls.
 
 ### <a name="output_firewall_resource_ids"></a> [firewall\_resource\_ids](#output\_firewall\_resource\_ids)
 
-Description: n/a
+Description: Resource IDs of the firewalls.
 
 ### <a name="output_firewall_resource_names"></a> [firewall\_resource\_names](#output\_firewall\_resource\_names)
 
-Description: n/a
+Description: Resource names of the firewalls.
+
+### <a name="output_name"></a> [name](#output\_name)
+
+Description: Names of the virtual networks
+
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: Resource IDs of the virtual networks
 
 ### <a name="output_route_tables_firewall"></a> [route\_tables\_firewall](#output\_route\_tables\_firewall)
 
-Description: n/a
+Description: Route tables associated with the firewall.
 
 ### <a name="output_route_tables_user_subnets"></a> [route\_tables\_user\_subnets](#output\_route\_tables\_user\_subnets)
 
-Description: n/a
+Description: Route tables associated with the user subnets.
 
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 
-Description: n/a
+Description: Resource IDs of the virtual networks.
 
 ### <a name="output_virtual_network_resource_names"></a> [virtual\_network\_resource\_names](#output\_virtual\_network\_resource\_names)
 
-Description: n/a
+Description: Resource names of the virtual networks.
 
 ## Modules
 
@@ -194,13 +204,13 @@ Version: 0.7.2
 
 Source: Azure/avm-ptn-hubnetworking/azurerm
 
-Version: 0.5.2
+Version: 0.6.1
 
 ### <a name="module_private_dns_zone_auto_registration"></a> [private\_dns\_zone\_auto\_registration](#module\_private\_dns\_zone\_auto\_registration)
 
 Source: Azure/avm-res-network-privatednszone/azurerm
 
-Version: 0.3.2
+Version: 0.3.3
 
 ### <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones)
 

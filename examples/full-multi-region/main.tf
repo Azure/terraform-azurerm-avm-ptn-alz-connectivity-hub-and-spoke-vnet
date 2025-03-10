@@ -5,14 +5,6 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
     }
-    modtm = {
-      source  = "azure/modtm"
-      version = "~> 0.3"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
   }
 }
 
@@ -90,7 +82,7 @@ variable "tags" {
 data "azurerm_client_config" "current" {}
 
 module "config" {
-  source           = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating"
+  source           = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating?ref=main"
   enable_telemetry = var.enable_telemetry
 
   starter_locations               = var.starter_locations

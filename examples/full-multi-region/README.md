@@ -11,14 +11,6 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
     }
-    modtm = {
-      source  = "azure/modtm"
-      version = "~> 0.3"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
   }
 }
 
@@ -96,7 +88,7 @@ variable "tags" {
 data "azurerm_client_config" "current" {}
 
 module "config" {
-  source           = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating"
+  source           = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating?ref=main"
   enable_telemetry = var.enable_telemetry
 
   starter_locations               = var.starter_locations
@@ -155,10 +147,6 @@ The following requirements are needed by this module:
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.21)
-
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
 
 ## Resources
 
@@ -316,7 +304,11 @@ Default: `null`
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_linting"></a> [linting](#output\_linting)
+
+Description: n/a
 
 ## Modules
 
@@ -326,7 +318,7 @@ The following Modules are called:
 
 Source: github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating
 
-Version:
+Version: main
 
 ### <a name="module_resource_groups"></a> [resource\_groups](#module\_resource\_groups)
 

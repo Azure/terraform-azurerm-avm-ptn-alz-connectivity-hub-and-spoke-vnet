@@ -1,6 +1,6 @@
 module "hub_and_spoke_vnet" {
   source  = "Azure/avm-ptn-hubnetworking/azurerm"
-  version = "0.5.2"
+  version = "0.6.1"
 
   hub_virtual_networks = local.hub_virtual_networks
   enable_telemetry     = var.enable_telemetry
@@ -81,7 +81,7 @@ module "private_dns_zones" {
 
 module "private_dns_zone_auto_registration" {
   source  = "Azure/avm-res-network-privatednszone/azurerm"
-  version = "0.3.2"
+  version = "0.3.3"
 
   for_each = local.private_dns_zones_auto_registration
 
