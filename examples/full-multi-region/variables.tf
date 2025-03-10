@@ -54,6 +54,12 @@ DESCRIPTION
 
 variable "enable_telemetry" {
   type        = bool
-  default     = true
+  default     = false
   description = "Flag to enable/disable telemetry"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = null
+  description = "(Optional) Tags of the resource."
 }
