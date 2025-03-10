@@ -26,6 +26,23 @@ variable "starter_locations" {
   default = [ "uksouth", "ukwest" ]
 }
 
+variable "connectivity_resource_groups" {
+  type = map(object({
+    name     = string
+    location = string
+  }))
+  default     = {}
+  description = <<DESCRIPTION
+A map of resource groups to create. These must be created before the connectivity module is applied.
+
+The following attributes are supported:
+
+  - name: The name of the resource group
+  - location: The location of the resource group
+
+DESCRIPTION
+}
+
 variable "hub_and_spoke_vnet_settings" {
   type        = any
   default     = {}
@@ -62,6 +79,12 @@ The following attributes are supported:
   - bastion: (Optional) The bastion host settings. Detailed information about the bastion can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-res-network-bastionhost/
 
 DESCRIPTION
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = null
+  description = "(Optional) Tags of the resource."
 }
 
 data "azurerm_client_config" "current" {}
