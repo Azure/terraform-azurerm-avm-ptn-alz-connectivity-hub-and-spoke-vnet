@@ -6,7 +6,7 @@ locals {
   private_dns_resolver_ip_addresses = { for key, value in var.hub_virtual_networks : key =>
     (value.private_dns_zones.private_dns_resolver.ip_address == null ?
       cidrhost(value.private_dns_zones.subnet_address_prefix, 4) :
-    value.private_dns_zones.private_dns_resolver.ip_address) if local.private_dns_zones_enabled[key]
+    value.private_dns_zones.private_dns_resolver.ip_address) if local.private_dns_zones_enabled[key] && try(value.private_dns_zones.private_dns_resolver, null) != null
   }
   private_dns_zones = { for key, value in var.hub_virtual_networks : key => merge({
     location = value.hub_virtual_network.location

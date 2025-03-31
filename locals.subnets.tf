@@ -33,7 +33,7 @@ locals {
           name = "Microsoft.Network/dnsResolvers"
         }
       }]
-    } } if local.private_dns_zones_enabled[key]
+    } } if local.private_dns_zones_enabled[key] && try(value.private_dns_zones.private_dns_resolver, null) != null
   }
   subnets = { for key, value in var.hub_virtual_networks : key => merge(lookup(local.private_dns_resolver_subnets, key, {}), lookup(local.bastion_subnets, key, {}), lookup(local.gateway_subnets, key, {})) }
 }
