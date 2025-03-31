@@ -45,11 +45,11 @@ variable "hub_virtual_networks" {
       auto_registration_zone_name    = optional(string, null)
       subnet_address_prefix          = string
       subnet_name                    = optional(string, "dns-resolver")
-      private_dns_resolver = object({
+      private_dns_resolver = optional(object({
         name                = string
         resource_group_name = optional(string)
         ip_address          = optional(string)
-      })
+      }))
     }))
   }))
   default     = {}
