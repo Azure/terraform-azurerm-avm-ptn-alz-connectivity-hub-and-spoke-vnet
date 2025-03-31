@@ -46,7 +46,7 @@ module "dns_resolver" {
   source  = "Azure/avm-res-network-dnsresolver/azurerm"
   version = "0.7.2"
 
-  for_each = local.private_dns_zones
+  for_each = local.private_dns_zones_resolvers
 
   location                    = each.value.location
   name                        = each.value.private_dns_resolver.name
