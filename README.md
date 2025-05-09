@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Azure Landing Zones Platform Landing Zone Connnectivity with Hub and Spoke Virtual Network
+# Azure Landing Zones Platform Landing Zone Connectivity with Hub and Spoke Virtual Network
 
 This module deploys a hub and spoke virtual network topology aligned to the Azure Landing Zones (ALZ) and Microsoft Cloud Adoption Framework (CAF) for Azure. The module is designed to be used in conjunction with the [Azure Verified Modules](https://aka.ms/AVM) initiative and is part of the [Microsoft Cloud Adoption Framework Azure Landing Zones](https://aka.ms/alz).
 
