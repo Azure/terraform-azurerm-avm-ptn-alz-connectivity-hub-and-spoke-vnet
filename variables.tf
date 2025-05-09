@@ -26,6 +26,7 @@ variable "hub_virtual_networks" {
   type = map(object({
     hub_virtual_network = any
     bastion = optional(object({
+      enabled               = optional(bool, true)
       subnet_address_prefix = string
       bastion_host          = any
       bastion_public_ip     = any
@@ -36,6 +37,7 @@ variable "hub_virtual_networks" {
       vpn                   = optional(any)
     }))
     private_dns_zones = optional(object({
+      enabled             = optional(bool, true)
       resource_group_name = string
       is_primary          = optional(bool, false)
       private_link_private_dns_zones = optional(map(object({
@@ -46,6 +48,7 @@ variable "hub_virtual_networks" {
       subnet_address_prefix          = string
       subnet_name                    = optional(string, "dns-resolver")
       private_dns_resolver = object({
+        enabled             = optional(bool, true)
         name                = string
         resource_group_name = optional(string)
         ip_address          = optional(string)
@@ -54,7 +57,7 @@ variable "hub_virtual_networks" {
   }))
   default     = {}
   description = <<DESCRIPTION
-A map of hub networks to create. 
+A map of hub networks to create.
 
 The following attributes are supported:
 

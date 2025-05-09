@@ -17,7 +17,7 @@ locals {
       route_table = {
         assign_generated_route_table = false
       }
-    } } if try(value.virtual_network_gateways, null) != null && (can(value.virtual_network_gateways.express_route) || can(value.virtual_network_gateways.vpn))
+    } } if try(value.virtual_network_gateways.subnet_address_prefix, null) != null && (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key])
   }
   private_dns_resolver_subnets = { for key, value in var.hub_virtual_networks : key => {
     dns_resolver = {
