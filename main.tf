@@ -158,5 +158,5 @@ module "bastion_host" {
   tags                   = try(each.value.tags, var.tags)
   tunneling_enabled      = try(each.value.tunneling_enabled, false)
   virtual_network_id     = try(each.value.virtual_network_id, null)
-  zones                  = try(each.value.zones, null)
+  zones                  = try(each.value.zones, try(local.bastion_host_public_ips[each.key].zones, null))
 }
