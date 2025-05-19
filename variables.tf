@@ -42,6 +42,17 @@ variable "hub_virtual_networks" {
       is_primary          = optional(bool, false)
       private_link_private_dns_zones = optional(map(object({
         zone_name = optional(string, null)
+        custom_iterator = optional(object({
+          replacement_placeholder = string
+          replacement_values      = map(string)
+        }))
+      })))
+      private_link_private_dns_zones_additional = optional(map(object({
+        zone_name = optional(string, null)
+        custom_iterator = optional(object({
+          replacement_placeholder = string
+          replacement_values      = map(string)
+        }))
       })))
       private_dns_zone_network_link_name_template = optional(string)
       auto_registration_zone_enabled              = optional(bool, false)
