@@ -43,10 +43,11 @@ variable "hub_virtual_networks" {
       private_link_private_dns_zones = optional(map(object({
         zone_name = optional(string, null)
       })))
-      auto_registration_zone_enabled = optional(bool, false)
-      auto_registration_zone_name    = optional(string, null)
-      subnet_address_prefix          = string
-      subnet_name                    = optional(string, "dns-resolver")
+      private_dns_zone_network_link_name_template = optional(string)
+      auto_registration_zone_enabled              = optional(bool, false)
+      auto_registration_zone_name                 = optional(string, null)
+      subnet_address_prefix                       = string
+      subnet_name                                 = optional(string, "dns-resolver")
       private_dns_resolver = object({
         enabled             = optional(bool, true)
         name                = string

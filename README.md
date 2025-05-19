@@ -92,10 +92,11 @@ map(object({
       private_link_private_dns_zones = optional(map(object({
         zone_name = optional(string, null)
       })))
-      auto_registration_zone_enabled = optional(bool, false)
-      auto_registration_zone_name    = optional(string, null)
-      subnet_address_prefix          = string
-      subnet_name                    = optional(string, "dns-resolver")
+      private_dns_zone_network_link_name_template = optional(string)
+      auto_registration_zone_enabled              = optional(bool, false)
+      auto_registration_zone_name                 = optional(string, null)
+      subnet_address_prefix                       = string
+      subnet_name                                 = optional(string, "dns-resolver")
       private_dns_resolver = object({
         enabled             = optional(bool, true)
         name                = string
@@ -212,7 +213,7 @@ Version: 0.3.3
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.11.0
+Version: 0.12.0
 
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 

@@ -37,7 +37,8 @@ locals {
   }
   private_dns_zones_virtual_network_links = {
     for key, value in module.hub_and_spoke_vnet.virtual_networks : key => {
-      vnet_resource_id = value.id
+      vnet_resource_id                            = value.id
+      virtual_network_link_name_template_override = try(var.hub_virtual_networks[key].private_dns_zones.private_dns_zone_network_link_name_template, null)
     }
   }
 }
