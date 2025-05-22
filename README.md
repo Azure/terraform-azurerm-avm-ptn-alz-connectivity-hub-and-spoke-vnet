@@ -75,15 +75,17 @@ Type:
 map(object({
     hub_virtual_network = any
     bastion = optional(object({
-      enabled               = optional(bool, true)
-      subnet_address_prefix = string
-      bastion_host          = any
-      bastion_public_ip     = any
+      enabled                                = optional(bool, true)
+      subnet_address_prefix                  = string
+      subnet_default_outbound_access_enabled = optional(bool, false)
+      bastion_host                           = any
+      bastion_public_ip                      = any
     }))
     virtual_network_gateways = optional(object({
-      subnet_address_prefix = string
-      express_route         = optional(any)
-      vpn                   = optional(any)
+      subnet_address_prefix                  = string
+      subnet_default_outbound_access_enabled = optional(bool, false)
+      express_route                          = optional(any)
+      vpn                                    = optional(any)
     }))
     private_dns_zones = optional(object({
       enabled             = optional(bool, true)
@@ -108,6 +110,7 @@ map(object({
       auto_registration_zone_name                 = optional(string, null)
       subnet_address_prefix                       = string
       subnet_name                                 = optional(string, "dns-resolver")
+      subnet_default_outbound_access_enabled      = optional(bool, false)
       private_dns_resolver = object({
         enabled             = optional(bool, true)
         name                = string
@@ -212,7 +215,7 @@ Version: 0.7.3
 
 Source: Azure/avm-ptn-hubnetworking/azurerm
 
-Version: 0.8.0
+Version: 0.9.0
 
 ### <a name="module_private_dns_zone_auto_registration"></a> [private\_dns\_zone\_auto\_registration](#module\_private\_dns\_zone\_auto\_registration)
 

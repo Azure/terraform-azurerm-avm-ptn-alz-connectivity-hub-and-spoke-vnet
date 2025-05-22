@@ -1,9 +1,10 @@
 module "hub_and_spoke_vnet" {
   source  = "Azure/avm-ptn-hubnetworking/azurerm"
-  version = "0.8.0"
+  version = "0.9.0"
 
   enable_telemetry     = var.enable_telemetry
   hub_virtual_networks = local.hub_virtual_networks
+  tags                 = var.tags
 }
 
 module "virtual_network_gateway" {

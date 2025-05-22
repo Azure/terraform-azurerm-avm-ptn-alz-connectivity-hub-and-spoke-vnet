@@ -26,15 +26,17 @@ variable "hub_virtual_networks" {
   type = map(object({
     hub_virtual_network = any
     bastion = optional(object({
-      enabled               = optional(bool, true)
-      subnet_address_prefix = string
-      bastion_host          = any
-      bastion_public_ip     = any
+      enabled                                = optional(bool, true)
+      subnet_address_prefix                  = string
+      subnet_default_outbound_access_enabled = optional(bool, false)
+      bastion_host                           = any
+      bastion_public_ip                      = any
     }))
     virtual_network_gateways = optional(object({
-      subnet_address_prefix = string
-      express_route         = optional(any)
-      vpn                   = optional(any)
+      subnet_address_prefix                  = string
+      subnet_default_outbound_access_enabled = optional(bool, false)
+      express_route                          = optional(any)
+      vpn                                    = optional(any)
     }))
     private_dns_zones = optional(object({
       enabled             = optional(bool, true)
@@ -59,6 +61,7 @@ variable "hub_virtual_networks" {
       auto_registration_zone_name                 = optional(string, null)
       subnet_address_prefix                       = string
       subnet_name                                 = optional(string, "dns-resolver")
+      subnet_default_outbound_access_enabled      = optional(bool, false)
       private_dns_resolver = object({
         enabled             = optional(bool, true)
         name                = string
