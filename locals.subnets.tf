@@ -24,8 +24,8 @@ locals {
   private_dns_resolver_subnets = { for key, value in var.hub_virtual_networks : key => {
     dns_resolver = {
       hub_network_key  = key
-      address_prefixes = [value.private_dns_zones.subnet_address_prefix]
-      name             = value.private_dns_zones.subnet_name
+      address_prefixes = [value.private_dns_resolver.subnet_address_prefix]
+      name             = value.private_dns_resolver.subnet_name
       route_table = {
         assign_generated_route_table = false
       }
@@ -35,8 +35,8 @@ locals {
           name = "Microsoft.Network/dnsResolvers"
         }
       }]
-      default_outbound_access_enabled = try(value.private_dns_zones.subnet_default_outbound_access_enabled, false)
-    } } if local.private_dns_zones_enabled[key]
+      default_outbound_access_enabled = try(value.private_dns_resolver.subnet_default_outbound_access_enabled, false)
+    } } if local.private_dns_resolver_enabled[key]
   }
   subnets = { for key, value in var.hub_virtual_networks : key => merge(lookup(local.private_dns_resolver_subnets, key, {}), lookup(local.bastion_subnets, key, {}), lookup(local.gateway_subnets, key, {})) }
 }
