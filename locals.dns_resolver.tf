@@ -18,6 +18,6 @@ locals {
         private_ip_allocation_method = "Static"
         private_ip_address           = local.private_dns_resolver_ip_addresses[key]
       }
-    } : null
+    } : {}
   }, value.private_dns_resolver.dns_resolver) if local.private_dns_resolver_enabled[key] }
 }
