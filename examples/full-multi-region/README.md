@@ -181,20 +181,7 @@ The following attributes are supported:
   - private\_dns\_zones: (Optional) The private DNS zone settings. Detailed information about the private DNS zone can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-network-private-link-private-dns-zones
   - bastion: (Optional) The bastion host settings. Detailed information about the bastion can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-res-network-bastionhost/
 
-Type:
-
-```hcl
-map(object({
-    hub_virtual_network = any
-    virtual_network_gateways = optional(object({
-      subnet_address_prefix = string
-      express_route         = optional(any)
-      vpn                   = optional(any)
-    }))
-    private_dns_zones = optional(any)
-    bastion           = optional(any)
-  }))
-```
+Type: `any`
 
 Default: `{}`
 
@@ -241,7 +228,15 @@ Default: `null`
 
 The following outputs are exported:
 
+### <a name="output_config_outputs"></a> [config\_outputs](#output\_config\_outputs)
+
+Description: n/a
+
 ### <a name="output_linting"></a> [linting](#output\_linting)
+
+Description: n/a
+
+### <a name="output_test_outputs"></a> [test\_outputs](#output\_test\_outputs)
 
 Description: n/a
 

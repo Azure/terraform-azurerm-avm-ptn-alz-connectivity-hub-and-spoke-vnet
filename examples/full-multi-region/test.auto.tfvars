@@ -392,9 +392,9 @@ hub_and_spoke_vnet_virtual_networks = {
       }
     }
     private_dns_zones = {
-      enabled                        = "$${primary_private_dns_zones_enabled}"
+      enabled = "$${primary_private_dns_zones_enabled}"
       dns_zones = {
-        resource_group_name            = "$${dns_resource_group_name}"
+        resource_group_name = "$${dns_resource_group_name}"
         private_link_private_dns_zones_regex_filter = {
           enabled = false
         }
@@ -403,8 +403,8 @@ hub_and_spoke_vnet_virtual_networks = {
       auto_registration_zone_name    = "$${primary_auto_registration_zone_name}"
     }
     private_dns_resolver = {
-      enabled = "$${primary_private_dns_resolver_enabled}"
-      subnet_address_prefix          = "$${primary_private_dns_resolver_subnet_address_prefix}"
+      enabled               = "$${primary_private_dns_resolver_enabled}"
+      subnet_address_prefix = "$${primary_private_dns_resolver_subnet_address_prefix}"
       dns_resolver = {
         name = "$${primary_private_dns_resolver_name}"
       }
@@ -488,9 +488,9 @@ hub_and_spoke_vnet_virtual_networks = {
       }
     }
     private_dns_zones = {
-      enabled                        = "$${secondary_private_dns_zones_enabled}"
+      enabled = "$${secondary_private_dns_zones_enabled}"
       dns_zones = {
-        resource_group_name            = "$${dns_resource_group_name}"
+        resource_group_name = "$${dns_resource_group_name}"
         private_link_private_dns_zones_regex_filter = {
           enabled = true
         }
@@ -499,8 +499,8 @@ hub_and_spoke_vnet_virtual_networks = {
       auto_registration_zone_name    = "$${secondary_auto_registration_zone_name}"
     }
     private_dns_resolver = {
-      enabled = "$${secondary_private_dns_resolver_enabled}"
-      subnet_address_prefix          = "$${secondary_private_dns_resolver_subnet_address_prefix}"
+      enabled               = "$${secondary_private_dns_resolver_enabled}"
+      subnet_address_prefix = "$${secondary_private_dns_resolver_subnet_address_prefix}"
       dns_resolver = {
         name = "$${secondary_private_dns_resolver_name}"
       }

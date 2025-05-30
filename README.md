@@ -68,6 +68,7 @@ The following attributes are supported:
   - bastion: (Optional) The bastion host settings. Detailed information about the bastion can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-res-network-bastionhost/
   - virtual\_network\_gateways: (Optional) The virtual network gateway settings. Detailed information about the virtual network gateway can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-vnetgateway
   - private\_dns\_zones: (Optional) The private DNS zone settings. Detailed information about the private DNS zone can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-network-private-link-private-dns-zones
+  - private\_dns\_resolver: (Optional) The private DNS resolver settings. Detailed information about the private DNS resolver can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-res-network-dnsresolver
 
 Type:
 
@@ -88,35 +89,17 @@ map(object({
       vpn                                    = optional(any)
     }))
     private_dns_zones = optional(object({
-      enabled             = optional(bool, true)
-      resource_group_name = string
-      is_primary          = optional(bool, false)
-      private_link_private_dns_zones = optional(map(object({
-        zone_name = optional(string, null)
-        custom_iterator = optional(object({
-          replacement_placeholder = string
-          replacement_values      = map(string)
-        }))
-      })))
-      private_link_private_dns_zones_additional = optional(map(object({
-        zone_name = optional(string, null)
-        custom_iterator = optional(object({
-          replacement_placeholder = string
-          replacement_values      = map(string)
-        }))
-      })))
-      private_dns_zone_network_link_name_template = optional(string)
-      auto_registration_zone_enabled              = optional(bool, false)
-      auto_registration_zone_name                 = optional(string, null)
-      subnet_address_prefix                       = string
-      subnet_name                                 = optional(string, "dns-resolver")
-      subnet_default_outbound_access_enabled      = optional(bool, false)
-      private_dns_resolver = object({
-        enabled             = optional(bool, true)
-        name                = string
-        resource_group_name = optional(string)
-        ip_address          = optional(string)
-      })
+      enabled                        = optional(bool, true)
+      dns_zones                      = any
+      auto_registration_zone_enabled = optional(bool, true)
+      auto_registration_zone_name    = optional(string, null)
+    }))
+    private_dns_resolver = optional(object({
+      enabled                                = optional(bool, true)
+      subnet_address_prefix                  = string
+      subnet_name                            = optional(string, "dns-resolver")
+      subnet_default_outbound_access_enabled = optional(bool, false)
+      dns_resolver                           = any
     }))
   }))
 ```
@@ -227,7 +210,7 @@ Version: 0.3.3
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.13.1
+Version: 0.15.0
 
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 

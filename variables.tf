@@ -39,17 +39,17 @@ variable "hub_virtual_networks" {
       vpn                                    = optional(any)
     }))
     private_dns_zones = optional(object({
-      enabled             = optional(bool, true)
-      dns_zones           = any
-      auto_registration_zone_enabled              = optional(bool, true)
-      auto_registration_zone_name                 = optional(string, null)
+      enabled                        = optional(bool, true)
+      dns_zones                      = any
+      auto_registration_zone_enabled = optional(bool, true)
+      auto_registration_zone_name    = optional(string, null)
     }))
     private_dns_resolver = optional(object({
-      enabled             = optional(bool, true)
-      subnet_address_prefix                       = string
-      subnet_name                                 = optional(string, "dns-resolver")
-      subnet_default_outbound_access_enabled      = optional(bool, false)
-      dns_resolver = any
+      enabled                                = optional(bool, true)
+      subnet_address_prefix                  = string
+      subnet_name                            = optional(string, "dns-resolver")
+      subnet_default_outbound_access_enabled = optional(bool, false)
+      dns_resolver                           = any
     }))
   }))
   default     = {}

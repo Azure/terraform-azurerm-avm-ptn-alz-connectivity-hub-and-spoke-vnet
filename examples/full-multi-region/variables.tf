@@ -55,7 +55,7 @@ DESCRIPTION
 }
 
 variable "hub_and_spoke_vnet_virtual_networks" {
-  type = any
+  type        = any
   default     = {}
   description = <<DESCRIPTION
 A map of hub networks to create.

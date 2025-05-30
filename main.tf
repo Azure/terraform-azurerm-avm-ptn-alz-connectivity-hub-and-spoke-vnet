@@ -54,7 +54,7 @@ module "dns_resolver" {
   enable_telemetry            = var.enable_telemetry
   inbound_endpoints           = each.value.inbound_endpoints
   outbound_endpoints          = try(each.value.outbound_endpoints, null)
-  tags = var.tags
+  tags                        = var.tags
 }
 
 module "private_dns_zones" {
@@ -62,16 +62,16 @@ module "private_dns_zones" {
   version  = "0.15.0"
   for_each = local.private_dns_zones
 
-  location                                  = each.value.location
-  resource_group_name                       = each.value.resource_group_name
-  enable_telemetry                          = var.enable_telemetry
-  private_link_private_dns_zones            = try(each.value.private_link_private_dns_zones, null)
-  private_link_private_dns_zones_additional = try(each.value.private_link_private_dns_zones_additional, null)
-  private_link_excluded_zones               = try(each.value.private_link_excluded_zones, [])
-  resource_group_creation_enabled           = false
-  tags                                      = var.tags
-  virtual_network_resource_ids_to_link_to   = local.private_dns_zones_virtual_network_links
+  location                                    = each.value.location
+  resource_group_name                         = each.value.resource_group_name
+  enable_telemetry                            = var.enable_telemetry
+  private_link_excluded_zones                 = try(each.value.private_link_excluded_zones, [])
+  private_link_private_dns_zones              = try(each.value.private_link_private_dns_zones, null)
+  private_link_private_dns_zones_additional   = try(each.value.private_link_private_dns_zones_additional, null)
   private_link_private_dns_zones_regex_filter = try(each.value.private_link_private_dns_zones_regex_filter, null)
+  resource_group_creation_enabled             = false
+  tags                                        = var.tags
+  virtual_network_resource_ids_to_link_to     = local.private_dns_zones_virtual_network_links
 }
 
 module "private_dns_zone_auto_registration" {
