@@ -70,6 +70,7 @@ custom_replacements = {
     primary_firewall_name                                        = "fw-hub-$${starter_location_01}"
     primary_firewall_policy_name                                 = "fwp-hub-$${starter_location_01}"
     primary_firewall_public_ip_name                              = "pip-fw-hub-$${starter_location_01}"
+    primary_firewall_management_public_ip_name                   = "pip-fw-hub-mgmt-$${starter_location_01}"
     primary_route_table_firewall_name                            = "rt-hub-fw-$${starter_location_01}"
     primary_route_table_user_subnets_name                        = "rt-hub-std-$${starter_location_01}"
     primary_virtual_network_gateway_express_route_name           = "vgw-hub-er-$${starter_location_01}"
@@ -86,6 +87,7 @@ custom_replacements = {
     secondary_firewall_name                                        = "fw-hub-$${starter_location_02}"
     secondary_firewall_policy_name                                 = "fwp-hub-$${starter_location_02}"
     secondary_firewall_public_ip_name                              = "pip-fw-hub-$${starter_location_02}"
+    secondary_firewall_management_public_ip_name                   = "pip-fw-hub-mgmt-$${starter_location_02}"
     secondary_route_table_firewall_name                            = "rt-hub-fw-$${starter_location_02}"
     secondary_route_table_user_subnets_name                        = "rt-hub-std-$${starter_location_02}"
     secondary_virtual_network_gateway_express_route_name           = "vgw-hub-er-$${starter_location_02}"
@@ -352,6 +354,12 @@ hub_and_spoke_vnet_virtual_networks = {
             zones = "$${starter_location_01_availability_zones}"
           }
         }
+        management_ip_configuration = {
+          public_ip_config = {
+            name  = "$${primary_firewall_management_public_ip_name}"
+            zones = "$${starter_location_01_availability_zones}"
+          }
+        }
         firewall_policy = {
           name = "$${primary_firewall_policy_name}"
         }
@@ -446,6 +454,12 @@ hub_and_spoke_vnet_virtual_networks = {
         default_ip_configuration = {
           public_ip_config = {
             name  = "$${secondary_firewall_public_ip_name}"
+            zones = "$${starter_location_02_availability_zones}"
+          }
+        }
+        management_ip_configuration = {
+          public_ip_config = {
+            name  = "$${secondary_firewall_management_public_ip_name}"
             zones = "$${starter_location_02_availability_zones}"
           }
         }
