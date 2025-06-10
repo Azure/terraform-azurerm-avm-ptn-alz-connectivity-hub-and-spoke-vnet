@@ -21,5 +21,5 @@ resource "modtm_telemetry" "telemetry" {
     module_source   = one(data.modtm_module_source.telemetry).module_source
     module_version  = one(data.modtm_module_source.telemetry).module_version
     random_id       = one(random_uuid.telemetry).result
-  }, { location = var.location })
+  }, { location = var.hub_virtual_networks[keys(var.hub_virtual_networks)[0]].hub_virtual_network.location })
 }
