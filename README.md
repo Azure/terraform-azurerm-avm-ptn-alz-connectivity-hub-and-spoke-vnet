@@ -200,7 +200,7 @@ Version: 0.7.3
 
 Source: Azure/avm-ptn-hubnetworking/azurerm
 
-Version: 0.10.1
+Version: 0.11.0
 
 ### <a name="module_private_dns_zone_auto_registration"></a> [private\_dns\_zone\_auto\_registration](#module\_private\_dns\_zone\_auto\_registration)
 
