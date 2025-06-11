@@ -33,6 +33,11 @@ output "name" {
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.name }
 }
 
+output "private_dns_zone_resource_ids" {
+  description = "Resource IDs of the private DNS zones"
+  value       = { for key, value in module.private_dns_zones.private_dns_zone_resource_ids : key => value.id }
+}
+
 output "resource_id" {
   description = "Resource IDs of the virtual networks"
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.id }
