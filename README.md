@@ -148,6 +148,10 @@ Description: Resource names of the firewalls.
 
 Description: Names of the virtual networks
 
+### <a name="output_private_dns_zone_resource_ids"></a> [private\_dns\_zone\_resource\_ids](#output\_private\_dns\_zone\_resource\_ids)
+
+Description: Resource IDs of the private DNS zones
+
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: Resource IDs of the virtual networks
