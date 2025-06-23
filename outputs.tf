@@ -5,7 +5,7 @@ output "dns_server_ip_addresses" {
 
 output "firewall_policies" {
   description = "Firewall policy IDs for each hub virtual network."
-  value       = { for key, value in var.hub_virtual_networks : key => try(value.hub_virtual_network.firewall_policies, "ToDo") }
+  value       = { for key, value in var.hub_virtual_networks : key => value.hub_virtual_network.firewall_policies }
 }
 
 output "firewall_private_ip_addresses" {
