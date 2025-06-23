@@ -35,7 +35,7 @@ output "name" {
 
 output "private_dns_zone_resource_ids" {
   description = "Resource IDs of the private DNS zones"
-  value       = { for key, value in module.private_dns_zones.private_dns_zone_resource_ids : key => value.id }
+  value       = { for key, value in module.private_dns_zones : key => value.private_dns_zone_resource_ids }
 }
 
 output "resource_id" {
