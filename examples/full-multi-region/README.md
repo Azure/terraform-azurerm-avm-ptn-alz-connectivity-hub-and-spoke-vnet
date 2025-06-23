@@ -6,6 +6,7 @@ Uses the standard tfvars file for the multi-region with azure firewall scenario.
 ```hcl
 terraform {
   required_version = "~> 1.5"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
