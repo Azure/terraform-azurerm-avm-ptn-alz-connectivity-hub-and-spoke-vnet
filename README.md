@@ -199,7 +199,7 @@ Version: 0.3.0
 
 Source: Azure/avm-res-network-dnsresolver/azurerm
 
-Version: 0.7.3
+Version: 0.7.5
 
 ### <a name="module_hub_and_spoke_vnet"></a> [hub\_and\_spoke\_vnet](#module\_hub\_and\_spoke\_vnet)
 
