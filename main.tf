@@ -75,7 +75,7 @@ module "private_dns_zones" {
 
 module "private_dns_zone_auto_registration" {
   source   = "Azure/avm-res-network-privatednszone/azurerm"
-  version  = "0.3.3"
+  version  = "0.3.4"
   for_each = local.private_dns_zones_auto_registration
 
   domain_name           = each.value.domain_name
