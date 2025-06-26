@@ -1,6 +1,6 @@
 module "hub_and_spoke_vnet" {
   source  = "Azure/avm-ptn-hubnetworking/azurerm"
-  version = "0.11.0"
+  version = "0.12.1"
 
   enable_telemetry     = var.enable_telemetry
   hub_virtual_networks = local.hub_virtual_networks
@@ -9,12 +9,12 @@ module "hub_and_spoke_vnet" {
 
 module "virtual_network_gateway" {
   source   = "Azure/avm-ptn-vnetgateway/azurerm"
-  version  = "0.6.3"
+  version  = "0.7.0"
   for_each = local.virtual_network_gateways
 
   location                                  = each.value.virtual_network_gateway.location
   name                                      = each.value.virtual_network_gateway.name
-  virtual_network_id                        = module.hub_and_spoke_vnet.virtual_networks[each.value.hub_network_key].id
+  virtual_network_gateway_subnet_id         = each.value.virtual_network_gateway_subnet_id
   edge_zone                                 = try(each.value.virtual_network_gateway.edge_zone, null)
   enable_telemetry                          = var.enable_telemetry
   express_route_circuits                    = try(each.value.virtual_network_gateway.express_route_circuits, null)
@@ -25,8 +25,7 @@ module "virtual_network_gateway" {
   route_table_name                          = try(each.value.virtual_network_gateway.route_table_name, null)
   route_table_tags                          = try(each.value.virtual_network_gateway.route_table_tags, null)
   sku                                       = each.value.virtual_network_gateway.sku
-  subnet_address_prefix                     = try(each.value.virtual_network_gateway.subnet_address_prefix, null)
-  subnet_creation_enabled                   = try(each.value.virtual_network_gateway.subnet_creation_enabled, false)
+  subnet_creation_enabled                   = false
   tags                                      = var.tags
   type                                      = each.value.virtual_network_gateway.type
   vpn_active_active_enabled                 = try(each.value.virtual_network_gateway.vpn_active_active_enabled, null)

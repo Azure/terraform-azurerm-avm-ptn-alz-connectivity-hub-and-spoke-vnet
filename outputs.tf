@@ -15,7 +15,7 @@ output "firewall_private_ip_addresses" {
 
 output "firewall_public_ip_addresses" {
   description = "Public IP addresses of the firewalls."
-  value       = { for key, value in module.hub_and_spoke_vnet.firewalls : key => value.public_ip_address }
+  value       = { for key, value in module.hub_and_spoke_vnet.firewalls : key => value.public_ip_addresses }
 }
 
 output "firewall_resource_ids" {
