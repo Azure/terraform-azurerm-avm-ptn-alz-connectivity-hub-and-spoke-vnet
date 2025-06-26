@@ -212,7 +212,7 @@ Default:
 
 ```json
 [
-  "uksouth",
+  "swedencentral",
   "ukwest"
 ]
 ```
