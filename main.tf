@@ -14,7 +14,6 @@ module "virtual_network_gateway" {
 
   location                                  = each.value.virtual_network_gateway.location
   name                                      = each.value.virtual_network_gateway.name
-  virtual_network_gateway_subnet_id         = each.value.virtual_network_gateway_subnet_id
   edge_zone                                 = try(each.value.virtual_network_gateway.edge_zone, null)
   enable_telemetry                          = var.enable_telemetry
   express_route_circuits                    = try(each.value.virtual_network_gateway.express_route_circuits, null)
@@ -28,6 +27,7 @@ module "virtual_network_gateway" {
   subnet_creation_enabled                   = false
   tags                                      = var.tags
   type                                      = each.value.virtual_network_gateway.type
+  virtual_network_gateway_subnet_id         = each.value.virtual_network_gateway_subnet_id
   vpn_active_active_enabled                 = try(each.value.virtual_network_gateway.vpn_active_active_enabled, null)
   vpn_bgp_enabled                           = try(each.value.virtual_network_gateway.vpn_bgp_enabled, null)
   vpn_bgp_settings                          = try(each.value.virtual_network_gateway.vpn_bgp_settings, null)
