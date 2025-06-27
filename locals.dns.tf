@@ -12,7 +12,7 @@ locals {
     domain_name         = value.private_dns_zones.auto_registration_zone_name
     resource_group_name = try(value.auto_registration_zone_resource_group_name, local.private_dns_zones[key].resource_group_name)
     virtual_network_links = {
-      auto_registion = {
+      auto_registration = {
         vnetlinkname     = "vnet-link-${key}-auto-registration"
         vnetid           = module.hub_and_spoke_vnet.virtual_networks[key].id
         autoregistration = true
