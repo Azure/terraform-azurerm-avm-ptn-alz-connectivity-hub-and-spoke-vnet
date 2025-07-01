@@ -9,7 +9,7 @@ module "hub_and_spoke_vnet" {
 
 module "virtual_network_gateway" {
   source   = "Azure/avm-ptn-vnetgateway/azurerm"
-  version  = "0.7.0"
+  version  = "0.8.0"
   for_each = local.virtual_network_gateways
 
   location                                  = each.value.virtual_network_gateway.location
@@ -35,6 +35,7 @@ module "virtual_network_gateway" {
   vpn_point_to_site                         = try(each.value.virtual_network_gateway.vpn_point_to_site, null)
   vpn_private_ip_address_enabled            = try(each.value.virtual_network_gateway.vpn_private_ip_address_enabled, null)
   vpn_type                                  = try(each.value.virtual_network_gateway.vpn_type, null)
+  hosted_on_behalf_of_public_ip_enabled     = try(each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled, false)
 
   depends_on = [
     module.hub_and_spoke_vnet
