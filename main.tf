@@ -9,7 +9,7 @@ module "hub_and_spoke_vnet" {
 
 module "virtual_network_gateway" {
   source   = "Azure/avm-ptn-vnetgateway/azurerm"
-  version  = "0.8.0"
+  version  = "0.9.0"
   for_each = local.virtual_network_gateways
 
   location                                  = each.value.virtual_network_gateway.location
@@ -20,6 +20,7 @@ module "virtual_network_gateway" {
   hosted_on_behalf_of_public_ip_enabled     = try(each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled, false)
   ip_configurations                         = try(each.value.virtual_network_gateway.ip_configurations, null)
   local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
+  parent_id                                 = each.value.virtual_network_gateway.parent_id
   route_table_bgp_route_propagation_enabled = try(each.value.virtual_network_gateway.route_table_bgp_route_propagation_enabled, null)
   route_table_creation_enabled              = try(each.value.virtual_network_gateway.route_table_creation_enabled, null)
   route_table_name                          = try(each.value.virtual_network_gateway.route_table_name, null)
