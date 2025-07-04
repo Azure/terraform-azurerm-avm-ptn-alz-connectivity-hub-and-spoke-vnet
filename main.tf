@@ -14,13 +14,13 @@ module "virtual_network_gateway" {
 
   location                                  = each.value.virtual_network_gateway.location
   name                                      = each.value.virtual_network_gateway.name
+  parent_id                                 = each.value.virtual_network_gateway.parent_id
   edge_zone                                 = try(each.value.virtual_network_gateway.edge_zone, null)
   enable_telemetry                          = var.enable_telemetry
   express_route_circuits                    = try(each.value.virtual_network_gateway.express_route_circuits, null)
   hosted_on_behalf_of_public_ip_enabled     = try(each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled, false)
   ip_configurations                         = try(each.value.virtual_network_gateway.ip_configurations, null)
   local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
-  parent_id                                 = each.value.virtual_network_gateway.parent_id
   route_table_bgp_route_propagation_enabled = try(each.value.virtual_network_gateway.route_table_bgp_route_propagation_enabled, null)
   route_table_creation_enabled              = try(each.value.virtual_network_gateway.route_table_creation_enabled, null)
   route_table_name                          = try(each.value.virtual_network_gateway.route_table_name, null)
