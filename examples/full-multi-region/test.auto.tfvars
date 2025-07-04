@@ -1,7 +1,7 @@
 /*
 --- Built-in Replacements ---
 This file contains built-in replacements to avoid repeating the same hard-coded values.
-Replacements are denoted by the dollar-dollar curly braces token (e.g. $${starter_location_01}). The following details each built-in replacemnets that you can use:
+Replacements are denoted by the dollar-dollar curly braces token (e.g. $${starter_location_01}). The following details each built-in replacements that you can use:
 `starter_location_01`: This the primary an Azure location sourced from the `starter_locations` variable. This can be used to set the location of resources.
 `starter_location_02` to `starter_location_10`: These are the secondary Azure locations sourced from the `starter_locations` variable. This can be used to set the location of resources.
 `starter_location_01_availability_zones` to `starter_location_10_availability_zones`: These are the availability zones for the Azure locations sourced from the `starter_locations` variable. This can be used to set the availability zones of resources.
@@ -48,26 +48,26 @@ custom_replacements = {
     ddos_protection_plan_enabled = true
 
     # Resource provisioning primary connectivity
-    primary_firewall_enabled                                                            = true
-    primary_firewall_management_ip_enabled                                              = false
-    primary_virtual_network_gateway_express_route_enabled                               = true
-    primary_virtual_network_gateway_vpn_enabled                                         = false
-    primary_private_dns_zones_enabled                                                   = true
-    primary_private_dns_auto_registration_zone_enabled                                  = true
-    primary_private_dns_resolver_enabled                                                = false
-    primary_bastion_enabled                                                             = false
-    primary_virtual_network_gateway_express_route_hosted_on_behalf_of_public_ip_enabled = true #This setting enables the Public IP of the ExpressRoute Gateway to be hosted on behalf of Azure, only available in specific regions.
+    primary_firewall_enabled                                             = true
+    primary_firewall_management_ip_enabled                               = true
+    primary_virtual_network_gateway_express_route_enabled                = true
+    primary_virtual_network_gateway_express_route_hobo_public_ip_enabled = true
+    primary_virtual_network_gateway_vpn_enabled                          = true
+    primary_private_dns_zones_enabled                                    = true
+    primary_private_dns_auto_registration_zone_enabled                   = true
+    primary_private_dns_resolver_enabled                                 = true
+    primary_bastion_enabled                                              = true
 
-    # Resource provisioning secondary connectivity (Only VPN Gateway is enabled to avoid costs)
-    secondary_firewall_enabled                                                            = false
-    secondary_firewall_management_ip_enabled                                              = false
-    secondary_virtual_network_gateway_express_route_enabled                               = false
-    secondary_virtual_network_gateway_vpn_enabled                                         = true
-    secondary_private_dns_zones_enabled                                                   = false
-    secondary_private_dns_auto_registration_zone_enabled                                  = false
-    secondary_private_dns_resolver_enabled                                                = false
-    secondary_bastion_enabled                                                             = false
-    secondary_virtual_network_gateway_express_route_hosted_on_behalf_of_public_ip_enabled = false
+    # Resource provisioning secondary connectivity
+    secondary_firewall_enabled                                             = true
+    secondary_firewall_management_ip_enabled                               = true
+    secondary_virtual_network_gateway_express_route_enabled                = true
+    secondary_virtual_network_gateway_express_route_hobo_public_ip_enabled = false
+    secondary_virtual_network_gateway_vpn_enabled                          = true
+    secondary_private_dns_zones_enabled                                    = true
+    secondary_private_dns_auto_registration_zone_enabled                   = true
+    secondary_private_dns_resolver_enabled                                 = true
+    secondary_bastion_enabled                                              = true
 
     # Resource names primary connectivity
     primary_virtual_network_name                                 = "vnet-hub-$${starter_location_01}"
@@ -201,7 +201,12 @@ You can use this section to customize the management groups and policies that wi
 You can further configure management groups and policy by supplying a `lib` folder. This is detailed in the Accelerator documentation.
 */
 management_group_settings = {
-  enabled            = true
+  enabled = true
+  # This is the name of the architecture that will be used to deploy the management resources.
+  # It refers to the alz_custom.alz_architecture_definition.yaml file in the lib folder.
+  # Do not change this value unless you have created another architecture definition
+  # with the name value specified below.
+  architecture_name  = "alz_custom"
   location           = "$${starter_location_01}"
   parent_resource_id = "$${root_parent_management_group_id}"
   policy_default_values = {
@@ -254,26 +259,6 @@ management_group_settings = {
         }
       }
     }
-    /*
-    # Example of how to update a policy assignment enforcement mode for DDOS Protection Plan
-    connectivity = {
-      policy_assignments = {
-        Enable-DDoS-VNET = {
-          enforcement_mode = "DoNotEnforce"
-        }
-      }
-    }
-    */
-    /*
-    # Example of how to update a policy assignment enforcement mode for Private Link DNS Zones
-    corp = {
-      policy_assignments = {
-        Deploy-Private-DNS-Zones = {
-          enforcement_mode = "DoNotEnforce"
-        }
-      }
-    }
-    */
   }
   /*
   # Example of how to add management group role assignments
@@ -358,6 +343,7 @@ hub_and_spoke_vnet_virtual_networks = {
             zones = "$${starter_location_01_availability_zones}"
           }
         }
+        management_ip_enabled = "$${primary_firewall_management_ip_enabled}"
         management_ip_configuration = {
           public_ip_config = {
             name  = "$${primary_firewall_management_public_ip_name}"
@@ -376,7 +362,7 @@ hub_and_spoke_vnet_virtual_networks = {
         location                              = "$${starter_location_01}"
         name                                  = "$${primary_virtual_network_gateway_express_route_name}"
         sku                                   = "$${starter_location_01_virtual_network_gateway_sku_express_route}"
-        hosted_on_behalf_of_public_ip_enabled = "$${primary_virtual_network_gateway_express_route_hosted_on_behalf_of_public_ip_enabled}"
+        hosted_on_behalf_of_public_ip_enabled = "$${primary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
             public_ip = {
@@ -462,6 +448,7 @@ hub_and_spoke_vnet_virtual_networks = {
             zones = "$${starter_location_02_availability_zones}"
           }
         }
+        management_ip_enabled = "$${secondary_firewall_management_ip_enabled}"
         management_ip_configuration = {
           public_ip_config = {
             name  = "$${secondary_firewall_management_public_ip_name}"
@@ -480,7 +467,7 @@ hub_and_spoke_vnet_virtual_networks = {
         location                              = "$${starter_location_02}"
         name                                  = "$${secondary_virtual_network_gateway_express_route_name}"
         sku                                   = "$${starter_location_02_virtual_network_gateway_sku_express_route}"
-        hosted_on_behalf_of_public_ip_enabled = "$${secondary_virtual_network_gateway_express_route_hosted_on_behalf_of_public_ip_enabled}"
+        hosted_on_behalf_of_public_ip_enabled = "$${secondary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
             public_ip = {
