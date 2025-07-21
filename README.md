@@ -222,9 +222,9 @@ Version: 0.15.0
 
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 
-Source: Azure/avm-ptn-vnetgateway/azurerm
+Source: git::https://github.com/Azure/terraform-azurerm-avm-ptn-vnetgateway.git
 
-Version: 0.9.0
+Version: bug/fix-short-circuit-syntax
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
