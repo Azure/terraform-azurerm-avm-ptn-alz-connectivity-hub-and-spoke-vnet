@@ -224,7 +224,7 @@ Version: 0.15.0
 
 Source: git::https://github.com/Azure/terraform-azurerm-avm-ptn-vnetgateway.git
 
-Version: bug/fix-short-circuit-syntax
+Version: main
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
