@@ -222,9 +222,9 @@ Version: 0.15.0
 
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 
-Source: git::https://github.com/Azure/terraform-azurerm-avm-ptn-vnetgateway.git
+Source: Azure/avm-ptn-vnetgateway/azurerm
 
-Version: bug/express-route-circuit-peering-config
+Version: 0.10.2
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

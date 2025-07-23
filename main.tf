@@ -8,9 +8,8 @@ module "hub_and_spoke_vnet" {
 }
 
 module "virtual_network_gateway" {
-  source = "git::https://github.com/Azure/terraform-azurerm-avm-ptn-vnetgateway.git?ref=bug/express-route-circuit-peering-config"
-  # source  = "Azure/avm-ptn-vnetgateway/azurerm"
-  # version = "0.10.1"
+  source   = "Azure/avm-ptn-vnetgateway/azurerm"
+  version  = "0.10.2"
   for_each = local.virtual_network_gateways
 
   location                                  = each.value.virtual_network_gateway.location
