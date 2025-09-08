@@ -45,7 +45,7 @@ module "virtual_network_gateway" {
 
 module "dns_resolver" {
   source   = "Azure/avm-res-network-dnsresolver/azurerm"
-  version  = "0.7.3"
+  version  = "0.7.5"
   for_each = local.private_dns_resolver
 
   location                    = each.value.location
@@ -60,7 +60,7 @@ module "dns_resolver" {
 
 module "private_dns_zones" {
   source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
-  version  = "0.15.0"
+  version  = "0.16.0"
   for_each = local.private_dns_zones
 
   location                                    = each.value.location
@@ -77,7 +77,7 @@ module "private_dns_zones" {
 
 module "private_dns_zone_auto_registration" {
   source   = "Azure/avm-res-network-privatednszone/azurerm"
-  version  = "0.3.3"
+  version  = "0.3.4"
   for_each = local.private_dns_zones_auto_registration
 
   domain_name           = each.value.domain_name
