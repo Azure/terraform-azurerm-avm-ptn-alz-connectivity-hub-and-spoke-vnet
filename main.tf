@@ -18,6 +18,8 @@ module "virtual_network_gateway" {
   edge_zone                                 = try(each.value.virtual_network_gateway.edge_zone, null)
   enable_telemetry                          = var.enable_telemetry
   express_route_circuits                    = try(each.value.virtual_network_gateway.express_route_circuits, null)
+  express_route_remote_vnet_traffic_enabled = try(each.value.virtual_network_gateway.express_route_remote_vnet_traffic_enabled, null)
+  express_route_virtual_wan_traffic_enabled = try(each.value.virtual_network_gateway.express_route_virtual_wan_traffic_enabled, null)
   hosted_on_behalf_of_public_ip_enabled     = try(each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled, false)
   ip_configurations                         = try(each.value.virtual_network_gateway.ip_configurations, null)
   local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
