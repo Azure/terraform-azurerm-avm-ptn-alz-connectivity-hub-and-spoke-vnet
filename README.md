@@ -166,6 +166,10 @@ Description: Resource IDs of the virtual networks
 
 Description: Route tables associated with the firewall.
 
+### <a name="output_route_tables_gateway"></a> [route\_tables\_gateway](#output\_route\_tables\_gateway)
+
+Description: Route tables associated with the gateway subnet.
+
 ### <a name="output_route_tables_user_subnets"></a> [route\_tables\_user\_subnets](#output\_route\_tables\_user\_subnets)
 
 Description: Route tables associated with the user subnets.
