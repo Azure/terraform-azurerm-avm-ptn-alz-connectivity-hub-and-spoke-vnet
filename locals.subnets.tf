@@ -5,6 +5,7 @@ locals {
       address_prefixes = [value.bastion.subnet_address_prefix]
       name             = "AzureBastionSubnet"
       route_table = {
+        id                           = null
         assign_generated_route_table = false
       }
       default_outbound_access_enabled = try(value.bastion.subnet_default_outbound_access_enabled, false)
@@ -16,6 +17,7 @@ locals {
       address_prefixes = [value.virtual_network_gateways.subnet_address_prefix]
       name             = "GatewaySubnet"
       route_table = {
+        id                           = local.gateway_route_table_enabled[key] ? module.gateway_route_table[key].resource_id : null
         assign_generated_route_table = false
       }
       default_outbound_access_enabled = try(value.virtual_network_gateways.subnet_default_outbound_access_enabled, false)
@@ -27,6 +29,7 @@ locals {
       address_prefixes = [value.private_dns_resolver.subnet_address_prefix]
       name             = value.private_dns_resolver.subnet_name
       route_table = {
+        id                           = null
         assign_generated_route_table = false
       }
       delegations = [{

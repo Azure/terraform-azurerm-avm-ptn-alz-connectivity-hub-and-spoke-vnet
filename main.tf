@@ -45,6 +45,19 @@ module "virtual_network_gateway" {
   ]
 }
 
+module "gateway_route_table" {
+  source   = "Azure/avm-res-network-routetable/azurerm"
+  version  = "0.3.1"
+  for_each = local.gateway_route_table
+
+  location                      = each.value.location
+  name                          = each.value.name
+  resource_group_name           = each.value.resource_group_name
+  bgp_route_propagation_enabled = each.value.bgp_route_propagation_enabled
+  enable_telemetry              = var.enable_telemetry
+  tags                          = var.tags
+}
+
 module "dns_resolver" {
   source   = "Azure/avm-res-network-dnsresolver/azurerm"
   version  = "0.7.3"

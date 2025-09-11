@@ -87,10 +87,13 @@ map(object({
       bastion_public_ip                      = any
     }))
     virtual_network_gateways = optional(object({
-      subnet_address_prefix                  = string
-      subnet_default_outbound_access_enabled = optional(bool, false)
-      express_route                          = optional(any)
-      vpn                                    = optional(any)
+      subnet_address_prefix                     = string
+      subnet_default_outbound_access_enabled    = optional(bool, false)
+      route_table_creation_enabled              = optional(bool, false)
+      route_table_name                          = optional(string)
+      route_table_bgp_route_propagation_enabled = optional(bool, false)
+      express_route                             = optional(any)
+      vpn                                       = optional(any)
     }))
     private_dns_zones = optional(object({
       enabled                                    = optional(bool, true)
@@ -163,6 +166,10 @@ Description: Resource IDs of the virtual networks
 
 Description: Route tables associated with the firewall.
 
+### <a name="output_route_tables_gateway"></a> [route\_tables\_gateway](#output\_route\_tables\_gateway)
+
+Description: Route tables associated with the gateway subnet.
+
 ### <a name="output_route_tables_user_subnets"></a> [route\_tables\_user\_subnets](#output\_route\_tables\_user\_subnets)
 
 Description: Route tables associated with the user subnets.
@@ -202,6 +209,12 @@ Version: 0.3.0
 Source: Azure/avm-res-network-dnsresolver/azurerm
 
 Version: 0.7.3
+
+### <a name="module_gateway_route_table"></a> [gateway\_route\_table](#module\_gateway\_route\_table)
+
+Source: Azure/avm-res-network-routetable/azurerm
+
+Version: 0.3.1
 
 ### <a name="module_hub_and_spoke_vnet"></a> [hub\_and\_spoke\_vnet](#module\_hub\_and\_spoke\_vnet)
 
