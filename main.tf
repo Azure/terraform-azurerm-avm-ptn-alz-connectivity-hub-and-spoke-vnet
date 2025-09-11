@@ -23,10 +23,7 @@ module "virtual_network_gateway" {
   hosted_on_behalf_of_public_ip_enabled     = try(each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled, false)
   ip_configurations                         = try(each.value.virtual_network_gateway.ip_configurations, null)
   local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
-  route_table_bgp_route_propagation_enabled = try(each.value.virtual_network_gateway.route_table_bgp_route_propagation_enabled, null)
-  route_table_creation_enabled              = try(each.value.virtual_network_gateway.route_table_creation_enabled, null)
-  route_table_name                          = try(each.value.virtual_network_gateway.route_table_name, null)
-  route_table_tags                          = try(each.value.virtual_network_gateway.route_table_tags, null)
+  route_table_creation_enabled              = false
   sku                                       = each.value.virtual_network_gateway.sku
   subnet_creation_enabled                   = false
   tags                                      = var.tags
