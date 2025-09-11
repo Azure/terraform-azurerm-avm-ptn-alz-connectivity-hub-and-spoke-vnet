@@ -17,7 +17,7 @@ locals {
       address_prefixes = [value.virtual_network_gateways.subnet_address_prefix]
       name             = "GatewaySubnet"
       route_table = {
-        id                           = local.gateway_route_table_enabled[key] ? module.gateway_route_table[key].id : null
+        id                           = local.gateway_route_table_enabled[key] ? module.gateway_route_table[key].resource_id : null
         assign_generated_route_table = false
       }
       default_outbound_access_enabled = try(value.virtual_network_gateways.subnet_default_outbound_access_enabled, false)
