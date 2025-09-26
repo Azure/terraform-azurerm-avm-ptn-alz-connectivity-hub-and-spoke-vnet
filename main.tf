@@ -83,6 +83,7 @@ module "private_dns_zones" {
   resource_group_creation_enabled             = false
   tags                                        = var.tags
   virtual_network_resource_ids_to_link_to     = local.private_dns_zones_virtual_network_links
+  dns_resolver_policy                         = try(each.value.dns_resolver_policy, null)
 }
 
 module "private_dns_zone_auto_registration" {

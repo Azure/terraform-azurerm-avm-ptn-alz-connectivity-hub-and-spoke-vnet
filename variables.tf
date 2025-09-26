@@ -47,6 +47,7 @@ variable "hub_virtual_networks" {
       auto_registration_zone_enabled             = optional(bool, true)
       auto_registration_zone_name                = optional(string, null)
       auto_registration_zone_resource_group_name = optional(string, null)
+      dns_resolver_policy                        = optional(string, null)
     }))
     private_dns_resolver = optional(object({
       enabled                                = optional(bool, true)
@@ -65,7 +66,7 @@ The following attributes are supported:
   - hub_virtual_network: The hub virtual network settings. Detailed information about the hub virtual network can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-hubnetworking
   - bastion: (Optional) The bastion host settings. Detailed information about the bastion can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-res-network-bastionhost/
   - virtual_network_gateways: (Optional) The virtual network gateway settings. Detailed information about the virtual network gateway can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-vnetgateway
-  - private_dns_zones: (Optional) The private DNS zone settings. Detailed information about the private DNS zone can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-network-private-link-private-dns-zones
+  - private_dns_zones: (Optional) The private DNS zone settings. Detailed information about the private DNS zone can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-ptn-network-private-link-private-dns-zones. The dns_resolver_policy parameter supports Azure Private DNS fallback functionality introduced in v0.18.0.
   - private_dns_resolver: (Optional) The private DNS resolver settings. Detailed information about the private DNS resolver can be found in the module's README: https://registry.terraform.io/modules/Azure/avm-res-network-dnsresolver
 
 DESCRIPTION
