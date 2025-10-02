@@ -397,11 +397,9 @@ hub_and_spoke_vnet_virtual_networks = {
     }
     private_dns_zones = {
       enabled = "$${primary_private_dns_zones_enabled}"
-      dns_zones = {
-        resource_group_name = "$${dns_resource_group_name}"
-        private_link_private_dns_zones_regex_filter = {
-          enabled = false
-        }
+      resource_group_name = "$${dns_resource_group_name}"
+      private_link_private_dns_zones_regex_filter = {
+        enabled = false
       }
       auto_registration_zone_enabled = "$${primary_private_dns_auto_registration_zone_enabled}"
       auto_registration_zone_name    = "$${primary_auto_registration_zone_name}"
@@ -414,10 +412,8 @@ hub_and_spoke_vnet_virtual_networks = {
     bastion = {
       enabled               = "$${primary_bastion_enabled}"
       subnet_address_prefix = "$${primary_bastion_subnet_address_prefix}"
-      bastion_host = {
-        name  = "$${primary_bastion_host_name}"
-        zones = "$${starter_location_01_availability_zones}"
-      }
+      name  = "$${primary_bastion_host_name}"
+      zones = "$${starter_location_01_availability_zones}"
       bastion_public_ip = {
         name  = "$${primary_bastion_host_public_ip_name}"
         zones = "$${starter_location_01_availability_zones}"
@@ -501,11 +497,9 @@ hub_and_spoke_vnet_virtual_networks = {
     }
     private_dns_zones = {
       enabled = "$${secondary_private_dns_zones_enabled}"
-      dns_zones = {
-        resource_group_name = "$${dns_resource_group_name}"
-        private_link_private_dns_zones_regex_filter = {
-          enabled = true
-        }
+      resource_group_name = "$${dns_resource_group_name}"
+      private_link_private_dns_zones_regex_filter = {
+        enabled = true
       }
       auto_registration_zone_enabled = "$${secondary_private_dns_auto_registration_zone_enabled}"
       auto_registration_zone_name    = "$${secondary_auto_registration_zone_name}"
@@ -518,10 +512,8 @@ hub_and_spoke_vnet_virtual_networks = {
     bastion = {
       enabled               = "$${secondary_bastion_enabled}"
       subnet_address_prefix = "$${secondary_bastion_subnet_address_prefix}"
-      bastion_host = {
-        name  = "$${secondary_bastion_host_name}"
-        zones = "$${starter_location_02_availability_zones}"
-      }
+      name  = "$${secondary_bastion_host_name}"
+      zones = "$${starter_location_02_availability_zones}"
       bastion_public_ip = {
         name  = "$${secondary_bastion_host_public_ip_name}"
         zones = "$${starter_location_02_availability_zones}"

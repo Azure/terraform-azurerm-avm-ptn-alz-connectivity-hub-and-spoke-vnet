@@ -376,8 +376,35 @@ map(object({
       enabled                                = optional(bool, true)
       subnet_address_prefix                  = string
       subnet_default_outbound_access_enabled = optional(bool, false)
-      bastion_host                           = any
-      bastion_public_ip                      = any
+      name                                   = string
+      copy_paste_enabled                     = optional(bool, false)
+      file_copy_enabled                      = optional(bool, false)
+      ip_connect_enabled                     = optional(bool, false)
+      kerberos_enabled                       = optional(bool, false)
+      scale_units                            = optional(number, 2)
+      shareable_link_enabled                 = optional(bool, false)
+      sku                                    = optional(string, "Standard")
+      tags                                   = optional(map(string), null)
+      tunneling_enabled                      = optional(bool, false)
+      zones                                  = optional(set(string), null)
+      bastion_public_ip = object({
+        name                    = optional(string)
+        allocation_method       = optional(string, "Static")
+        sku                     = optional(string, "Standard")
+        sku_tier                = optional(string, "Regional")
+        idle_timeout_in_minutes = optional(number, 4)
+        zones                   = optional(set(string), null)
+        tags                    = optional(map(string), null)
+        domain_name_label       = optional(string, null)
+        public_ip_prefix_id     = optional(string, null)
+        reverse_fqdn            = optional(string, null)
+        ip_version              = optional(string, "IPv4")
+        ip_tags                 = optional(map(string), {})
+        edge_zone               = optional(string, null)
+        ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+        ddos_protection_plan_id = optional(string, null)
+
+      })
     }))
     virtual_network_gateways = optional(object({
       subnet_address_prefix                     = string
@@ -656,7 +683,7 @@ map(object({
       auto_registration_zone_enabled             = optional(bool, true)
       auto_registration_zone_name                = optional(string, null)
       auto_registration_zone_resource_group_name = optional(string, null)
-      private_link_excluded_zones                = optional(set(string))
+      private_link_excluded_zones                = optional(set(string), [])
       private_link_private_dns_zones = optional(map(object({
         zone_name                              = optional(string, null)
         private_dns_zone_supports_private_link = optional(bool, true)
