@@ -653,10 +653,31 @@ map(object({
     }))
     private_dns_zones = optional(object({
       enabled                                    = optional(bool, true)
-      dns_zones                                  = any
       auto_registration_zone_enabled             = optional(bool, true)
       auto_registration_zone_name                = optional(string, null)
       auto_registration_zone_resource_group_name = optional(string, null)
+      private_link_excluded_zones                = optional(set(string))
+      private_link_private_dns_zones = optional(map(object({
+        zone_name                              = optional(string, null)
+        private_dns_zone_supports_private_link = optional(bool, true)
+        custom_iterator = optional(object({
+          replacement_placeholder = string
+          replacement_values      = map(string)
+        }))
+      })))
+      private_link_private_dns_zones_additional = optional(map(object({
+        zone_name                              = optional(string, null)
+        private_dns_zone_supports_private_link = optional(bool, true)
+        custom_iterator = optional(object({
+          replacement_placeholder = string
+          replacement_values      = map(string)
+        }))
+      })))
+      private_link_private_dns_zones_regex_filter = optional(object({
+        enabled      = optional(bool, false)
+        regex_filter = optional(string, "{regionName}|{regionCode}")
+      }))
+      tags = optional(map(string), null)
     }))
     private_dns_resolver = optional(object({
       enabled                                = optional(bool, true)
