@@ -409,9 +409,7 @@ hub_and_spoke_vnet_virtual_networks = {
     private_dns_resolver = {
       enabled               = "$${primary_private_dns_resolver_enabled}"
       subnet_address_prefix = "$${primary_private_dns_resolver_subnet_address_prefix}"
-      dns_resolver = {
-        name = "$${primary_private_dns_resolver_name}"
-      }
+      name = "$${primary_private_dns_resolver_name}"
     }
     bastion = {
       enabled               = "$${primary_bastion_enabled}"
@@ -515,9 +513,7 @@ hub_and_spoke_vnet_virtual_networks = {
     private_dns_resolver = {
       enabled               = "$${secondary_private_dns_resolver_enabled}"
       subnet_address_prefix = "$${secondary_private_dns_resolver_subnet_address_prefix}"
-      dns_resolver = {
-        name = "$${secondary_private_dns_resolver_name}"
-      }
+      name = "$${secondary_private_dns_resolver_name}"
     }
     bastion = {
       enabled               = "$${secondary_bastion_enabled}"

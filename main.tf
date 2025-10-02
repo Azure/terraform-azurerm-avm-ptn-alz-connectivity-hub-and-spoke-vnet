@@ -23,7 +23,7 @@ module "virtual_network_gateway" {
   route_table_creation_enabled              = false
   sku                                       = each.value.virtual_network_gateway.sku
   subnet_creation_enabled                   = false
-  tags                                      = var.tags
+  tags                                      = each.value.tags
   type                                      = each.value.virtual_network_gateway.type
   virtual_network_gateway_subnet_id         = each.value.virtual_network_gateway_subnet_id
   vpn_active_active_enabled                 = try(each.value.virtual_network_gateway.vpn_active_active_enabled, null)
@@ -69,8 +69,8 @@ module "dns_resolver" {
   virtual_network_resource_id = module.hub_and_spoke_vnet.virtual_networks[each.key].id
   enable_telemetry            = var.enable_telemetry
   inbound_endpoints           = each.value.inbound_endpoints
-  outbound_endpoints          = try(each.value.outbound_endpoints, null)
-  tags                        = var.tags
+  outbound_endpoints          = each.value.outbound_endpoints
+  tags                        = each.value.tags
 }
 
 module "private_dns_zones" {
