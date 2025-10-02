@@ -137,8 +137,10 @@ custom_replacements = {
   NOTE: You cannot refer to another custom resource group identifier in this variable.
   */
   resource_group_identifiers = {
-    management_resource_group_id           = "/subscriptions/$${subscription_id_management}/resourcegroups/$${management_resource_group_name}"
-    ddos_protection_plan_resource_group_id = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${ddos_resource_group_name}"
+    management_resource_group_id                 = "/subscriptions/$${subscription_id_management}/resourcegroups/$${management_resource_group_name}"
+    connectivity_hub_primary_resource_group_id   = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${connectivity_hub_primary_resource_group_name}"
+    connectivity_hub_secondary_resource_group_id = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${connectivity_hub_secondary_resource_group_name}"
+    ddos_protection_plan_resource_group_id       = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${ddos_resource_group_name}"
   }
 
   /*
@@ -322,42 +324,42 @@ hub_and_spoke_vnet_virtual_networks = {
   primary = {
     hub_virtual_network = {
       name                          = "$${primary_virtual_network_name}"
-      resource_group_name           = "$${connectivity_hub_primary_resource_group_name}"
+      parent_id                     = "$${connectivity_hub_primary_resource_group_id}"
       location                      = "$${starter_location_01}"
       address_space                 = ["$${primary_hub_virtual_network_address_space}"]
       routing_address_space         = ["$${primary_hub_address_space}"]
       route_table_name_firewall     = "$${primary_route_table_firewall_name}"
       route_table_name_user_subnets = "$${primary_route_table_user_subnets_name}"
       subnets                       = {}
-      firewall = {
-        enabled                          = "$${primary_firewall_enabled}"
-        subnet_address_prefix            = "$${primary_firewall_subnet_address_prefix}"
-        management_subnet_address_prefix = "$${primary_firewall_management_subnet_address_prefix}"
-        name                             = "$${primary_firewall_name}"
-        sku_name                         = "AZFW_VNet"
-        sku_tier                         = "Standard"
-        zones                            = "$${starter_location_01_availability_zones}"
-        default_ip_configuration = {
-          public_ip_config = {
-            name  = "$${primary_firewall_public_ip_name}"
-            zones = "$${starter_location_01_availability_zones}"
-          }
+    }
+    firewall = {
+      enabled                          = "$${primary_firewall_enabled}"
+      subnet_address_prefix            = "$${primary_firewall_subnet_address_prefix}"
+      management_subnet_address_prefix = "$${primary_firewall_management_subnet_address_prefix}"
+      name                             = "$${primary_firewall_name}"
+      sku_name                         = "AZFW_VNet"
+      sku_tier                         = "Standard"
+      zones                            = "$${starter_location_01_availability_zones}"
+      default_ip_configuration = {
+        public_ip_config = {
+          name  = "$${primary_firewall_public_ip_name}"
+          zones = "$${starter_location_01_availability_zones}"
         }
-        management_ip_enabled = "$${primary_firewall_management_ip_enabled}"
-        management_ip_configuration = {
-          public_ip_config = {
-            name  = "$${primary_firewall_management_public_ip_name}"
-            zones = "$${starter_location_01_availability_zones}"
-          }
-        }
-        firewall_policy = {
-          name = "$${primary_firewall_policy_name}"
+      }
+      management_ip_enabled = "$${primary_firewall_management_ip_enabled}"
+      management_ip_configuration = {
+        public_ip_config = {
+          name  = "$${primary_firewall_management_public_ip_name}"
+          zones = "$${starter_location_01_availability_zones}"
         }
       }
     }
+    firewall_policy = {
+      name = "$${primary_firewall_policy_name}"
+    }
     virtual_network_gateways = {
-      subnet_address_prefix = "$${primary_gateway_subnet_address_prefix}"
-      route_table_creation_enabled = true
+      subnet_address_prefix                     = "$${primary_gateway_subnet_address_prefix}"
+      route_table_creation_enabled              = true
       route_table_bgp_route_propagation_enabled = true
       express_route = {
         enabled                               = "$${primary_virtual_network_gateway_express_route_enabled}"
@@ -429,7 +431,7 @@ hub_and_spoke_vnet_virtual_networks = {
   secondary = {
     hub_virtual_network = {
       name                          = "$${secondary_virtual_network_name}"
-      resource_group_name           = "$${connectivity_hub_secondary_resource_group_name}"
+      parent_id                     = "$${connectivity_hub_secondary_resource_group_id}"
       location                      = "$${starter_location_02}"
       address_space                 = ["$${secondary_hub_virtual_network_address_space}"]
       routing_address_space         = ["$${secondary_hub_address_space}"]
@@ -463,8 +465,8 @@ hub_and_spoke_vnet_virtual_networks = {
       }
     }
     virtual_network_gateways = {
-      subnet_address_prefix = "$${secondary_gateway_subnet_address_prefix}"
-      route_table_creation_enabled = false
+      subnet_address_prefix                     = "$${secondary_gateway_subnet_address_prefix}"
+      route_table_creation_enabled              = false
       route_table_bgp_route_propagation_enabled = false
       express_route = {
         enabled                               = "$${secondary_virtual_network_gateway_express_route_enabled}"
