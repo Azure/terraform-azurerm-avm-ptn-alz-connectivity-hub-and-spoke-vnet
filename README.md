@@ -774,9 +774,9 @@ Version: 0.3.1
 
 ### <a name="module_hub_and_spoke_vnet"></a> [hub\_and\_spoke\_vnet](#module\_hub\_and\_spoke\_vnet)
 
-Source: Azure/avm-ptn-hubnetworking/azurerm
+Source: ./modules/hub-virtual-network-mesh
 
-Version: 0.13.1
+Version:
 
 ### <a name="module_private_dns_zone_auto_registration"></a> [private\_dns\_zone\_auto\_registration](#module\_private\_dns\_zone\_auto\_registration)
 
@@ -792,9 +792,9 @@ Version: 0.15.0
 
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 
-Source: Azure/avm-ptn-vnetgateway/azurerm
+Source: ./modules/virtual-network-gateway
 
-Version: 0.10.2
+Version:
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
