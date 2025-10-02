@@ -138,8 +138,8 @@ custom_replacements = {
   */
   resource_group_identifiers = {
     management_resource_group_id                 = "/subscriptions/$${subscription_id_management}/resourcegroups/$${management_resource_group_name}"
-    connectivity_hub_primary_resource_group_id   = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${connectivity_hub_primary_resource_group_name}"
-    connectivity_hub_secondary_resource_group_id = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${connectivity_hub_secondary_resource_group_name}"
+    connectivity_hub_primary_resource_group_id   = "/subscriptions/$${subscription_id_connectivity}/resourceGroups/$${connectivity_hub_primary_resource_group_name}"
+    connectivity_hub_secondary_resource_group_id = "/subscriptions/$${subscription_id_connectivity}/resourceGroups/$${connectivity_hub_secondary_resource_group_name}"
     ddos_protection_plan_resource_group_id       = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${ddos_resource_group_name}"
   }
 
@@ -438,31 +438,32 @@ hub_and_spoke_vnet_virtual_networks = {
       route_table_name_firewall     = "$${secondary_route_table_firewall_name}"
       route_table_name_user_subnets = "$${secondary_route_table_user_subnets_name}"
       subnets                       = {}
-      firewall = {
-        enabled                          = "$${secondary_firewall_enabled}"
-        subnet_address_prefix            = "$${secondary_firewall_subnet_address_prefix}"
-        management_subnet_address_prefix = "$${secondary_firewall_management_subnet_address_prefix}"
-        name                             = "$${secondary_firewall_name}"
-        sku_name                         = "AZFW_VNet"
-        sku_tier                         = "Standard"
-        zones                            = "$${starter_location_02_availability_zones}"
-        default_ip_configuration = {
-          public_ip_config = {
-            name  = "$${secondary_firewall_public_ip_name}"
-            zones = "$${starter_location_02_availability_zones}"
-          }
-        }
-        management_ip_enabled = "$${secondary_firewall_management_ip_enabled}"
-        management_ip_configuration = {
-          public_ip_config = {
-            name  = "$${secondary_firewall_management_public_ip_name}"
-            zones = "$${starter_location_02_availability_zones}"
-          }
-        }
-        firewall_policy = {
-          name = "$${secondary_firewall_policy_name}"
+    }
+    firewall = {
+      enabled                          = "$${secondary_firewall_enabled}"
+      subnet_address_prefix            = "$${secondary_firewall_subnet_address_prefix}"
+      management_subnet_address_prefix = "$${secondary_firewall_management_subnet_address_prefix}"
+      name                             = "$${secondary_firewall_name}"
+      sku_name                         = "AZFW_VNet"
+      sku_tier                         = "Standard"
+      zones                            = "$${starter_location_02_availability_zones}"
+      default_ip_configuration = {
+        public_ip_config = {
+          name  = "$${secondary_firewall_public_ip_name}"
+          zones = "$${starter_location_02_availability_zones}"
         }
       }
+      management_ip_enabled = "$${secondary_firewall_management_ip_enabled}"
+      management_ip_configuration = {
+        public_ip_config = {
+          name  = "$${secondary_firewall_management_public_ip_name}"
+          zones = "$${starter_location_02_availability_zones}"
+        }
+      }
+
+    }
+    firewall_policy = {
+      name = "$${secondary_firewall_policy_name}"
     }
     virtual_network_gateways = {
       subnet_address_prefix                     = "$${secondary_gateway_subnet_address_prefix}"

@@ -11,4 +11,5 @@ locals {
       subnets                         = merge(local.subnets[key], value.hub_virtual_network.subnets)
     })
   }
+  hub_virtual_networks_resource_group_names = { for key, value in var.hub_virtual_networks : key => provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", value.hub_virtual_network.parent_id).resource_group_name }
 }

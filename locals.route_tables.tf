@@ -2,7 +2,7 @@ locals {
   gateway_route_table = { for key, value in var.hub_virtual_networks : key => {
     name                          = coalesce(value.virtual_network_gateways.route_table_name, "rt-hub-gateway-${value.hub_virtual_network.location}")
     location                      = value.hub_virtual_network.location
-    resource_group_name           = value.hub_virtual_network.resource_group_name
+    resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
     } if local.gateway_route_table_enabled[key]
   }

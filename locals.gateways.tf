@@ -5,7 +5,7 @@ locals {
     for hub_network_key, hub_network_value in var.hub_virtual_networks : "${hub_network_key}-express-route" => {
       virtual_network_gateway_subnet_id = module.hub_and_spoke_vnet.virtual_networks[hub_network_key].subnets["${hub_network_key}-gateway"].resource_id
       virtual_network_gateway = merge({
-        parent_id       = try(hub_network_value.virtual_network_gateways.express_route.parent_id, provider::azapi::subscription_resource_id(data.azapi_client_config.current.subscription_id, local.resource_group_resource_type, [hub_network_value.hub_virtual_network.resource_group_name]))
+        parent_id       = try(hub_network_value.virtual_network_gateways.express_route.parent_id, hub_network_value.hub_virtual_network.parent_id)
         hub_network_key = hub_network_key
         type            = "ExpressRoute"
       }, hub_network_value.virtual_network_gateways.express_route)
@@ -18,7 +18,7 @@ locals {
     for hub_network_key, hub_network_value in var.hub_virtual_networks : "${hub_network_key}-vpn" => {
       virtual_network_gateway_subnet_id = module.hub_and_spoke_vnet.virtual_networks[hub_network_key].subnets["${hub_network_key}-gateway"].resource_id
       virtual_network_gateway = merge({
-        parent_id       = try(hub_network_value.virtual_network_gateways.vpn.parent_id, provider::azapi::subscription_resource_id(data.azapi_client_config.current.subscription_id, local.resource_group_resource_type, [hub_network_value.hub_virtual_network.resource_group_name]))
+        parent_id       = try(hub_network_value.virtual_network_gateways.vpn.parent_id, hub_network_value.hub_virtual_network.parent_id)
         hub_network_key = hub_network_key
         type            = "Vpn"
       }, hub_network_value.virtual_network_gateways.vpn)

@@ -5,7 +5,7 @@ locals {
 locals {
   private_dns_zones = { for key, value in var.hub_virtual_networks : key => merge({
     location            = value.hub_virtual_network.location
-    resource_group_name = value.hub_virtual_network.resource_group_name
+    resource_group_name = local.hub_virtual_networks_resource_group_names[key]
   }, value.private_dns_zones.dns_zones) if local.private_dns_zones_enabled[key] }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
     location            = value.hub_virtual_network.location
