@@ -111,7 +111,7 @@ module "ddos_protection_plan" {
   name                = local.ddos_protection_plan.name
   resource_group_name = local.ddos_protection_plan.resource_group_name
   enable_telemetry    = var.enable_telemetry
-  tags                = var.tags
+  tags                = local.ddos_protection_plan_tags
 }
 
 module "bastion_public_ip" {

@@ -1,5 +1,5 @@
 locals {
-  private_dns_resolver_enabled = { for key, value in var.hub_virtual_networks : key => try(value.private_dns_resolver.enabled, try(value.private_dns_resolver, null) != null) }
+  private_dns_resolver_enabled = { for key, value in var.hub_virtual_networks : key => value.private_dns_resolver.enabled }
 }
 
 locals {
@@ -20,7 +20,7 @@ locals {
     } if local.private_dns_resolver_enabled[key]
   }
   private_dns_resolver_ip_addresses = { for key, value in var.hub_virtual_networks : key =>
-    (try(value.private_dns_resolver.ip_address, null) == null ?
+    (value.private_dns_resolver.ip_address == null ?
       cidrhost(value.private_dns_resolver.subnet_address_prefix, 4) :
     value.private_dns_resolver.ip_address) if local.private_dns_resolver_enabled[key]
   }
