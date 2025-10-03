@@ -16,7 +16,7 @@ locals {
       }
     }, value.private_dns_resolver.inbound_endpoints) : value.private_dns_resolver.inbound_endpoints
     outbound_endpoints = value.private_dns_resolver.outbound_endpoints
-    tags               = coalesce(value.private_dns_resolver.tags, var.tags)
+    tags               = coalesce(value.private_dns_resolver.tags, var.tags, {})
     } if local.private_dns_resolver_enabled[key]
   }
   private_dns_resolver_ip_addresses = { for key, value in var.hub_virtual_networks : key =>

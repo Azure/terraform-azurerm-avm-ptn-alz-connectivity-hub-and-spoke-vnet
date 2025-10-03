@@ -7,7 +7,7 @@ locals {
     for key, value in var.hub_virtual_networks : key => {
       location            = value.hub_virtual_network.location
       resource_group_name = local.hub_virtual_networks_resource_group_names[key]
-      tags                = coalesce(value.bastion.bastion_public_ip.tags, var.tags)
+      tags                = coalesce(value.bastion.bastion_public_ip.tags, var.tags, {})
       public_ip_settings  = value.bastion.bastion_public_ip
     } if local.bastions_enabled[key]
   }
@@ -16,7 +16,7 @@ locals {
       location            = value.hub_virtual_network.location
       resource_group_name = local.hub_virtual_networks_resource_group_names[key]
       zones               = coalesce(value.bastion.zones, local.bastion_host_public_ips[key].public_ip_settings.zones)
-      tags                = coalesce(value.bastion.tags, var.tags)
+      tags                = coalesce(value.bastion.tags, var.tags, {})
       ip_configuration = {
         name                 = "bastion-ip-config"
         subnet_id            = module.hub_and_spoke_vnet.virtual_networks[key].subnet_ids["${key}-bastion"]
