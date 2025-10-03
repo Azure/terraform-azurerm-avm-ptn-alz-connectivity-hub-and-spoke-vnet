@@ -91,7 +91,11 @@ object({
       location            = string
       resource_group_name = string
       tags                = optional(map(string), null)
-    }))
+      }), {
+      name                = "required"
+      location            = "required"
+      resource_group_name = "required"
+    })
   })
 ```
 
@@ -660,7 +664,11 @@ map(object({
           zones      = optional(set(string))
         }))
       }))
-    }))
+      }), {
+      sku_name              = "required"
+      sku_tier              = "required"
+      subnet_address_prefix = "required"
+    })
     firewall_policy = optional(object({
       enabled                           = optional(bool, false)
       name                              = optional(string)
@@ -722,7 +730,7 @@ map(object({
         key_vault_secret_id = string
         name                = string
       }))
-    }))
+    }), {})
     bastion = optional(object({
       enabled                                = optional(bool, false)
       subnet_address_prefix                  = string
@@ -756,7 +764,11 @@ map(object({
         ddos_protection_plan_id = optional(string, null)
 
       })
-    }))
+      }), {
+      bastion_public_ip     = {}
+      name                  = "required"
+      subnet_address_prefix = "required"
+    })
     virtual_network_gateways = optional(object({
       subnet_address_prefix                     = string
       subnet_default_outbound_access_enabled    = optional(bool, false)
@@ -878,7 +890,10 @@ map(object({
           }), null)
         })))
         tags = optional(map(string))
-      }))
+        }), {
+        name = "required"
+        sku  = "required"
+      })
       vpn = optional(object({
         enabled                               = optional(bool, false)
         name                                  = string
@@ -1027,8 +1042,13 @@ map(object({
         })))
         vpn_private_ip_address_enabled = optional(bool, false)
         vpn_type                       = optional(string, null)
-      }))
-    }))
+        }), {
+        name = "required"
+        sku  = "required"
+      })
+      }), {
+      subnet_address_prefix = "required"
+    })
     private_dns_zones = optional(object({
       enabled                                     = optional(bool, false)
       resource_group_name                         = optional(string, null)
@@ -1058,7 +1078,7 @@ map(object({
         regex_filter = optional(string, "{regionName}|{regionCode}")
       }))
       tags = optional(map(string), null)
-    }))
+    }), {})
     private_dns_resolver = optional(object({
       enabled                                = optional(bool, false)
       subnet_address_prefix                  = string
