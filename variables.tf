@@ -11,17 +11,15 @@ DESCRIPTION
 
 variable "hub_and_spoke_networks_settings" {
   type = object({
+    enabled_resources = optional(object({
+      ddos_protection_plan = optional(bool, true)
+    }), {})
     ddos_protection_plan = optional(object({
-      enabled             = optional(bool, true)
-      name                = string
-      location            = string
-      resource_group_name = string
+      name                = optional(string)
+      location            = optional(string)
+      resource_group_name = optional(string)
       tags                = optional(map(string), null)
-      }), {
-      name                = "required"
-      location            = "required"
-      resource_group_name = "required"
-    })
+    }), {})
   })
   default     = {}
   description = <<DESCRIPTION
@@ -30,7 +28,6 @@ The shared settings for the hub and spoke networks. This is where global resourc
 ## DDoS Protection Plan
 
 - `ddos_protection_plan` - (Optional) An object defining the DDoS protection plan settings. When configured, this DDoS protection plan can be associated with hub virtual networks. The object has the following fields:
-  - `enabled` - (Optional) Should the DDoS protection plan be created? Default `true`.
   - `name` - The name of the DDoS protection plan resource.
   - `location` - The Azure location where the DDoS protection plan should be created. This should typically match the location of the hub networks that will use it.
   - `resource_group_name` - The name of the resource group where the DDoS protection plan should be created.
@@ -43,7 +40,6 @@ For detailed information about the DDoS protection plan and its capabilities, re
 ```terraform
 hub_and_spoke_networks_settings = {
   ddos_protection_plan = {
-    enabled             = true
     name                = "ddos-protection-plan-prod"
     location            = "eastus"
     resource_group_name = "rg-network-security-prod"
@@ -60,11 +56,22 @@ DESCRIPTION
 
 variable "hub_virtual_networks" {
   type = map(object({
-    hub_virtual_network = object({
-      name                          = string
-      address_space                 = list(string)
-      location                      = string
-      parent_id                     = string
+    enabled_resources = optional(object({
+      firewall                              = optional(bool, true)
+      firewall_policy                       = optional(bool, true)
+      bastion                               = optional(bool, true)
+      virtual_network_gateway_express_route = optional(bool, true)
+      virtual_network_gateway_vpn           = optional(bool, true)
+      private_dns_zones                     = optional(bool, true)
+      private_dns_resolver                  = optional(bool, true)
+    }), {})
+    default_hub_address_space = optional(string)
+    default_parent_id         = optional(string)
+    location                  = string
+    hub_virtual_network = optional(object({
+      name                          = optional(string)
+      address_space                 = optional(list(string))
+      parent_id                     = optional(string)
       route_table_name_firewall     = optional(string)
       route_table_name_user_subnets = optional(string)
       bgp_community                 = optional(string)
@@ -125,12 +132,11 @@ variable "hub_virtual_networks" {
           default_outbound_access_enabled = optional(bool, false)
         }
       )), {})
-    })
+    }), {})
     firewall = optional(object({
-      enabled                                           = optional(bool, false)
-      sku_name                                          = string
-      sku_tier                                          = string
-      subnet_address_prefix                             = string
+      sku_name                                          = optional(string, "AZFW_VNet")
+      sku_tier                                          = optional(string, "Standard")
+      subnet_address_prefix                             = optional(string)
       subnet_default_outbound_access_enabled            = optional(bool, false)
       firewall_policy_id                                = optional(string, null)
       management_ip_enabled                             = optional(bool, true)
@@ -141,7 +147,6 @@ variable "hub_virtual_networks" {
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
-
       default_ip_configuration = optional(object({
         is_default = optional(bool, true)
         name       = optional(string)
@@ -150,8 +155,8 @@ variable "hub_virtual_networks" {
           name       = optional(string)
           sku_tier   = optional(string, "Regional")
           zones      = optional(set(string))
-        }))
-      }))
+        }), {})
+      }), {})
       ip_configurations = optional(map(object({
         is_default = optional(bool, false)
         name       = optional(string)
@@ -160,7 +165,7 @@ variable "hub_virtual_networks" {
           name       = optional(string)
           sku_tier   = optional(string, "Regional")
           zones      = optional(set(string))
-        }))
+        }), {})
       })), {})
       management_ip_configuration = optional(object({
         name = optional(string)
@@ -169,15 +174,10 @@ variable "hub_virtual_networks" {
           name       = optional(string)
           sku_tier   = optional(string, "Regional")
           zones      = optional(set(string))
-        }))
-      }))
-      }), {
-      sku_name              = "required"
-      sku_tier              = "required"
-      subnet_address_prefix = "required"
-    })
+        }), {})
+      }), {})
+    }), {})
     firewall_policy = optional(object({
-      enabled                           = optional(bool, false)
       name                              = optional(string)
       sku                               = optional(string, "Standard")
       auto_learn_private_ranges_enabled = optional(bool)
@@ -239,10 +239,9 @@ variable "hub_virtual_networks" {
       }))
     }), {})
     bastion = optional(object({
-      enabled                                = optional(bool, false)
-      subnet_address_prefix                  = string
+      subnet_address_prefix                  = optional(string)
       subnet_default_outbound_access_enabled = optional(bool, false)
-      name                                   = string
+      name                                   = optional(string)
       copy_paste_enabled                     = optional(bool, false)
       file_copy_enabled                      = optional(bool, false)
       ip_connect_enabled                     = optional(bool, false)
@@ -253,7 +252,7 @@ variable "hub_virtual_networks" {
       tags                                   = optional(map(string), null)
       tunneling_enabled                      = optional(bool, false)
       zones                                  = optional(set(string), null)
-      bastion_public_ip = object({
+      bastion_public_ip = optional(object({
         name                    = optional(string)
         allocation_method       = optional(string, "Static")
         sku                     = optional(string, "Standard")
@@ -269,24 +268,18 @@ variable "hub_virtual_networks" {
         edge_zone               = optional(string, null)
         ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
         ddos_protection_plan_id = optional(string, null)
-
-      })
-      }), {
-      bastion_public_ip     = {}
-      name                  = "required"
-      subnet_address_prefix = "required"
-    })
+      }), {})
+    }), {})
     virtual_network_gateways = optional(object({
-      subnet_address_prefix                     = string
+      subnet_address_prefix                     = optional(string)
       subnet_default_outbound_access_enabled    = optional(bool, false)
       route_table_creation_enabled              = optional(bool, false)
       route_table_name                          = optional(string)
       route_table_bgp_route_propagation_enabled = optional(bool, false)
       express_route = optional(object({
-        enabled   = optional(bool, false)
-        name      = string
+        name      = optional(string)
         parent_id = optional(string)
-        sku       = string
+        sku       = optional(string, "ErGw1AZ")
         edge_zone = optional(string)
         express_route_circuits = optional(map(object({
           id = string
@@ -319,7 +312,7 @@ variable "hub_virtual_networks" {
           }), null)
         })))
         express_route_remote_vnet_traffic_enabled = optional(bool, false)
-        hosted_on_behalf_of_public_ip_enabled     = optional(bool, false)
+        hosted_on_behalf_of_public_ip_enabled     = optional(bool, true)
         ip_configurations = optional(map(object({
           name                          = optional(string, null)
           apipa_addresses               = optional(list(string), null)
@@ -332,7 +325,7 @@ variable "hub_virtual_networks" {
             allocation_method       = optional(string, "Static")
             sku                     = optional(string, "Standard")
             tags                    = optional(map(string), {})
-            zones                   = optional(list(number), [1, 2, 3])
+            zones                   = optional(list(number), null)
             edge_zone               = optional(string, null)
             ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
             ddos_protection_plan_id = optional(string, null)
@@ -344,7 +337,7 @@ variable "hub_virtual_networks" {
             reverse_fqdn            = optional(string, null)
             sku_tier                = optional(string, "Regional")
           }), {})
-        })))
+        })), {})
         local_network_gateways = optional(map(object({
           id                  = optional(string, null)
           name                = optional(string, null)
@@ -397,15 +390,11 @@ variable "hub_virtual_networks" {
           }), null)
         })))
         tags = optional(map(string))
-        }), {
-        name = "required"
-        sku  = "required"
-      })
+      }), {})
       vpn = optional(object({
-        enabled                               = optional(bool, false)
-        name                                  = string
+        name                                  = optional(string)
         parent_id                             = optional(string)
-        sku                                   = string
+        sku                                   = optional(string, "VpnGw1AZ")
         edge_zone                             = optional(string)
         hosted_on_behalf_of_public_ip_enabled = optional(bool, false)
         ip_configurations = optional(map(object({
@@ -420,7 +409,7 @@ variable "hub_virtual_networks" {
             allocation_method       = optional(string, "Static")
             sku                     = optional(string, "Standard")
             tags                    = optional(map(string), {})
-            zones                   = optional(list(number), [1, 2, 3])
+            zones                   = optional(list(number), null)
             edge_zone               = optional(string, null)
             ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
             ddos_protection_plan_id = optional(string, null)
@@ -432,7 +421,10 @@ variable "hub_virtual_networks" {
             reverse_fqdn            = optional(string, null)
             sku_tier                = optional(string, "Regional")
           }), {})
-        })))
+          })), {
+          active_active_1 = {}
+          active_active_2 = {}
+        })
         local_network_gateways = optional(map(object({
           id                  = optional(string, null)
           name                = optional(string, null)
@@ -549,15 +541,9 @@ variable "hub_virtual_networks" {
         })))
         vpn_private_ip_address_enabled = optional(bool, false)
         vpn_type                       = optional(string, null)
-        }), {
-        name = "required"
-        sku  = "required"
-      })
-      }), {
-      subnet_address_prefix = "required"
-    })
+      }), {})
+    }), {})
     private_dns_zones = optional(object({
-      enabled                                     = optional(bool, false)
       resource_group_name                         = optional(string, null)
       auto_registration_zone_enabled              = optional(bool, true)
       auto_registration_zone_name                 = optional(string, null)
@@ -588,11 +574,11 @@ variable "hub_virtual_networks" {
     }), {})
     private_dns_resolver = optional(object({
       enabled                                = optional(bool, false)
-      subnet_address_prefix                  = string
+      subnet_address_prefix                  = optional(string)
       subnet_name                            = optional(string, "dns-resolver")
       subnet_default_outbound_access_enabled = optional(bool, false)
       default_inbound_endpoint_enabled       = optional(bool, true)
-      name                                   = string
+      name                                   = optional(string)
       ip_address                             = optional(string, null)
       inbound_endpoints = optional(map(object({
         name                         = optional(string)
@@ -631,7 +617,7 @@ variable "hub_virtual_networks" {
         })))
       })), {})
       tags = optional(map(string), null)
-    }))
+    }), {})
   }))
   default     = {}
   description = <<DESCRIPTION

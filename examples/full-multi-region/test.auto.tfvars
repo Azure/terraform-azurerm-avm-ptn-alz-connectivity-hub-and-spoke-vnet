@@ -322,10 +322,19 @@ hub_and_spoke_vnet_settings = {
 
 hub_and_spoke_vnet_virtual_networks = {
   primary = {
+    enabled_resources = {
+      firewall                           = "$${primary_firewall_enabled}"
+      firewall_policy                    = "$${primary_firewall_enabled}"
+      virtual_network_gateway_express_route =  "$${primary_virtual_network_gateway_express_route_enabled}"
+      virtual_network_gateway_vpn        = "$${primary_virtual_network_gateway_vpn_enabled}"
+      private_dns_zones                  = "$${primary_private_dns_zones_enabled}"
+      private_dns_resolver               = "$${primary_private_dns_resolver_enabled}"
+      bastion                            = "$${primary_bastion_enabled}"
+    }
+    location                      = "$${starter_location_01}"
+    default_parent_id = "$${connectivity_hub_primary_resource_group_id}"
     hub_virtual_network = {
       name                          = "$${primary_virtual_network_name}"
-      parent_id                     = "$${connectivity_hub_primary_resource_group_id}"
-      location                      = "$${starter_location_01}"
       address_space                 = ["$${primary_hub_virtual_network_address_space}"]
       routing_address_space         = ["$${primary_hub_address_space}"]
       route_table_name_firewall     = "$${primary_route_table_firewall_name}"
@@ -333,24 +342,18 @@ hub_and_spoke_vnet_virtual_networks = {
       subnets                       = {}
     }
     firewall = {
-      enabled                          = "$${primary_firewall_enabled}"
       subnet_address_prefix            = "$${primary_firewall_subnet_address_prefix}"
       management_subnet_address_prefix = "$${primary_firewall_management_subnet_address_prefix}"
       name                             = "$${primary_firewall_name}"
-      sku_name                         = "AZFW_VNet"
-      sku_tier                         = "Standard"
-      zones                            = "$${starter_location_01_availability_zones}"
       default_ip_configuration = {
         public_ip_config = {
           name  = "$${primary_firewall_public_ip_name}"
-          zones = "$${starter_location_01_availability_zones}"
         }
       }
       management_ip_enabled = "$${primary_firewall_management_ip_enabled}"
       management_ip_configuration = {
         public_ip_config = {
           name  = "$${primary_firewall_management_public_ip_name}"
-          zones = "$${starter_location_01_availability_zones}"
         }
       }
     }
@@ -362,41 +365,33 @@ hub_and_spoke_vnet_virtual_networks = {
       route_table_creation_enabled              = true
       route_table_bgp_route_propagation_enabled = true
       express_route = {
-        enabled                               = "$${primary_virtual_network_gateway_express_route_enabled}"
         name                                  = "$${primary_virtual_network_gateway_express_route_name}"
-        sku                                   = "$${starter_location_01_virtual_network_gateway_sku_express_route}"
         hosted_on_behalf_of_public_ip_enabled = "$${primary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
             public_ip = {
               name  = "$${primary_virtual_network_gateway_express_route_public_ip_name}"
-              zones = "$${starter_location_01_availability_zones}"
             }
           }
         }
       }
       vpn = {
-        enabled = "$${primary_virtual_network_gateway_vpn_enabled}"
         name    = "$${primary_virtual_network_gateway_vpn_name}"
-        sku     = "$${starter_location_01_virtual_network_gateway_sku_vpn}"
         ip_configurations = {
           active_active_1 = {
             public_ip = {
               name  = "$${primary_virtual_network_gateway_vpn_public_ip_name_1}"
-              zones = "$${starter_location_01_availability_zones}"
             }
           }
           active_active_2 = {
             public_ip = {
               name  = "$${primary_virtual_network_gateway_vpn_public_ip_name_2}"
-              zones = "$${starter_location_01_availability_zones}"
             }
           }
         }
       }
     }
     private_dns_zones = {
-      enabled = "$${primary_private_dns_zones_enabled}"
       resource_group_name = "$${dns_resource_group_name}"
       private_link_private_dns_zones_regex_filter = {
         enabled = false
@@ -405,26 +400,31 @@ hub_and_spoke_vnet_virtual_networks = {
       auto_registration_zone_name    = "$${primary_auto_registration_zone_name}"
     }
     private_dns_resolver = {
-      enabled               = "$${primary_private_dns_resolver_enabled}"
       subnet_address_prefix = "$${primary_private_dns_resolver_subnet_address_prefix}"
       name = "$${primary_private_dns_resolver_name}"
     }
     bastion = {
-      enabled               = "$${primary_bastion_enabled}"
       subnet_address_prefix = "$${primary_bastion_subnet_address_prefix}"
       name  = "$${primary_bastion_host_name}"
-      zones = "$${starter_location_01_availability_zones}"
       bastion_public_ip = {
         name  = "$${primary_bastion_host_public_ip_name}"
-        zones = "$${starter_location_01_availability_zones}"
       }
     }
   }
   secondary = {
+    enabled_resources = {
+      firewall                           = "$${secondary_firewall_enabled}"
+      firewall_policy                    = "$${secondary_firewall_enabled}"
+      virtual_network_gateway_express_route =  "$${secondary_virtual_network_gateway_express_route_enabled}"
+      virtual_network_gateway_vpn        = "$${secondary_virtual_network_gateway_vpn_enabled}"
+      private_dns_zones                  = "$${secondary_private_dns_zones_enabled}"
+      private_dns_resolver               = "$${secondary_private_dns_resolver_enabled}"
+      bastion                            = "$${secondary_bastion_enabled}"
+    }
+    location                      = "$${starter_location_02}"
+    default_parent_id = "$${connectivity_hub_secondary_resource_group_id}"
     hub_virtual_network = {
       name                          = "$${secondary_virtual_network_name}"
-      parent_id                     = "$${connectivity_hub_secondary_resource_group_id}"
-      location                      = "$${starter_location_02}"
       address_space                 = ["$${secondary_hub_virtual_network_address_space}"]
       routing_address_space         = ["$${secondary_hub_address_space}"]
       route_table_name_firewall     = "$${secondary_route_table_firewall_name}"
@@ -432,27 +432,20 @@ hub_and_spoke_vnet_virtual_networks = {
       subnets                       = {}
     }
     firewall = {
-      enabled                          = "$${secondary_firewall_enabled}"
       subnet_address_prefix            = "$${secondary_firewall_subnet_address_prefix}"
       management_subnet_address_prefix = "$${secondary_firewall_management_subnet_address_prefix}"
       name                             = "$${secondary_firewall_name}"
-      sku_name                         = "AZFW_VNet"
-      sku_tier                         = "Standard"
-      zones                            = "$${starter_location_02_availability_zones}"
       default_ip_configuration = {
         public_ip_config = {
           name  = "$${secondary_firewall_public_ip_name}"
-          zones = "$${starter_location_02_availability_zones}"
         }
       }
       management_ip_enabled = "$${secondary_firewall_management_ip_enabled}"
       management_ip_configuration = {
         public_ip_config = {
           name  = "$${secondary_firewall_management_public_ip_name}"
-          zones = "$${starter_location_02_availability_zones}"
         }
       }
-
     }
     firewall_policy = {
       name = "$${secondary_firewall_policy_name}"
@@ -462,41 +455,33 @@ hub_and_spoke_vnet_virtual_networks = {
       route_table_creation_enabled              = false
       route_table_bgp_route_propagation_enabled = false
       express_route = {
-        enabled                               = "$${secondary_virtual_network_gateway_express_route_enabled}"
         name                                  = "$${secondary_virtual_network_gateway_express_route_name}"
-        sku                                   = "$${starter_location_02_virtual_network_gateway_sku_express_route}"
         hosted_on_behalf_of_public_ip_enabled = "$${secondary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
             public_ip = {
               name  = "$${secondary_virtual_network_gateway_express_route_public_ip_name}"
-              zones = "$${starter_location_02_availability_zones}"
             }
           }
         }
       }
       vpn = {
-        enabled = "$${secondary_virtual_network_gateway_vpn_enabled}"
         name    = "$${secondary_virtual_network_gateway_vpn_name}"
-        sku     = "$${starter_location_02_virtual_network_gateway_sku_vpn}"
         ip_configurations = {
           active_active_1 = {
             public_ip = {
               name  = "$${secondary_virtual_network_gateway_vpn_public_ip_name_1}"
-              zones = "$${starter_location_02_availability_zones}"
             }
           }
           active_active_2 = {
             public_ip = {
               name  = "$${secondary_virtual_network_gateway_vpn_public_ip_name_2}"
-              zones = "$${starter_location_02_availability_zones}"
             }
           }
         }
       }
     }
     private_dns_zones = {
-      enabled = "$${secondary_private_dns_zones_enabled}"
       resource_group_name = "$${dns_resource_group_name}"
       private_link_private_dns_zones_regex_filter = {
         enabled = true
@@ -505,18 +490,14 @@ hub_and_spoke_vnet_virtual_networks = {
       auto_registration_zone_name    = "$${secondary_auto_registration_zone_name}"
     }
     private_dns_resolver = {
-      enabled               = "$${secondary_private_dns_resolver_enabled}"
       subnet_address_prefix = "$${secondary_private_dns_resolver_subnet_address_prefix}"
       name = "$${secondary_private_dns_resolver_name}"
     }
     bastion = {
-      enabled               = "$${secondary_bastion_enabled}"
       subnet_address_prefix = "$${secondary_bastion_subnet_address_prefix}"
       name  = "$${secondary_bastion_host_name}"
-      zones = "$${starter_location_02_availability_zones}"
       bastion_public_ip = {
         name  = "$${secondary_bastion_host_public_ip_name}"
-        zones = "$${starter_location_02_availability_zones}"
       }
     }
   }

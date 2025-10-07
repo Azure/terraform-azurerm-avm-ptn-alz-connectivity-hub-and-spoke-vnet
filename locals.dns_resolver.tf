@@ -1,11 +1,11 @@
 locals {
-  private_dns_resolver_enabled = { for key, value in var.hub_virtual_networks : key => value.private_dns_resolver.enabled }
+  private_dns_resolver_enabled = { for key, value in var.hub_virtual_networks : key => value.enabled_resources.private_dns_resolver }
 }
 
 locals {
   private_dns_resolver = { for key, value in var.hub_virtual_networks : key => {
-    name                = value.private_dns_resolver.name
-    location            = value.hub_virtual_network.location
+    name                = coalesce(value.private_dns_resolver.name, "pdr-hub-${value.location}")
+    location            = value.location
     resource_group_name = local.hub_virtual_networks_resource_group_names[key]
     inbound_endpoints = local.private_dns_zones_enabled[key] && value.private_dns_resolver.default_inbound_endpoint_enabled ? merge({
       dns = {
@@ -21,7 +21,7 @@ locals {
   }
   private_dns_resolver_ip_addresses = { for key, value in var.hub_virtual_networks : key =>
     (value.private_dns_resolver.ip_address == null ?
-      cidrhost(value.private_dns_resolver.subnet_address_prefix, 4) :
+      cidrhost(coalesce(value.private_dns_resolver.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["dns_resolver"]), 4) :
     value.private_dns_resolver.ip_address) if local.private_dns_resolver_enabled[key]
   }
 }
