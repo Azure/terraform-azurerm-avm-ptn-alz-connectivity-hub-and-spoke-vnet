@@ -17,22 +17,22 @@ data "azurerm_client_config" "current" {}
 
 resource "random_string" "suffix" {
   length  = 4
-  upper   = false
-  numeric  = true
+  numeric = true
   special = false
+  upper   = false
 }
 
 locals {
   common_tags = {
-    created_by = "terraform"
-    project    = "avm-hub-and-spoke"
-    owner      = "avm"
+    created_by  = "terraform"
+    project     = "Azure Landing Zones"
+    owner       = "avm"
     environment = "demo"
   }
   resource_groups = {
     hub_primary = {
       name     = "rg-hub-primary-${random_string.suffix.result}"
-      location = "uksouth"
+      location = "swedencentral"
     }
     hub_secondary = {
       name     = "rg-hub-secondary-${random_string.suffix.result}"
@@ -56,18 +56,18 @@ module "resource_groups" {
 module "test" {
   source = "../../"
 
-  enable_telemetry                = false
-  hub_virtual_networks            = {
+  enable_telemetry = false
+  hub_virtual_networks = {
     primary = {
-      location                       = "uksouth"
+      location                  = local.resource_groups["hub_primary"].location
       default_hub_address_space = "10.0.0.0/16"
-      default_parent_id = module.resource_groups["hub_primary"].resource_id
+      default_parent_id         = module.resource_groups["hub_primary"].resource_id
     }
     secondary = {
-      location          = "ukwest"
+      location                  = local.resource_groups["hub_secondary"].location
       default_hub_address_space = "10.1.0.0/16"
-      default_parent_id  = module.resource_groups["hub_secondary"].resource_id
+      default_parent_id         = module.resource_groups["hub_secondary"].resource_id
     }
   }
-  tags                            = local.common_tags
+  tags = local.common_tags
 }

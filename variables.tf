@@ -1,3 +1,66 @@
+variable "default_naming_convention" {
+  type = object({
+    virtual_network_name                                        = string
+    firewall_name                                               = string
+    firewall_policy_name                                        = string
+    firewall_public_ip_name                                     = string
+    firewall_management_public_ip_name                          = string
+    route_table_firewall_name                                   = string
+    route_table_user_subnets_name                               = string
+    virtual_network_gateway_express_route_name                  = string
+    virtual_network_gateway_express_route_ip_configuration_name = string
+    virtual_network_gateway_express_route_public_ip_name        = string
+    virtual_network_gateway_vpn_name                            = string
+    virtual_network_gateway_vpn_ip_configuration_name           = string
+    virtual_network_gateway_vpn_public_ip_name                  = string
+    virtual_network_gateway_route_table_name                    = string
+    private_dns_resolver_name                                   = string
+    bastion_host_name                                           = string
+    bastion_host_public_ip_name                                 = string
+    ddos_protection_plan_name                                   = string
+  })
+  default = {
+    virtual_network_name                                        = "vnet-hub-$${location}-$${sequence}"
+    firewall_name                                               = "fw-hub-$${location}-$${sequence}"
+    firewall_policy_name                                        = "fwp-hub-$${location}-$${sequence}"
+    firewall_public_ip_name                                     = "pip-fw-hub-$${location}-$${sequence}"
+    firewall_management_public_ip_name                          = "pip-fw-hub-mgmt-$${location}-$${sequence}"
+    route_table_firewall_name                                   = "rt-hub-fw-$${location}-$${sequence}"
+    route_table_user_subnets_name                               = "rt-hub-std-$${location}-$${sequence}"
+    virtual_network_gateway_express_route_name                  = "vgw-hub-er-$${location}-$${sequence}"
+    virtual_network_gateway_express_route_ip_configuration_name = "ipcfg-vgw-hub-er-$${location}-$${sequence}"
+    virtual_network_gateway_express_route_public_ip_name        = "pip-vgw-hub-er-$${location}-$${sequence}"
+    virtual_network_gateway_vpn_name                            = "vgw-hub-vpn-$${location}-$${sequence}"
+    virtual_network_gateway_vpn_ip_configuration_name           = "ipcfg-vgw-hub-vpn-$${location}-$${sequence}"
+    virtual_network_gateway_vpn_public_ip_name                  = "pip-vgw-hub-vpn-$${location}-$${sequence}"
+    virtual_network_gateway_route_table_name                    = "rt-hub-gateway-$${location}-$${sequence}"
+    private_dns_resolver_name                                   = "pdr-hub-dns-$${location}-$${sequence}"
+    bastion_host_name                                           = "bas-hub-$${location}-$${sequence}"
+    bastion_host_public_ip_name                                 = "pip-bas-hub-$${location}-$${sequence}"
+    ddos_protection_plan_name                                   = "ddos-hub-$${location}-$${sequence}"
+  }
+  description = <<DESCRIPTION
+(Optional) An object defining default naming conventions for resources created by this module. The following fields are available:
+
+
+The following placeholders can be used in the naming conventions:
+  - `%%{location}` - The location of the resource.
+  - `%%{sequence}` - A sequence number to ensure uniqueness.
+DESCRIPTION
+}
+
+variable "default_naming_convention_sequence" {
+  type = object({
+    starting_number = number
+    padding_format  = string
+  })
+  default = {
+    starting_number = 1
+    padding_format  = "%03d"
+  }
+  description = "(Optional) Defines the starting number and padded length for the sequence placeholder in naming conventions."
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
@@ -279,7 +342,7 @@ variable "hub_virtual_networks" {
       express_route = optional(object({
         name      = optional(string)
         parent_id = optional(string)
-        sku       = optional(string, "ErGw1AZ")
+        sku       = optional(string, null)
         edge_zone = optional(string)
         express_route_circuits = optional(map(object({
           id = string

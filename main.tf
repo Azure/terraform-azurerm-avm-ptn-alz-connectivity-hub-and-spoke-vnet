@@ -21,7 +21,7 @@ module "virtual_network_gateway" {
   ip_configurations                         = each.value.ip_configurations
   local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
   route_table_creation_enabled              = false
-  sku                                       = each.value.virtual_network_gateway.sku
+  sku                                       = each.value.sku
   subnet_creation_enabled                   = false
   tags                                      = each.value.tags
   type                                      = each.value.virtual_network_gateway.type

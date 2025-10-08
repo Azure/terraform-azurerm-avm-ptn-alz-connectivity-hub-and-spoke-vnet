@@ -3,7 +3,7 @@ locals {
     for key, value in var.hub_virtual_networks : key => merge(value.firewall.default_ip_configuration, {
       name = coalesce(value.firewall.default_ip_configuration.name, "default")
       public_ip_config = merge(value.firewall.default_ip_configuration.public_ip_config, {
-        name  = coalesce(value.firewall.default_ip_configuration.public_ip_config.name, "pip-fw-hub-${value.location}")
+        name  = coalesce(value.firewall.default_ip_configuration.public_ip_config.name, local.default_names[key].firewall_public_ip_name)
         zones = coalesce(value.firewall.default_ip_configuration.public_ip_config.zones, local.availability_zones[key])
       })
     })
@@ -24,13 +24,13 @@ locals {
     for key, value in var.hub_virtual_networks : key => merge(value.firewall.management_ip_configuration, {
       name = coalesce(value.firewall.management_ip_configuration.name, "mgmt")
       public_ip_config = merge(value.firewall.management_ip_configuration.public_ip_config, {
-        name  = coalesce(value.firewall.management_ip_configuration.public_ip_config.name, "pip-fw-mgmt-hub-${value.location}")
+        name  = coalesce(value.firewall.management_ip_configuration.public_ip_config.name, local.default_names[key].firewall_management_public_ip_name)
         zones = coalesce(value.firewall.management_ip_configuration.public_ip_config.zones, local.availability_zones[key])
       })
     })
   }
   firewall_policies = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] ? merge(value.firewall_policy, {
-    name = coalesce(value.firewall_policy.name, "fwp-hub-${value.location}")
+    name = coalesce(value.firewall_policy.name, local.default_names[key].firewall_policy_name)
     dns  = coalesce(value.firewall_policy.dns, local.firewall_policy_dns_defaults[key])
   }) : null }
   firewall_policy_dns_defaults = { for key, value in var.hub_virtual_networks : key => local.private_dns_resolver_enabled[key] && local.private_dns_zones_enabled[key] && local.firewall_enabled[key] ? {
@@ -38,7 +38,7 @@ locals {
     servers       = [local.private_dns_resolver_ip_addresses[key]]
   } : null }
   firewalls = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] ? merge(value.firewall, {
-    name                             = coalesce(value.firewall.name, "fw-hub-${value.location}")
+    name                             = coalesce(value.firewall.name, local.default_names[key].firewall_name)
     firewall_policy                  = local.firewall_policies[key]
     subnet_address_prefix            = coalesce(value.firewall.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["firewall"])
     management_subnet_address_prefix = coalesce(value.firewall.management_subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["firewall_management"])

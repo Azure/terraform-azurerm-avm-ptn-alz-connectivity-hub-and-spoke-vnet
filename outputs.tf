@@ -67,6 +67,3 @@ output "virtual_network_resource_names" {
   description = "Resource names of the virtual networks."
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.name }
 }
-output "test" {
-  value = local.virtual_network_gateways_vpn_ip_configurations
-}

@@ -39,6 +39,86 @@ No required inputs.
 
 The following input variables are optional (have default values):
 
+### <a name="input_default_naming_convention"></a> [default\_naming\_convention](#input\_default\_naming\_convention)
+
+Description: (Optional) An object defining default naming conventions for resources created by this module. The following fields are available:
+
+The following placeholders can be used in the naming conventions:
+  - `%{location}` - The location of the resource.
+  - `%{sequence}` - A sequence number to ensure uniqueness.
+
+Type:
+
+```hcl
+object({
+    virtual_network_name                                        = string
+    firewall_name                                               = string
+    firewall_policy_name                                        = string
+    firewall_public_ip_name                                     = string
+    firewall_management_public_ip_name                          = string
+    route_table_firewall_name                                   = string
+    route_table_user_subnets_name                               = string
+    virtual_network_gateway_express_route_name                  = string
+    virtual_network_gateway_express_route_ip_configuration_name = string
+    virtual_network_gateway_express_route_public_ip_name        = string
+    virtual_network_gateway_vpn_name                            = string
+    virtual_network_gateway_vpn_ip_configuration_name           = string
+    virtual_network_gateway_vpn_public_ip_name                  = string
+    virtual_network_gateway_route_table_name                    = string
+    private_dns_resolver_name                                   = string
+    bastion_host_name                                           = string
+    bastion_host_public_ip_name                                 = string
+    ddos_protection_plan_name                                   = string
+  })
+```
+
+Default:
+
+```json
+{
+  "bastion_host_name": "bas-hub-${location}-${sequence}",
+  "bastion_host_public_ip_name": "pip-bas-hub-${location}-${sequence}",
+  "ddos_protection_plan_name": "ddos-hub-${location}-${sequence}",
+  "firewall_management_public_ip_name": "pip-fw-hub-mgmt-${location}-${sequence}",
+  "firewall_name": "fw-hub-${location}-${sequence}",
+  "firewall_policy_name": "fwp-hub-${location}-${sequence}",
+  "firewall_public_ip_name": "pip-fw-hub-${location}-${sequence}",
+  "private_dns_resolver_name": "pdr-hub-dns-${location}-${sequence}",
+  "route_table_firewall_name": "rt-hub-fw-${location}-${sequence}",
+  "route_table_user_subnets_name": "rt-hub-std-${location}-${sequence}",
+  "virtual_network_gateway_express_route_ip_configuration_name": "ipcfg-vgw-hub-er-${location}-${sequence}",
+  "virtual_network_gateway_express_route_name": "vgw-hub-er-${location}-${sequence}",
+  "virtual_network_gateway_express_route_public_ip_name": "pip-vgw-hub-er-${location}-${sequence}",
+  "virtual_network_gateway_route_table_name": "rt-hub-gateway-${location}-${sequence}",
+  "virtual_network_gateway_vpn_ip_configuration_name": "ipcfg-vgw-hub-vpn-${location}-${sequence}",
+  "virtual_network_gateway_vpn_name": "vgw-hub-vpn-${location}-${sequence}",
+  "virtual_network_gateway_vpn_public_ip_name": "pip-vgw-hub-vpn-${location}-${sequence}",
+  "virtual_network_name": "vnet-hub-${location}-${sequence}"
+}
+```
+
+### <a name="input_default_naming_convention_sequence"></a> [default\_naming\_convention\_sequence](#input\_default\_naming\_convention\_sequence)
+
+Description: (Optional) Defines the starting number and padded length for the sequence placeholder in naming conventions.
+
+Type:
+
+```hcl
+object({
+    starting_number = number
+    padding_format  = string
+  })
+```
+
+Default:
+
+```json
+{
+  "padding_format": "%03d",
+  "starting_number": 1
+}
+```
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
@@ -56,7 +136,6 @@ Description: The shared settings for the hub and spoke networks. This is where g
 ## DDoS Protection Plan
 
 - `ddos_protection_plan` - (Optional) An object defining the DDoS protection plan settings. When configured, this DDoS protection plan can be associated with hub virtual networks. The object has the following fields:
-  - `enabled` - (Optional) Should the DDoS protection plan be created? Default `true`.
   - `name` - The name of the DDoS protection plan resource.
   - `location` - The Azure location where the DDoS protection plan should be created. This should typically match the location of the hub networks that will use it.
   - `resource_group_name` - The name of the resource group where the DDoS protection plan should be created.
@@ -69,7 +148,6 @@ For detailed information about the DDoS protection plan and its capabilities, re
 ```terraform
 hub_and_spoke_networks_settings = {
   ddos_protection_plan = {
-    enabled             = true
     name                = "ddos-protection-plan-prod"
     location            = "eastus"
     resource_group_name = "rg-network-security-prod"
@@ -85,17 +163,15 @@ Type:
 
 ```hcl
 object({
+    enabled_resources = optional(object({
+      ddos_protection_plan = optional(bool, true)
+    }), {})
     ddos_protection_plan = optional(object({
-      enabled             = optional(bool, true)
-      name                = string
-      location            = string
-      resource_group_name = string
+      name                = optional(string)
+      location            = optional(string)
+      resource_group_name = optional(string)
       tags                = optional(map(string), null)
-      }), {
-      name                = "required"
-      location            = "required"
-      resource_group_name = "required"
-    })
+    }), {})
   })
 ```
 
@@ -553,11 +629,22 @@ Type:
 
 ```hcl
 map(object({
-    hub_virtual_network = object({
-      name                          = string
-      address_space                 = list(string)
-      location                      = string
-      parent_id                     = string
+    enabled_resources = optional(object({
+      firewall                              = optional(bool, true)
+      firewall_policy                       = optional(bool, true)
+      bastion                               = optional(bool, true)
+      virtual_network_gateway_express_route = optional(bool, true)
+      virtual_network_gateway_vpn           = optional(bool, true)
+      private_dns_zones                     = optional(bool, true)
+      private_dns_resolver                  = optional(bool, true)
+    }), {})
+    default_hub_address_space = optional(string)
+    default_parent_id         = optional(string)
+    location                  = string
+    hub_virtual_network = optional(object({
+      name                          = optional(string)
+      address_space                 = optional(list(string))
+      parent_id                     = optional(string)
       route_table_name_firewall     = optional(string)
       route_table_name_user_subnets = optional(string)
       bgp_community                 = optional(string)
@@ -618,12 +705,11 @@ map(object({
           default_outbound_access_enabled = optional(bool, false)
         }
       )), {})
-    })
+    }), {})
     firewall = optional(object({
-      enabled                                           = optional(bool, false)
-      sku_name                                          = string
-      sku_tier                                          = string
-      subnet_address_prefix                             = string
+      sku_name                                          = optional(string, "AZFW_VNet")
+      sku_tier                                          = optional(string, "Standard")
+      subnet_address_prefix                             = optional(string)
       subnet_default_outbound_access_enabled            = optional(bool, false)
       firewall_policy_id                                = optional(string, null)
       management_ip_enabled                             = optional(bool, true)
@@ -634,7 +720,6 @@ map(object({
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
-
       default_ip_configuration = optional(object({
         is_default = optional(bool, true)
         name       = optional(string)
@@ -643,8 +728,8 @@ map(object({
           name       = optional(string)
           sku_tier   = optional(string, "Regional")
           zones      = optional(set(string))
-        }))
-      }))
+        }), {})
+      }), {})
       ip_configurations = optional(map(object({
         is_default = optional(bool, false)
         name       = optional(string)
@@ -653,7 +738,7 @@ map(object({
           name       = optional(string)
           sku_tier   = optional(string, "Regional")
           zones      = optional(set(string))
-        }))
+        }), {})
       })), {})
       management_ip_configuration = optional(object({
         name = optional(string)
@@ -662,15 +747,10 @@ map(object({
           name       = optional(string)
           sku_tier   = optional(string, "Regional")
           zones      = optional(set(string))
-        }))
-      }))
-      }), {
-      sku_name              = "required"
-      sku_tier              = "required"
-      subnet_address_prefix = "required"
-    })
+        }), {})
+      }), {})
+    }), {})
     firewall_policy = optional(object({
-      enabled                           = optional(bool, false)
       name                              = optional(string)
       sku                               = optional(string, "Standard")
       auto_learn_private_ranges_enabled = optional(bool)
@@ -732,10 +812,9 @@ map(object({
       }))
     }), {})
     bastion = optional(object({
-      enabled                                = optional(bool, false)
-      subnet_address_prefix                  = string
+      subnet_address_prefix                  = optional(string)
       subnet_default_outbound_access_enabled = optional(bool, false)
-      name                                   = string
+      name                                   = optional(string)
       copy_paste_enabled                     = optional(bool, false)
       file_copy_enabled                      = optional(bool, false)
       ip_connect_enabled                     = optional(bool, false)
@@ -746,7 +825,7 @@ map(object({
       tags                                   = optional(map(string), null)
       tunneling_enabled                      = optional(bool, false)
       zones                                  = optional(set(string), null)
-      bastion_public_ip = object({
+      bastion_public_ip = optional(object({
         name                    = optional(string)
         allocation_method       = optional(string, "Static")
         sku                     = optional(string, "Standard")
@@ -762,24 +841,18 @@ map(object({
         edge_zone               = optional(string, null)
         ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
         ddos_protection_plan_id = optional(string, null)
-
-      })
-      }), {
-      bastion_public_ip     = {}
-      name                  = "required"
-      subnet_address_prefix = "required"
-    })
+      }), {})
+    }), {})
     virtual_network_gateways = optional(object({
-      subnet_address_prefix                     = string
+      subnet_address_prefix                     = optional(string)
       subnet_default_outbound_access_enabled    = optional(bool, false)
       route_table_creation_enabled              = optional(bool, false)
       route_table_name                          = optional(string)
       route_table_bgp_route_propagation_enabled = optional(bool, false)
       express_route = optional(object({
-        enabled   = optional(bool, false)
-        name      = string
+        name      = optional(string)
         parent_id = optional(string)
-        sku       = string
+        sku       = optional(string, null)
         edge_zone = optional(string)
         express_route_circuits = optional(map(object({
           id = string
@@ -812,7 +885,7 @@ map(object({
           }), null)
         })))
         express_route_remote_vnet_traffic_enabled = optional(bool, false)
-        hosted_on_behalf_of_public_ip_enabled     = optional(bool, false)
+        hosted_on_behalf_of_public_ip_enabled     = optional(bool, true)
         ip_configurations = optional(map(object({
           name                          = optional(string, null)
           apipa_addresses               = optional(list(string), null)
@@ -825,7 +898,7 @@ map(object({
             allocation_method       = optional(string, "Static")
             sku                     = optional(string, "Standard")
             tags                    = optional(map(string), {})
-            zones                   = optional(list(number), [1, 2, 3])
+            zones                   = optional(list(number), null)
             edge_zone               = optional(string, null)
             ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
             ddos_protection_plan_id = optional(string, null)
@@ -837,7 +910,7 @@ map(object({
             reverse_fqdn            = optional(string, null)
             sku_tier                = optional(string, "Regional")
           }), {})
-        })))
+        })), {})
         local_network_gateways = optional(map(object({
           id                  = optional(string, null)
           name                = optional(string, null)
@@ -890,15 +963,11 @@ map(object({
           }), null)
         })))
         tags = optional(map(string))
-        }), {
-        name = "required"
-        sku  = "required"
-      })
+      }), {})
       vpn = optional(object({
-        enabled                               = optional(bool, false)
-        name                                  = string
+        name                                  = optional(string)
         parent_id                             = optional(string)
-        sku                                   = string
+        sku                                   = optional(string, "VpnGw1AZ")
         edge_zone                             = optional(string)
         hosted_on_behalf_of_public_ip_enabled = optional(bool, false)
         ip_configurations = optional(map(object({
@@ -913,7 +982,7 @@ map(object({
             allocation_method       = optional(string, "Static")
             sku                     = optional(string, "Standard")
             tags                    = optional(map(string), {})
-            zones                   = optional(list(number), [1, 2, 3])
+            zones                   = optional(list(number), null)
             edge_zone               = optional(string, null)
             ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
             ddos_protection_plan_id = optional(string, null)
@@ -925,7 +994,10 @@ map(object({
             reverse_fqdn            = optional(string, null)
             sku_tier                = optional(string, "Regional")
           }), {})
-        })))
+          })), {
+          active_active_1 = {}
+          active_active_2 = {}
+        })
         local_network_gateways = optional(map(object({
           id                  = optional(string, null)
           name                = optional(string, null)
@@ -1042,15 +1114,9 @@ map(object({
         })))
         vpn_private_ip_address_enabled = optional(bool, false)
         vpn_type                       = optional(string, null)
-        }), {
-        name = "required"
-        sku  = "required"
-      })
-      }), {
-      subnet_address_prefix = "required"
-    })
+      }), {})
+    }), {})
     private_dns_zones = optional(object({
-      enabled                                     = optional(bool, false)
       resource_group_name                         = optional(string, null)
       auto_registration_zone_enabled              = optional(bool, true)
       auto_registration_zone_name                 = optional(string, null)
@@ -1081,11 +1147,11 @@ map(object({
     }), {})
     private_dns_resolver = optional(object({
       enabled                                = optional(bool, false)
-      subnet_address_prefix                  = string
+      subnet_address_prefix                  = optional(string)
       subnet_name                            = optional(string, "dns-resolver")
       subnet_default_outbound_access_enabled = optional(bool, false)
       default_inbound_endpoint_enabled       = optional(bool, true)
-      name                                   = string
+      name                                   = optional(string)
       ip_address                             = optional(string, null)
       inbound_endpoints = optional(map(object({
         name                         = optional(string)
@@ -1124,7 +1190,7 @@ map(object({
         })))
       })), {})
       tags = optional(map(string), null)
-    }))
+    }), {})
   }))
 ```
 
@@ -1261,11 +1327,29 @@ Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
 Version: 0.15.0
 
+### <a name="module_regions"></a> [regions](#module\_regions)
+
+Source: Azure/avm-utl-regions/azurerm
+
+Version: 0.5.2
+
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 
 Source: ./modules/virtual-network-gateway
 
 Version:
+
+### <a name="module_virtual_network_ip_prefixes"></a> [virtual\_network\_ip\_prefixes](#module\_virtual\_network\_ip\_prefixes)
+
+Source: Azure/avm-utl-network-ip-addresses/azurerm
+
+Version: 0.1.0
+
+### <a name="module_virtual_network_subnet_ip_prefixes"></a> [virtual\_network\_subnet\_ip\_prefixes](#module\_virtual\_network\_subnet\_ip\_prefixes)
+
+Source: Azure/avm-utl-network-ip-addresses/azurerm
+
+Version: 0.1.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
