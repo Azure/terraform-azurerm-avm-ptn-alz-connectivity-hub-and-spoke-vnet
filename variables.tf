@@ -698,7 +698,12 @@ variable "hub_virtual_networks" {
       tags = optional(map(string), null)
     }), {})
   }))
-  default     = {}
+  default = {
+    example = {
+      default_parent_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/xxxxxxx"
+      location          = "uksouth"
+    }
+  }
   description = <<DESCRIPTION
 A map of hub networks to create.
 
