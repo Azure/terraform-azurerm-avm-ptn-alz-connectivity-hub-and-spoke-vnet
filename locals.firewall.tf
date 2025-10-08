@@ -22,7 +22,7 @@ locals {
   }
   firewall_management_ip_configuration = {
     for key, value in var.hub_virtual_networks : key => merge(value.firewall.management_ip_configuration, {
-      name = coalesce(value.firewall.management_ip_configuration.name, "mgmt")
+      name = coalesce(value.firewall.management_ip_configuration.name, "defaultMgmt")
       public_ip_config = merge(value.firewall.management_ip_configuration.public_ip_config, {
         name  = coalesce(value.firewall.management_ip_configuration.public_ip_config.name, local.default_names[key].firewall_management_public_ip_name)
         zones = coalesce(value.firewall.management_ip_configuration.public_ip_config.zones, local.availability_zones[key])

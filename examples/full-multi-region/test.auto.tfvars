@@ -367,11 +367,13 @@ hub_and_spoke_vnet_virtual_networks = {
       subnet_address_prefix                     = "$${primary_gateway_subnet_address_prefix}"
       route_table_creation_enabled              = true
       route_table_bgp_route_propagation_enabled = true
+      route_table_name = "rt-hub-gateway-uksouth"
       express_route = {
         name                                  = "$${primary_virtual_network_gateway_express_route_name}"
         hosted_on_behalf_of_public_ip_enabled = "$${primary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
+            name  = "vnetGatewayConfigdefault"
             public_ip = {
               name  = "$${primary_virtual_network_gateway_express_route_public_ip_name}"
             }
@@ -382,11 +384,13 @@ hub_and_spoke_vnet_virtual_networks = {
         name    = "$${primary_virtual_network_gateway_vpn_name}"
         ip_configurations = {
           active_active_1 = {
+            name = "vnetGatewayConfigactive_active_1"
             public_ip = {
               name  = "$${primary_virtual_network_gateway_vpn_public_ip_name_1}"
             }
           }
           active_active_2 = {
+            name = "vnetGatewayConfigactive_active_2"
             public_ip = {
               name  = "$${primary_virtual_network_gateway_vpn_public_ip_name_2}"
             }
@@ -462,6 +466,7 @@ hub_and_spoke_vnet_virtual_networks = {
         hosted_on_behalf_of_public_ip_enabled = "$${secondary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
+            name  = "vnetGatewayConfigdefault"
             public_ip = {
               name  = "$${secondary_virtual_network_gateway_express_route_public_ip_name}"
             }
@@ -470,13 +475,16 @@ hub_and_spoke_vnet_virtual_networks = {
       }
       vpn = {
         name    = "$${secondary_virtual_network_gateway_vpn_name}"
+        sku = "VpnGw1"
         ip_configurations = {
           active_active_1 = {
+            name = "vnetGatewayConfigactive_active_1"
             public_ip = {
               name  = "$${secondary_virtual_network_gateway_vpn_public_ip_name_1}"
             }
           }
           active_active_2 = {
+            name = "vnetGatewayConfigactive_active_2"
             public_ip = {
               name  = "$${secondary_virtual_network_gateway_vpn_public_ip_name_2}"
             }
