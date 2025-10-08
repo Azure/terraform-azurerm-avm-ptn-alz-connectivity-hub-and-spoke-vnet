@@ -312,6 +312,9 @@ connectivity_resource_groups = {
 }
 
 hub_and_spoke_vnet_settings = {
+  enabled_resources = {
+    ddos_protection_plan = "$${ddos_protection_plan_enabled}"
+  }
   ddos_protection_plan = {
     enabled             = "$${ddos_protection_plan_enabled}"
     name                = "$${ddos_protection_plan_name}"
