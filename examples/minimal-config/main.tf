@@ -59,14 +59,14 @@ module "test" {
   enable_telemetry = false
   hub_virtual_networks = {
     primary = {
-      location                  = local.resource_groups["hub_primary"].location
-      default_hub_address_space = "10.0.0.0/16"
-      default_parent_id         = module.resource_groups["hub_primary"].resource_id
+      location = local.resource_groups["hub_primary"].location
+      # default_hub_address_space = "10.0.0.0/16"
+      default_parent_id = module.resource_groups["hub_primary"].resource_id
     }
     secondary = {
-      location                  = local.resource_groups["hub_secondary"].location
-      default_hub_address_space = "10.1.0.0/16"
-      default_parent_id         = module.resource_groups["hub_secondary"].resource_id
+      location = local.resource_groups["hub_secondary"].location
+      # default_hub_address_space = "10.1.0.0/16"
+      default_parent_id = module.resource_groups["hub_secondary"].resource_id
     }
   }
   tags = local.common_tags
