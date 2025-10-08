@@ -6,14 +6,16 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.7"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
 }
-
-data "azurerm_client_config" "current" {}
 
 resource "random_string" "suffix" {
   length  = 4

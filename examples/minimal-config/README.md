@@ -13,14 +13,16 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.7"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
 }
-
-data "azurerm_client_config" "current" {}
 
 resource "random_string" "suffix" {
   length  = 4
@@ -89,12 +91,13 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.21)
 
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.7)
+
 ## Resources
 
 The following resources are used by this module:
 
 - [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) (resource)
-- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
