@@ -1204,16 +1204,7 @@ map(object({
   }))
 ```
 
-Default:
-
-```json
-{
-  "example": {
-    "default_parent_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/xxxxxxx",
-    "location": "uksouth"
-  }
-}
-```
+Default: `{}`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 

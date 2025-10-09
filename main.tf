@@ -107,11 +107,11 @@ module "ddos_protection_plan" {
   version = "0.3.0"
   count   = local.ddos_protection_plan_enabled ? 1 : 0
 
-  location            = local.ddos_protection_plan_location
-  name                = local.ddos_protection_plan_name
-  resource_group_name = local.ddos_protection_plan_resource_group_name
+  location            = local.ddos_protection_plan.location
+  name                = local.ddos_protection_plan.name
+  resource_group_name = local.ddos_protection_plan.resource_group_name
   enable_telemetry    = var.enable_telemetry
-  tags                = local.ddos_protection_plan_tags
+  tags                = local.ddos_protection_plan.tags
 }
 
 module "bastion_public_ip" {

@@ -304,12 +304,6 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `ip_addresses` - (Optional) A set of IP addresses to allowlist for threat intelligence.
 DESCRIPTION
   nullable    = false
-
-  # Validate that there is at least 1 hub network defined
-  validation {
-    condition     = length(var.hub_virtual_networks) > 0
-    error_message = "At least one hub virtual network must be defined."
-  }
 }
 
 variable "tags" {
