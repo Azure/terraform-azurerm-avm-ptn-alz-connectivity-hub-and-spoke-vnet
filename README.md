@@ -1232,7 +1232,7 @@ Type:
 
 ```hcl
 object({
-    error_message_regex  = optional(list(string), [])
+    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
     interval_seconds     = optional(number, 10)
     max_interval_seconds = optional(number, 180)
   })
