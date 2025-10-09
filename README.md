@@ -138,24 +138,6 @@ Default:
 }
 ```
 
-### <a name="input_default_timeouts"></a> [default\_timeouts](#input\_default\_timeouts)
-
-Description: (Optional) A set of default timeouts to apply to resources created by this module.  
-If not specified, resources will use their provider default timeouts. This variable allows you to customize the timeouts for create, update, delete, and read operations.
-
-Type:
-
-```hcl
-object({
-    create = optional(string, "60m")
-    update = optional(string, "60m")
-    delete = optional(string, "60m")
-    read   = optional(string, "15m")
-  })
-```
-
-Default: `null`
-
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  

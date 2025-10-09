@@ -79,20 +79,6 @@ variable "default_naming_convention_sequence" {
   description = "(Optional) Defines the starting number and padded length for the sequence placeholder in naming conventions."
 }
 
-variable "default_timeouts" {
-  type = object({
-    create = optional(string, "60m")
-    update = optional(string, "60m")
-    delete = optional(string, "60m")
-    read   = optional(string, "15m")
-  })
-  default     = null
-  description = <<DESCRIPTION
-(Optional) A set of default timeouts to apply to resources created by this module.
-If not specified, resources will use their provider default timeouts. This variable allows you to customize the timeouts for create, update, delete, and read operations.
-DESCRIPTION
-}
-
 variable "enable_telemetry" {
   type        = bool
   default     = true
