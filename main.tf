@@ -3,7 +3,9 @@ module "hub_and_spoke_vnet" {
 
   enable_telemetry     = var.enable_telemetry
   hub_virtual_networks = local.hub_virtual_networks
+  retry                = var.retry
   tags                 = var.tags
+  timeouts             = var.timeouts
 }
 
 module "virtual_network_gateway" {
@@ -20,10 +22,12 @@ module "virtual_network_gateway" {
   hosted_on_behalf_of_public_ip_enabled     = each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled
   ip_configurations                         = each.value.ip_configurations
   local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
+  retry                                     = var.retry
   route_table_creation_enabled              = false
   sku                                       = each.value.sku
   subnet_creation_enabled                   = false
   tags                                      = each.value.tags
+  timeouts                                  = var.timeouts
   type                                      = each.value.virtual_network_gateway.type
   virtual_network_gateway_subnet_id         = each.value.virtual_network_gateway_subnet_id
   vpn_active_active_enabled                 = try(each.value.virtual_network_gateway.vpn_active_active_enabled, null)

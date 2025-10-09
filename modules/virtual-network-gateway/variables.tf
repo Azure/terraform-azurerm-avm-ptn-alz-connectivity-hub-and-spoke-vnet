@@ -369,6 +369,16 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   }
 }
 
+variable "retry" {
+  type = object({
+    error_message_regex  = optional(list(string), [])
+    interval_seconds     = optional(number, 10)
+    max_interval_seconds = optional(number, 180)
+  })
+  default     = {}
+  description = "Retry configuration for the resource operations"
+}
+
 variable "route_table_bgp_route_propagation_enabled" {
   type        = bool
   default     = true
@@ -432,6 +442,17 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "Tags to apply to the Virtual Network Gateway."
+}
+
+variable "timeouts" {
+  type = object({
+    create = optional(string, "60m")
+    read   = optional(string, "5m")
+    update = optional(string, "60m")
+    delete = optional(string, "60m")
+  })
+  default     = {}
+  description = "Timeouts for the resource operations"
 }
 
 variable "type" {

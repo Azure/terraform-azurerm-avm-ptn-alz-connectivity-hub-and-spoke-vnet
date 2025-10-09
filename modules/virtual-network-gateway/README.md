@@ -416,6 +416,22 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_retry"></a> [retry](#input\_retry)
+
+Description: Retry configuration for the resource operations
+
+Type:
+
+```hcl
+object({
+    error_message_regex  = optional(list(string), [])
+    interval_seconds     = optional(number, 10)
+    max_interval_seconds = optional(number, 180)
+  })
+```
+
+Default: `{}`
+
 ### <a name="input_route_table_bgp_route_propagation_enabled"></a> [route\_table\_bgp\_route\_propagation\_enabled](#input\_route\_table\_bgp\_route\_propagation\_enabled)
 
 Description: Whether or not to enable BGP route propagation on the Route Table.
@@ -487,6 +503,23 @@ Description: Tags to apply to the Virtual Network Gateway.
 Type: `map(string)`
 
 Default: `null`
+
+### <a name="input_timeouts"></a> [timeouts](#input\_timeouts)
+
+Description: Timeouts for the resource operations
+
+Type:
+
+```hcl
+object({
+    create = optional(string, "60m")
+    read   = optional(string, "5m")
+    update = optional(string, "60m")
+    delete = optional(string, "60m")
+  })
+```
+
+Default: `{}`
 
 ### <a name="input_type"></a> [type](#input\_type)
 

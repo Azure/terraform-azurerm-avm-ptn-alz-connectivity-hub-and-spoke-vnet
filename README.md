@@ -138,6 +138,24 @@ Default:
 }
 ```
 
+### <a name="input_default_timeouts"></a> [default\_timeouts](#input\_default\_timeouts)
+
+Description: (Optional) A set of default timeouts to apply to resources created by this module.  
+If not specified, resources will use their provider default timeouts. This variable allows you to customize the timeouts for create, update, delete, and read operations.
+
+Type:
+
+```hcl
+object({
+    create = optional(string, "60m")
+    update = optional(string, "60m")
+    delete = optional(string, "60m")
+    read   = optional(string, "15m")
+  })
+```
+
+Default: `null`
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
@@ -1206,6 +1224,22 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_retry"></a> [retry](#input\_retry)
+
+Description: Retry configuration for the resource operations
+
+Type:
+
+```hcl
+object({
+    error_message_regex  = optional(list(string), [])
+    interval_seconds     = optional(number, 10)
+    max_interval_seconds = optional(number, 180)
+  })
+```
+
+Default: `{}`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: (Optional) A map of tags to assign to the resources created by this module.  
@@ -1224,6 +1258,23 @@ tags = {
 Type: `map(string)`
 
 Default: `null`
+
+### <a name="input_timeouts"></a> [timeouts](#input\_timeouts)
+
+Description: Timeouts for the resource operations
+
+Type:
+
+```hcl
+object({
+    create = optional(string, "60m")
+    read   = optional(string, "5m")
+    update = optional(string, "60m")
+    delete = optional(string, "60m")
+  })
+```
+
+Default: `{}`
 
 ## Outputs
 

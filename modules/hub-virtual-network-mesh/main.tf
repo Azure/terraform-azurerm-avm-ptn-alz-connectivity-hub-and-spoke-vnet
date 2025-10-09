@@ -16,7 +16,9 @@ module "hub_virtual_networks" {
   enable_telemetry        = var.enable_telemetry
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
   name                    = each.value.name
+  retry                   = var.retry
   tags                    = each.value.tags == null ? var.tags : each.value.tags
+  timeouts                = var.timeouts
 }
 
 module "hub_virtual_network_subnets" {
@@ -33,9 +35,11 @@ module "hub_virtual_network_subnets" {
   network_security_group                        = each.value.network_security_group
   private_endpoint_network_policies             = each.value.private_endpoint_network_policies
   private_link_service_network_policies_enabled = each.value.private_link_service_network_policies_enabled
+  retry                                         = var.retry
   route_table                                   = each.value.route_table
   service_endpoint_policies                     = each.value.service_endpoint_policies
   service_endpoints                             = each.value.service_endpoints
+  timeouts                                      = var.timeouts
 }
 
 module "hub_virtual_network_peering" {
@@ -50,5 +54,7 @@ module "hub_virtual_network_peering" {
   create_reverse_peering       = false
   name                         = each.value.name
   remote_virtual_network_id    = each.value.remote_virtual_network_id
+  retry                        = var.retry
+  timeouts                     = var.timeouts
   use_remote_gateways          = each.value.use_remote_gateways
 }
