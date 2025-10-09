@@ -1278,7 +1278,7 @@ Description: Resource IDs of the virtual networks
 
 Description: Route tables associated with the firewall.
 
-### <a name="output_route_tables_gateway"></a> [route\_tables\_gateway](#output\_route\_tables\_gateway)
+### <a name="output_route_tables_gateway_resource_ids"></a> [route\_tables\_gateway\_resource\_ids](#output\_route\_tables\_gateway\_resource\_ids)
 
 Description: Route tables associated with the gateway subnet.
 
