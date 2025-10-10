@@ -13,6 +13,8 @@ locals {
         subnet_name                  = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-dns_resolver"].name
         private_ip_allocation_method = "Static"
         private_ip_address           = local.private_dns_resolver_ip_addresses[key]
+        tags                         = coalesce(value.private_dns_resolver.tags, var.tags, {})
+        merge_with_module_tags       = false
       }
     }, value.private_dns_resolver.inbound_endpoints) : value.private_dns_resolver.inbound_endpoints
     outbound_endpoints = value.private_dns_resolver.outbound_endpoints

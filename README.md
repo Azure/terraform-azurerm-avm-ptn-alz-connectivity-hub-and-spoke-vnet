@@ -70,51 +70,28 @@ Type:
 
 ```hcl
 object({
-    virtual_network_name                                        = string
-    firewall_name                                               = string
-    firewall_policy_name                                        = string
-    firewall_public_ip_name                                     = string
-    firewall_management_public_ip_name                          = string
-    route_table_firewall_name                                   = string
-    route_table_user_subnets_name                               = string
-    virtual_network_gateway_express_route_name                  = string
-    virtual_network_gateway_express_route_ip_configuration_name = string
-    virtual_network_gateway_express_route_public_ip_name        = string
-    virtual_network_gateway_vpn_name                            = string
-    virtual_network_gateway_vpn_ip_configuration_name           = string
-    virtual_network_gateway_vpn_public_ip_name                  = string
-    virtual_network_gateway_route_table_name                    = string
-    private_dns_resolver_name                                   = string
-    bastion_host_name                                           = string
-    bastion_host_public_ip_name                                 = string
-    ddos_protection_plan_name                                   = string
+    virtual_network_name                                        = optional(string, "vnet-hub-$${location}-$${sequence}")
+    firewall_name                                               = optional(string, "fw-hub-$${location}-$${sequence}")
+    firewall_policy_name                                        = optional(string, "fwp-hub-$${location}-$${sequence}")
+    firewall_public_ip_name                                     = optional(string, "pip-fw-hub-$${location}-$${sequence}")
+    firewall_management_public_ip_name                          = optional(string, "pip-fw-hub-mgmt-$${location}-$${sequence}")
+    route_table_firewall_name                                   = optional(string, "rt-hub-fw-$${location}-$${sequence}")
+    route_table_user_subnets_name                               = optional(string, "rt-hub-std-$${location}-$${sequence}")
+    virtual_network_gateway_express_route_name                  = optional(string, "vgw-hub-er-$${location}-$${sequence}")
+    virtual_network_gateway_express_route_ip_configuration_name = optional(string, "ipcfg-vgw-hub-er-$${location}-$${sequence}")
+    virtual_network_gateway_express_route_public_ip_name        = optional(string, "pip-vgw-hub-er-$${location}-$${sequence}")
+    virtual_network_gateway_vpn_name                            = optional(string, "vgw-hub-vpn-$${location}-$${sequence}")
+    virtual_network_gateway_vpn_ip_configuration_name           = optional(string, "ipcfg-vgw-hub-vpn-$${location}-$${sequence}")
+    virtual_network_gateway_vpn_public_ip_name                  = optional(string, "pip-vgw-hub-vpn-$${location}-$${sequence}")
+    virtual_network_gateway_route_table_name                    = optional(string, "rt-hub-gateway-$${location}-$${sequence}")
+    private_dns_resolver_name                                   = optional(string, "pdr-hub-$${location}-$${sequence}")
+    bastion_host_name                                           = optional(string, "bas-hub-$${location}-$${sequence}")
+    bastion_host_public_ip_name                                 = optional(string, "pip-bas-hub-$${location}-$${sequence}")
+    ddos_protection_plan_name                                   = optional(string, "ddos-hub-$${location}-$${sequence}")
   })
 ```
 
-Default:
-
-```json
-{
-  "bastion_host_name": "bas-hub-${location}-${sequence}",
-  "bastion_host_public_ip_name": "pip-bas-hub-${location}-${sequence}",
-  "ddos_protection_plan_name": "ddos-hub-${location}-${sequence}",
-  "firewall_management_public_ip_name": "pip-fw-hub-mgmt-${location}-${sequence}",
-  "firewall_name": "fw-hub-${location}-${sequence}",
-  "firewall_policy_name": "fwp-hub-${location}-${sequence}",
-  "firewall_public_ip_name": "pip-fw-hub-${location}-${sequence}",
-  "private_dns_resolver_name": "pdr-hub-${location}-${sequence}",
-  "route_table_firewall_name": "rt-hub-fw-${location}-${sequence}",
-  "route_table_user_subnets_name": "rt-hub-std-${location}-${sequence}",
-  "virtual_network_gateway_express_route_ip_configuration_name": "ipcfg-vgw-hub-er-${location}-${sequence}",
-  "virtual_network_gateway_express_route_name": "vgw-hub-er-${location}-${sequence}",
-  "virtual_network_gateway_express_route_public_ip_name": "pip-vgw-hub-er-${location}-${sequence}",
-  "virtual_network_gateway_route_table_name": "rt-hub-gateway-${location}-${sequence}",
-  "virtual_network_gateway_vpn_ip_configuration_name": "ipcfg-vgw-hub-vpn-${location}-${sequence}",
-  "virtual_network_gateway_vpn_name": "vgw-hub-vpn-${location}-${sequence}",
-  "virtual_network_gateway_vpn_public_ip_name": "pip-vgw-hub-vpn-${location}-${sequence}",
-  "virtual_network_name": "vnet-hub-${location}-${sequence}"
-}
-```
+Default: `{}`
 
 ### <a name="input_default_naming_convention_sequence"></a> [default\_naming\_convention\_sequence](#input\_default\_naming\_convention\_sequence)
 

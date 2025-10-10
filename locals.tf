@@ -1,5 +1,5 @@
 locals {
-  has_regions = length(var.hub_virtual_networks) > 1
+  has_regions = length(var.hub_virtual_networks) > 0
   hub_virtual_networks = {
     for key, value in var.hub_virtual_networks : key => merge(value.hub_virtual_network, {
       parent_id = coalesce(value.hub_virtual_network.parent_id, value.default_parent_id)
