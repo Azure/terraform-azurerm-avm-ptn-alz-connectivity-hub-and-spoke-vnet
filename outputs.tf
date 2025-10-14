@@ -48,9 +48,9 @@ output "route_tables_firewall" {
   value       = module.hub_and_spoke_vnet.hub_route_tables_firewall
 }
 
-output "route_tables_gateway" {
+output "route_tables_gateway_resource_ids" {
   description = "Route tables associated with the gateway subnet."
-  value       = module.gateway_route_table
+  value       = { for key, value in module.gateway_route_table : key => value.resource_id }
 }
 
 output "route_tables_user_subnets" {
