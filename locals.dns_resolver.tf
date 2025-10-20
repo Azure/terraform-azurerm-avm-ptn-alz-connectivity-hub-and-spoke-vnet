@@ -6,7 +6,7 @@ locals {
   private_dns_resolver = { for key, value in var.hub_virtual_networks : key => {
     name                = coalesce(value.private_dns_resolver.name, local.default_names[key].private_dns_resolver_name)
     location            = value.location
-    resource_group_name = local.hub_virtual_networks_resource_group_names[key]
+    resource_group_name = coalesce(value.private_dns_resolver.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
     inbound_endpoints = local.private_dns_zones_enabled[key] && value.private_dns_resolver.default_inbound_endpoint_enabled ? merge({
       dns = {
         name                         = "dns"
