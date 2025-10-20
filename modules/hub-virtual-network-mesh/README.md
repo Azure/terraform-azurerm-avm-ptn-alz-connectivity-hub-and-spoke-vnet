@@ -283,6 +283,8 @@ map(object({
     )), {})
 
     firewall = optional(object({
+      name                                              = optional(string)
+      resource_group_name                               = optional(string)
       sku_name                                          = string
       sku_tier                                          = string
       subnet_address_prefix                             = string
@@ -291,7 +293,6 @@ map(object({
       management_ip_enabled                             = optional(bool, true)
       management_subnet_address_prefix                  = optional(string, null)
       management_subnet_default_outbound_access_enabled = optional(bool, false)
-      name                                              = optional(string)
       private_ip_ranges                                 = optional(list(string))
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
@@ -301,33 +302,37 @@ map(object({
         is_default = optional(bool, true)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version = optional(string, "IPv4")
-          name       = optional(string)
-          sku_tier   = optional(string, "Regional")
-          zones      = optional(set(string))
+          ip_version          = optional(string, "IPv4")
+          name                = optional(string)
+          resource_group_name = optional(string)
+          sku_tier            = optional(string, "Regional")
+          zones               = optional(set(string))
         }))
       }))
       ip_configurations = optional(map(object({
         is_default = optional(bool, false)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version = optional(string, "IPv4")
-          name       = optional(string)
-          sku_tier   = optional(string, "Regional")
-          zones      = optional(set(string))
+          ip_version          = optional(string, "IPv4")
+          name                = optional(string)
+          resource_group_name = optional(string)
+          sku_tier            = optional(string, "Regional")
+          zones               = optional(set(string))
         }))
       })), {})
       management_ip_configuration = optional(object({
         name = optional(string)
         public_ip_config = optional(object({
-          ip_version = optional(string, "IPv4")
-          name       = optional(string)
-          sku_tier   = optional(string, "Regional")
-          zones      = optional(set(string))
+          ip_version          = optional(string, "IPv4")
+          name                = optional(string)
+          resource_group_name = optional(string)
+          sku_tier            = optional(string, "Regional")
+          zones               = optional(set(string))
         }))
       }))
       firewall_policy = optional(object({
         name                              = optional(string)
+        resource_group_name               = optional(string)
         sku                               = optional(string, "Standard")
         auto_learn_private_ranges_enabled = optional(bool)
         base_policy_id                    = optional(string)

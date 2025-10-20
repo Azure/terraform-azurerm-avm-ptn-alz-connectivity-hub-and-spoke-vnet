@@ -194,7 +194,6 @@ variable "hub_virtual_networks" {
       management_ip_enabled                             = optional(bool, true)
       management_subnet_address_prefix                  = optional(string, null)
       management_subnet_default_outbound_access_enabled = optional(bool, false)
-
       private_ip_ranges                                 = optional(list(string))
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
@@ -204,11 +203,11 @@ variable "hub_virtual_networks" {
         is_default = optional(bool, true)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version = optional(string, "IPv4")
-          name       = optional(string)
+          ip_version          = optional(string, "IPv4")
+          name                = optional(string)
           resource_group_name = optional(string)
-          sku_tier   = optional(string, "Regional")
-          zones      = optional(set(string))
+          sku_tier            = optional(string, "Regional")
+          zones               = optional(set(string))
         }), {})
       }), {})
 
@@ -216,22 +215,22 @@ variable "hub_virtual_networks" {
         is_default = optional(bool, false)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version = optional(string, "IPv4")
-          name       = optional(string)
+          ip_version          = optional(string, "IPv4")
+          name                = optional(string)
           resource_group_name = optional(string)
-          sku_tier   = optional(string, "Regional")
-          zones      = optional(set(string))
+          sku_tier            = optional(string, "Regional")
+          zones               = optional(set(string))
         }), {})
       })), {})
 
       management_ip_configuration = optional(object({
         name = optional(string)
         public_ip_config = optional(object({
-          ip_version = optional(string, "IPv4")
-          name       = optional(string)
+          ip_version          = optional(string, "IPv4")
+          name                = optional(string)
           resource_group_name = optional(string)
-          sku_tier   = optional(string, "Regional")
-          zones      = optional(set(string))
+          sku_tier            = optional(string, "Regional")
+          zones               = optional(set(string))
         }), {})
       }), {})
     }), {})
@@ -639,13 +638,12 @@ variable "hub_virtual_networks" {
     }), {})
 
     private_dns_resolver = optional(object({
-      enabled                                = optional(bool, false)
+      name                                   = optional(string)
       resource_group_name                    = optional(string)
       subnet_address_prefix                  = optional(string)
       subnet_name                            = optional(string, "dns-resolver")
       subnet_default_outbound_access_enabled = optional(bool, false)
       default_inbound_endpoint_enabled       = optional(bool, true)
-      name                                   = optional(string)
       ip_address                             = optional(string, null)
       inbound_endpoints = optional(map(object({
         name                         = optional(string)
@@ -764,6 +762,8 @@ The following top level attributes are supported:
 ## Azure Firewall
 
 - `firewall` - (Optional) An object with the following fields:
+  - `name` - (Optional) The name of the firewall resource. If not specified will use `afw-{vnetname}`.
+  - `resource_group_name` - (Optional) The name of the resource group where the Azure Firewall should be created. If not specified will use the parent resource group of the virtual network.
   - `sku_name` - (Optional) The name of the SKU to use for the Azure Firewall. Possible values include `AZFW_Hub`, `AZFW_VNet`. Default `AZFW_VNet`.
   - `sku_tier` - (Optional) The tier of the SKU to use for the Azure Firewall. Possible values include `Basic`, `Standard`, `Premium`. Default `Standard`.
   - `subnet_address_prefix` - (Optional) The IPv4 address prefix to use for the Azure Firewall subnet in CIDR format. Needs to be a part of the virtual network's address space.
@@ -772,7 +772,6 @@ The following top level attributes are supported:
   - `management_ip_enabled` - (Optional) Should the Azure Firewall management IP be enabled? Default `true`.
   - `management_subnet_address_prefix` - (Optional) The IPv4 address prefix to use for the Azure Firewall management subnet in CIDR format. Needs to be a part of the virtual network's address space.
   - `management_subnet_default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the Azure Firewall management subnet? Default `false`.
-  - `name` - (Optional) The name of the firewall resource. If not specified will use `afw-{vnetname}`.
   - `private_ip_ranges` - (Optional) A list of private IP ranges to use for the Azure Firewall, to which the firewall will not NAT traffic. If not specified will use RFC1918.
   - `subnet_route_table_id` = (Optional) The resource id of the Route Table which should be associated with the Azure Firewall subnet. If not specified the module will assign the generated route table.
   - `tags` - (Optional) A map of tags to apply to the Azure Firewall. If not specified
@@ -782,6 +781,7 @@ The following top level attributes are supported:
     - `is_default` - (Optional) Indicates this is the default IP configuration. This must always be `true` for the legacy configuration. If not specified will be `true`.
     - `public_ip_config` - (Optional) An object with the following fields:
       - `name` - (Optional) The name of the public IP configuration. If not specified will use `pip-fw-{vnetname}`.
+      - `resource_group_name` - (Optional) The name of the resource group where the public IP should be created. If not specified will use the parent resource group of the virtual network.
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
@@ -790,6 +790,7 @@ The following top level attributes are supported:
     - `is_default` - (Optional) Indicates this is the default IP configuration, which will be linked to the Firewall subnet. If not specified will be `false`. At least one and only one IP configuration must have this set to `true`.
     - `public_ip_config` - (Optional) An object with the following fields:
       - `name` - (Optional) The name of the public IP configuration. If not specified will use `pip-fw-{vnetname}-<Map Key>`.
+      - `resource_group_name` - (Optional) The name of the resource group where the public IP should be created. If not specified will use the parent resource group of the virtual network.
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
@@ -797,6 +798,7 @@ The following top level attributes are supported:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
     - `public_ip_config` - (Optional) An object with the following fields:
       - `name` - (Optional) The name of the public IP configuration. If not specified will use `pip-fw-mgmt-<Map Key>`.
+      - `resource_group_name` - (Optional) The name of the resource group where the public IP should be created. If not specified will use the parent resource group of the virtual network.
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
@@ -805,6 +807,7 @@ The following top level attributes are supported:
 
 - `firewall_policy` - (Optional) An object with the following fields:
   - `name` - (Optional) The name of the firewall policy. If not specified will use `afw-policy-{vnetname}`.
+  - `resource_group_name` - (Optional) The name of the resource group where the firewall policy should be created. If not specified will use the parent resource group of the virtual network.
   - `sku` - (Optional) The SKU to use for the firewall policy. Possible values include `Standard`, `Premium`. Default `Standard`.
   - `auto_learn_private_ranges_enabled` - (Optional) Should the firewall policy automatically learn private ranges? Default `false`.
   - `base_policy_id` - (Optional) The resource id of the base policy to use for the firewall policy.
@@ -1088,12 +1091,13 @@ The following top level attributes are supported:
 ## Private DNS Resolver
 
 - `private_dns_resolver` - (Optional) An object with the following fields:
+  - `name` - (Optional) The name of the DNS resolver.
+  - `resource_group_name` - (Optional) The name of the resource group where the DNS resolver should be created. If not specified, uses the hub virtual network's parent resource group.
   - `enabled` - (Optional) Should the private DNS resolver be created? Default `false`.
   - `subnet_address_prefix` - (Optional) The IPv4 address prefix to use for the DNS resolver subnet in CIDR format. Must be a part of the virtual network's address space.
   - `subnet_name` - (Optional) The name of the DNS resolver subnet. Default `dns-resolver`.
   - `subnet_default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the DNS resolver subnet? Default `false`.
   - `default_inbound_endpoint_enabled` - (Optional) Should a default inbound endpoint be created? Default `true`.
-  - `name` - (Optional) The name of the DNS resolver.
   - `ip_address` - (Optional) The IP address for the default inbound endpoint.
   - `inbound_endpoints` - (Optional) A map of additional inbound endpoints. Each endpoint is an object with:
     - `name` - (Optional) The endpoint name.
