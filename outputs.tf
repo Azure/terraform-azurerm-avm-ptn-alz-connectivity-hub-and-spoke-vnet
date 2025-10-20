@@ -3,9 +3,9 @@ output "dns_server_ip_addresses" {
   value       = { for key, value in local.hub_virtual_networks : key => try(value.hub_router_ip_address, try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)) }
 }
 
-output "firewall_policy_ids" {
-  description = "Firewall policy IDs for each hub virtual network."
-  value       = { for key, value in var.hub_virtual_networks : key => try(value.hub_virtual_network.firewall_policy_id, "ToDo") }
+output "firewall_policies" {
+  description = "Firewall policies for each hub virtual network."
+  value       = module.hub_and_spoke_vnet.firewall_policies
 }
 
 output "firewall_private_ip_addresses" {

@@ -1243,9 +1243,9 @@ The following outputs are exported:
 
 Description: DNS server IP addresses for each hub virtual network.
 
-### <a name="output_firewall_policy_ids"></a> [firewall\_policy\_ids](#output\_firewall\_policy\_ids)
+### <a name="output_firewall_policies"></a> [firewall\_policies](#output\_firewall\_policies)
 
-Description: Firewall policy IDs for each hub virtual network.
+Description: Firewall policies for each hub virtual network.
 
 ### <a name="output_firewall_private_ip_addresses"></a> [firewall\_private\_ip\_addresses](#output\_firewall\_private\_ip\_addresses)
 
