@@ -45,7 +45,7 @@ locals {
     }
     hub_secondary = {
       name     = "rg-hub-secondary-${random_string.suffix.result}"
-      location = "autraliacentral"
+      location = "australiacentral"
     }
   }
 }
