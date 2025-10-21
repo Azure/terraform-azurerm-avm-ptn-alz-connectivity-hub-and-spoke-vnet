@@ -31,12 +31,13 @@ locals {
   }
   firewall_policies = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] ? merge(value.firewall_policy, {
     name = coalesce(value.firewall_policy.name, local.default_names[key].firewall_policy_name)
-    dns  = coalesce(value.firewall_policy.dns, local.firewall_policy_dns_defaults[key])
+    dns  = value.firewall_policy.dns != null ? value.firewall_policy.dns : local.firewall_policy_dns_defaults[key]
   }) : null }
-  firewall_policy_dns_defaults = { for key, value in var.hub_virtual_networks : key => local.private_dns_resolver_enabled[key] && local.private_dns_zones_enabled[key] && local.firewall_enabled[key] ? {
+  firewall_policy_dns_defaults = { for key, value in var.hub_virtual_networks : key => local.private_dns_resolver_enabled[key] && local.private_dns_zones_enabled[key] && local.firewall_enabled[key] && !local.firewall_sku_is_basic[key] ? {
     proxy_enabled = true
     servers       = [local.private_dns_resolver_ip_addresses[key]]
   } : null }
+  firewall_sku_is_basic = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] && (value.firewall.sku_tier == "Basic" || value.firewall_policy.sku == "Basic") }
   firewalls = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] ? merge(value.firewall, {
     name                             = coalesce(value.firewall.name, local.default_names[key].firewall_name)
     firewall_policy                  = local.firewall_policies[key]
