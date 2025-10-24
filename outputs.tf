@@ -1,3 +1,18 @@
+output "bastion_host_dns_names" {
+  description = "The bastion host resources associated with the virtual WAN, grouped by hub key."
+  value       = { for key, value in module.bastion_host : key => value.dns_name }
+}
+
+output "bastion_host_public_ip_address" {
+  description = "The public IP addresses of the bastion hosts associated with the virtual WAN, grouped by hub key."
+  value       = { for key, value in module.bastion_public_ip : key => value.public_ip_address }
+}
+
+output "bastion_host_resource_ids" {
+  description = "The resource IDs of the bastion hosts associated with the virtual WAN, grouped by hub key."
+  value       = { for key, value in module.bastion_host : key => value.resource_id }
+}
+
 output "dns_server_ip_addresses" {
   description = "DNS server IP addresses for each hub virtual network."
   value       = { for key, value in local.hub_virtual_networks : key => try(value.hub_router_ip_address, try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)) }
