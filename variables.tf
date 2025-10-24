@@ -617,6 +617,7 @@ variable "hub_virtual_networks" {
       private_link_private_dns_zones = optional(map(object({
         zone_name                              = optional(string, null)
         private_dns_zone_supports_private_link = optional(bool, true)
+        resolution_policy                      = optional(string, "Default")
         custom_iterator = optional(object({
           replacement_placeholder = string
           replacement_values      = map(string)
@@ -1079,6 +1080,7 @@ The following top level attributes are supported:
   - `private_link_private_dns_zones` - (Optional) A map of private link DNS zones. Each zone is an object with:
     - `zone_name` - (Optional) The DNS zone name.
     - `private_dns_zone_supports_private_link` - (Optional) Does this zone support private link? Default `true`.
+    - `resolution_policy` - (Optional) The resolution policy. Possible values are `Default` and `NsxDomainRedirect`. Default value is `Default`.
     - `custom_iterator` - (Optional) An object with the following fields:
       - `replacement_placeholder` - The placeholder string to replace (required).
       - `replacement_values` - A map of replacement values (required).
