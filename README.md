@@ -1332,7 +1332,7 @@ Version: 0.3.0
 
 Source: Azure/avm-res-network-dnsresolver/azurerm
 
-Version: 0.7.3
+Version: 0.7.5
 
 ### <a name="module_gateway_route_table"></a> [gateway\_route\_table](#module\_gateway\_route\_table)
 
@@ -1350,13 +1350,13 @@ Version:
 
 Source: Azure/avm-res-network-privatednszone/azurerm
 
-Version: 0.3.3
+Version: 0.3.4
 
 ### <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones)
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.15.0
+Version: 0.16.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
