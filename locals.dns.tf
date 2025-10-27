@@ -18,8 +18,11 @@ locals {
         private_dns_zone_supports_private_link = coalesce(private_link_dns_zone_v.private_dns_zone_supports_private_link, true)
         resolution_policy = coalesce(private_link_dns_zone_v.resolution_policy, "Default")
         virtual_network_links = {
-          virtual_network_resource_id = module.hub_and_spoke_vnet.virtual_networks[key].id
-          virtual_network_link_name_template_override = var.hub_virtual_networks[key].private_dns_zones.private_dns_zone_network_link_name_template
+          for vnet_key, vnet_value in module.module.hub_and_spoke_vnet.virtual_networks : vnet_key => {
+            virtual_network_resource_id = vnet_value.id
+            virtual_network_link_name_template_override = var.hub_virtual_networks[vnet_key].private_dns_zones.private_dns_zone_network_link_name_template
+          }
+
         }
       }
     }
