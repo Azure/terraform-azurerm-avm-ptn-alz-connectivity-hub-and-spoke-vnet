@@ -86,9 +86,9 @@ module "private_dns_zones" {
   location                                    = each.value.location
   resource_group_name                         = each.value.resource_group_name
   enable_telemetry                            = var.enable_telemetry
-  private_link_excluded_zones                 = each.value.private_dns_settings.private_link_excluded_zones
-  private_link_private_dns_zones              = each.value.private_dns_settings.private_link_private_dns_zones
-  private_link_private_dns_zones_additional   = each.value.private_dns_settings.private_link_private_dns_zones_additional
+  private_link_excluded_zones                 = each.value.private_link_excluded_zones
+  private_link_private_dns_zones              = each.value.private_link_private_dns_zones
+  private_link_private_dns_zones_additional   = each.value.private_link_private_dns_zones_additional
   private_link_private_dns_zones_regex_filter = each.value.private_link_private_dns_zones_regex_filter
   resource_group_creation_enabled             = false
   tags                                        = var.tags

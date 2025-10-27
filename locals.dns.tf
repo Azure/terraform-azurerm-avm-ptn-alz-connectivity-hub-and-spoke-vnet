@@ -9,7 +9,7 @@ locals {
     private_link_private_dns_zones_regex_filter = value.private_dns_zones.private_link_private_dns_zones_regex_filter != null ? value.private_dns_zones.private_link_private_dns_zones_regex_filter : {
       enabled = key != local.primary_region_key
     }
-    private_dns_settings = value.private_dns_zones
+    # private_dns_settings = value.private_dns_zones
     private_link_excluded_zones = value.private_dns_zones.private_link_excluded_zones
     private_link_private_dns_zones_additional = value.private_dns_zones.private_link_private_dns_zones_additional
     private_link_private_dns_zones = {
