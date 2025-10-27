@@ -11,7 +11,7 @@ locals {
     }
     private_dns_settings = value.private_dns_zones
     private_link_excluded_zones = value.private_dns_zones.private_link_excluded_zones
-    private_link_private_dns_zones_additional = value.private_dns_zones.private_link_private_dns
+    private_link_private_dns_zones_additional = value.private_dns_zones.private_link_private_dns_zones_additional
     private_link_private_dns_zones = {
       for private_link_dns_zone_k, private_link_dns_zone_v in value.private_dns_zones.private_link_private_dns_zones : private_link_dns_zone_k => {
         zone_name          = private_link_dns_zone_v.zone_name
