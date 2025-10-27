@@ -39,7 +39,7 @@ locals {
         }
       }]
       default_outbound_access_enabled = value.private_dns_resolver.subnet_default_outbound_access_enabled
-    } } if local.private_dns_resolver_enabled[key]
+    } } if local.private_dns_resolver_enabled[key] && value.private_dns_resolver.default_inbound_endpoint_enabled
   }
   subnets = { for key, value in var.hub_virtual_networks : key => merge(lookup(local.private_dns_resolver_subnets, key, {}), lookup(local.bastion_subnets, key, {}), lookup(local.gateway_subnets, key, {})) }
 }
