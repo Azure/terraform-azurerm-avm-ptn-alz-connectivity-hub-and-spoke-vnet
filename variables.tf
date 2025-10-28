@@ -1135,7 +1135,8 @@ DESCRIPTION
 }
 
 variable "private_dns_zone_network_link_name_template_override" {
-  type = optional(string, null)
+  type = string
+  nullable = true
   description = "The template to use for creating virtual network links for private link private dns zones."
 }
 
