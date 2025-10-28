@@ -17,8 +17,9 @@ locals {
         zone_name          = private_link_dns_zone_v.zone_name
         private_dns_zone_supports_private_link = coalesce(private_link_dns_zone_v.private_dns_zone_supports_private_link, true)
         virtual_network_links = {
-          for vnet_key, vnet_value in module.hub_and_spoke_vnet.virtual_networks : vnet_key => {
-            virtual_network_resource_id = vnet_value.id
+          # for vnet_key, vnet_value in module.hub_and_spoke_vnet.virtual_networks : vnet_key => {
+          key = {
+            virtual_network_resource_id = module.hub_and_spoke_vnet.virtual_networks[key].id
             resolution_policy = coalesce(private_link_dns_zone_v.resolution_policy, "Default")
           }
 
