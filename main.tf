@@ -90,6 +90,7 @@ module "private_dns_zones" {
   private_link_private_dns_zones              = each.value.private_link_private_dns_zones
   private_link_private_dns_zones_additional   = each.value.private_link_private_dns_zones_additional
   private_link_private_dns_zones_regex_filter = each.value.private_link_private_dns_zones_regex_filter
+  virtual_network_link_name_template          = var.private_dns_zone_network_link_name_template_override
   resource_group_creation_enabled             = false
   tags                                        = var.tags
 }
