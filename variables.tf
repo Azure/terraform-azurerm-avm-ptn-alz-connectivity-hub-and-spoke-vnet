@@ -612,7 +612,6 @@ variable "hub_virtual_networks" {
       auto_registration_zone_enabled              = optional(bool, true)
       auto_registration_zone_name                 = optional(string, null)
       auto_registration_zone_resource_group_name  = optional(string, null)
-      private_dns_zone_network_link_name_template = optional(string, null)
       private_link_excluded_zones                 = optional(set(string), [])
       private_link_private_dns_zones = optional(map(object({
         zone_name                              = optional(string, null)
@@ -1075,7 +1074,6 @@ The following top level attributes are supported:
   - `auto_registration_zone_enabled` - (Optional) Should an auto-registration zone be created? Default `true`.
   - `auto_registration_zone_name` - (Optional) The name of the auto-registration zone.
   - `auto_registration_zone_resource_group_name` - (Optional) The resource group name for the auto-registration zone.
-  - `private_dns_zone_network_link_name_template` - (Optional) The template for naming private DNS zone virtual network links.
   - `private_link_excluded_zones` - (Optional) A set of private link zones to exclude from creation. Default `[]`.
   - `private_link_private_dns_zones` - (Optional) A map of private link DNS zones. Each zone is an object with:
     - `zone_name` - (Optional) The DNS zone name.
@@ -1134,6 +1132,11 @@ The following top level attributes are supported:
   - `tags` - (Optional) A map of tags to apply to the DNS resolver.
 
 DESCRIPTION
+}
+
+variable "private_dns_zone_network_link_name_template_override" {
+  type = optional(string, null)
+  description = "The template to use for creating virtual network links for private link private dns zones."
 }
 
 variable "retry" {

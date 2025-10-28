@@ -19,7 +19,7 @@ locals {
         virtual_network_links = {
           for vnet_key, vnet_value in module.hub_and_spoke_vnet.virtual_networks : vnet_key => {
             virtual_network_resource_id = vnet_value.id
-            virtual_network_link_name_template_override = var.hub_virtual_networks[vnet_key].private_dns_zones.private_dns_zone_network_link_name_template
+            virtual_network_link_name_template = var.private_dns_zone_network_link_name_template_override
             resolution_policy = coalesce(private_link_dns_zone_v.resolution_policy, "Default")
           }
 
