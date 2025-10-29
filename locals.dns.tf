@@ -20,7 +20,7 @@ locals {
           for vnet_key, vnet_value in module.hub_and_spoke_vnet.virtual_networks : vnet_key => {
             virtual_network_resource_id = vnet_value.id
             resolution_policy = coalesce(var.hub_virtual_networks[vnet_key].private_dns_zones.private_link_private_dns_zones[private_link_dns_zone_k].resolution_policy, private_link_dns_zone_v.resolution_policy, "Default")
-          } if contains(var.hub_virtual_networks[vnet_key].private_dns_zones.private_link_private_dns_zones, private_link_dns_zone_k)
+          } if contains(keys(var.hub_virtual_networks[vnet_key].private_dns_zones.private_link_private_dns_zones), private_link_dns_zone_k)
 
         }
       }
