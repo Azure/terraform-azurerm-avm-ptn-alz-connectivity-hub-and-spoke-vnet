@@ -38,6 +38,11 @@ output "private_dns_zone_resource_ids" {
   value       = { for key, value in module.private_dns_zones : key => value.private_dns_zone_resource_ids }
 }
 
+output "private_link_private_dns_zone_with_network_links" {
+  description = "Private link private DNS zone links"
+  value       = local.private_dns_zones
+}
+
 output "resource_id" {
   description = "Resource IDs of the virtual networks"
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.id }
