@@ -634,6 +634,7 @@ variable "hub_virtual_networks" {
         enabled      = optional(bool, false)
         regex_filter = optional(string, "{regionName}|{regionCode}")
       }))
+      virtual_network_link_name_template = optional(string, null)
       tags = optional(map(string), null)
     }), {})
 
@@ -1132,13 +1133,6 @@ The following top level attributes are supported:
   - `tags` - (Optional) A map of tags to apply to the DNS resolver.
 
 DESCRIPTION
-}
-
-variable "private_dns_zone_network_link_name_template_override" {
-  type = string
-  nullable = true
-  default     = null
-  description = "The template to use for creating virtual network links for private link private dns zones."
 }
 
 variable "retry" {

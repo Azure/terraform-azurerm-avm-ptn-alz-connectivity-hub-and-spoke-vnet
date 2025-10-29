@@ -12,7 +12,7 @@ locals {
     # private_dns_settings = value.private_dns_zones
     private_link_excluded_zones = value.private_dns_zones.private_link_excluded_zones
     private_link_private_dns_zones_additional = value.private_dns_zones.private_link_private_dns_zones_additional
-    private_link_private_dns_zones = {
+    private_link_private_dns_zones = value.private_dns_zones.private_link_private_dns_zones != null ? {
       for private_link_dns_zone_k, private_link_dns_zone_v in value.private_dns_zones.private_link_private_dns_zones : private_link_dns_zone_k => {
         zone_name          = private_link_dns_zone_v.zone_name
         private_dns_zone_supports_private_link = coalesce(private_link_dns_zone_v.private_dns_zone_supports_private_link, true)
@@ -21,10 +21,10 @@ locals {
             virtual_network_resource_id = vnet_value.id
             resolution_policy = coalesce(var.hub_virtual_networks[vnet_key].private_dns_zones.private_link_private_dns_zones[private_link_dns_zone_k].resolution_policy, private_link_dns_zone_v.resolution_policy, "Default")
           } if contains(keys(var.hub_virtual_networks[vnet_key].private_dns_zones.private_link_private_dns_zones), private_link_dns_zone_k)
-
         }
       }
-    }
+    } : null
+    virtual_network_link_name_template = value.private_dns_zones.virtual_network_link_name_template
     tags                 = coalesce(value.private_dns_zones.tags, var.tags, {})
   } if local.private_dns_zones_enabled[key] }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
