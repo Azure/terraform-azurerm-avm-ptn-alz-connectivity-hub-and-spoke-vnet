@@ -1250,6 +1250,18 @@ Default: `{}`
 
 The following outputs are exported:
 
+### <a name="output_bastion_host_dns_names"></a> [bastion\_host\_dns\_names](#output\_bastion\_host\_dns\_names)
+
+Description: The bastion host resources associated with the virtual WAN, grouped by hub key.
+
+### <a name="output_bastion_host_public_ip_address"></a> [bastion\_host\_public\_ip\_address](#output\_bastion\_host\_public\_ip\_address)
+
+Description: The public IP addresses of the bastion hosts associated with the virtual WAN, grouped by hub key.
+
+### <a name="output_bastion_host_resource_ids"></a> [bastion\_host\_resource\_ids](#output\_bastion\_host\_resource\_ids)
+
+Description: The resource IDs of the bastion hosts associated with the virtual WAN, grouped by hub key.
+
 ### <a name="output_dns_server_ip_addresses"></a> [dns\_server\_ip\_addresses](#output\_dns\_server\_ip\_addresses)
 
 Description: DNS server IP addresses for each hub virtual network.
