@@ -15,7 +15,7 @@ output "bastion_host_resource_ids" {
 
 output "dns_server_ip_addresses" {
   description = "DNS server IP addresses for each hub virtual network."
-  value       = { for key, value in local.hub_virtual_networks : key => try(value.hub_router_ip_address, try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)) }
+  value       = { for key, value in local.hub_virtual_networks : key => coalesce(value.hub_router_ip_address, local.firewall_enabled[key] ? module.hub_and_spoke_vnet.firewalls[key].private_ip_address : null) }
 }
 
 output "firewall_policies" {
