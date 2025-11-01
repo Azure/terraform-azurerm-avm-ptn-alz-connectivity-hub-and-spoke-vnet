@@ -3,9 +3,9 @@ module "hub_virtual_networks" {
   version  = "0.15.0"
   for_each = var.hub_virtual_networks
 
-  address_space = each.value.address_space
   location      = each.value.location
   parent_id     = each.value.parent_id
+  address_space = each.value.address_space
   ddos_protection_plan = each.value.ddos_protection_plan_id == null ? null : {
     id     = each.value.ddos_protection_plan_id
     enable = true
