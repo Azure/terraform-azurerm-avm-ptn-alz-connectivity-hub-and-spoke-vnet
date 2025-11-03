@@ -1,11 +1,11 @@
 module "hub_virtual_networks" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version  = "0.12.0"
+  version  = "0.15.0"
   for_each = var.hub_virtual_networks
 
-  address_space = each.value.address_space
   location      = each.value.location
   parent_id     = each.value.parent_id
+  address_space = each.value.address_space
   ddos_protection_plan = each.value.ddos_protection_plan_id == null ? null : {
     id     = each.value.ddos_protection_plan_id
     enable = true
@@ -23,7 +23,7 @@ module "hub_virtual_networks" {
 
 module "hub_virtual_network_subnets" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version  = "0.12.0"
+  version  = "0.15.0"
   for_each = local.subnets
 
   parent_id                                     = each.value.virtual_network_id
@@ -38,13 +38,13 @@ module "hub_virtual_network_subnets" {
   retry                                         = var.retry
   route_table                                   = each.value.route_table
   service_endpoint_policies                     = each.value.service_endpoint_policies
-  service_endpoints                             = each.value.service_endpoints
+  service_endpoints_with_location               = each.value.service_endpoints_with_location
   timeouts                                      = var.timeouts
 }
 
 module "hub_virtual_network_peering" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version  = "0.12.0"
+  version  = "0.15.0"
   for_each = local.peerings
 
   parent_id                    = each.value.parent_id
