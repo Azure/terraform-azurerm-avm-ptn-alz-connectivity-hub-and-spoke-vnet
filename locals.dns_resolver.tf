@@ -7,7 +7,7 @@ locals {
     name                = coalesce(value.private_dns_resolver.name, local.default_names[key].private_dns_resolver_name)
     location            = value.location
     resource_group_name = coalesce(value.private_dns_resolver.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
-    inbound_endpoints = local.private_dns_zones_enabled[key] && value.private_dns_resolver.default_inbound_endpoint_enabled ? merge({
+    inbound_endpoints = local.private_dns_zones_enabled[key] && value.private_dns_resolver.default_inbound_endpoint_enabled ? merge(tomap({
       dns = {
         name                         = "dns"
         subnet_name                  = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-dns_resolver"].name
@@ -16,7 +16,7 @@ locals {
         tags                         = coalesce(value.private_dns_resolver.tags, var.tags, {})
         merge_with_module_tags       = false
       }
-    }, value.private_dns_resolver.inbound_endpoints) : value.private_dns_resolver.inbound_endpoints
+    }), value.private_dns_resolver.inbound_endpoints) : value.private_dns_resolver.inbound_endpoints
     outbound_endpoints = value.private_dns_resolver.outbound_endpoints
     tags               = coalesce(value.private_dns_resolver.tags, var.tags, {})
     } if local.private_dns_resolver_enabled[key]
