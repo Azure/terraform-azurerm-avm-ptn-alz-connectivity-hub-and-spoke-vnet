@@ -377,7 +377,7 @@ variable "hub_virtual_networks" {
           }), null)
         })))
         express_route_remote_vnet_traffic_enabled = optional(bool, false)
-        express_route_virtual_wan_traffic_enabled = optional(bool, true)
+        express_route_virtual_wan_traffic_enabled = optional(bool, false)
         hosted_on_behalf_of_public_ip_enabled     = optional(bool, true)
         ip_configurations = optional(map(object({
           name                          = optional(string, null)
