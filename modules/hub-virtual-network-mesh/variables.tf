@@ -132,6 +132,7 @@ variable "hub_virtual_networks" {
       firewall_policy = optional(object({
         name                              = optional(string)
         resource_group_name               = optional(string)
+        location                          = optional(string)
         sku                               = optional(string, "Standard")
         auto_learn_private_ranges_enabled = optional(bool)
         base_policy_id                    = optional(string)
@@ -181,7 +182,6 @@ variable "hub_virtual_networks" {
         private_ip_ranges        = optional(list(string))
         sql_redirect_allowed     = optional(bool, false)
         threat_intelligence_mode = optional(string, "Alert")
-
         threat_intelligence_allowlist = optional(object({
           fqdns        = optional(set(string))
           ip_addresses = optional(set(string))

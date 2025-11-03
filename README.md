@@ -282,6 +282,7 @@ The following top level attributes are supported:
 - `firewall_policy` - (Optional) An object with the following fields:
   - `name` - (Optional) The name of the firewall policy. If not specified will use `afw-policy-{vnetname}`.
   - `resource_group_name` - (Optional) The name of the resource group where the firewall policy should be created. If not specified will use the parent resource group of the virtual network.
+  - `location` - (Optional) The Azure location where the firewall policy should be created. If not specified will use the location of the hub network. This is included to handle a very specific edge case of a global base policy.
   - `sku` - (Optional) The SKU to use for the firewall policy. Possible values include `Standard`, `Premium`. Default `Standard`.
   - `auto_learn_private_ranges_enabled` - (Optional) Should the firewall policy automatically learn private ranges? Default `false`.
   - `base_policy_id` - (Optional) The resource id of the base policy to use for the firewall policy.
@@ -750,6 +751,7 @@ map(object({
       sku                               = optional(string, "Standard")
       auto_learn_private_ranges_enabled = optional(bool)
       base_policy_id                    = optional(string)
+      location                          = optional(string)
       dns = optional(object({
         proxy_enabled = optional(bool, false)
         servers       = optional(list(string))

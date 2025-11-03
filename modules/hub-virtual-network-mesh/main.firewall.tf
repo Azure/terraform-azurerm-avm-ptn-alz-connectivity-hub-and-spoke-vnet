@@ -60,7 +60,7 @@ module "fw_policies" {
   version  = "0.3.3"
   for_each = local.fw_policies
 
-  location                                          = var.hub_virtual_networks[each.key].location
+  location                                          = each.value.location
   name                                              = each.value.name
   resource_group_name                               = each.value.resource_group_name
   enable_telemetry                                  = var.enable_telemetry
@@ -76,7 +76,7 @@ module "fw_policies" {
   firewall_policy_sql_redirect_allowed              = each.value.sql_redirect_allowed
   firewall_policy_threat_intelligence_allowlist     = each.value.threat_intelligence_allowlist
   firewall_policy_threat_intelligence_mode          = each.value.threat_intelligence_mode
-  firewall_policy_timeouts                          = each.value.timeouts
+  firewall_policy_timeouts                          = var.timeouts
   firewall_policy_tls_certificate                   = each.value.tls_certificate
   tags                                              = each.value.tags == null ? var.tags : each.value.tags
 }

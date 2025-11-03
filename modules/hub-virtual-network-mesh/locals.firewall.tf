@@ -7,7 +7,7 @@ locals {
 locals {
   firewall_ip_configurations = { for vnet_key, vnet_value in local.firewall_merged_ip_configurations : vnet_key =>
     { for ip_config_key, ip_config_value in vnet_value : ip_config_key => {
-      name                 = try(ip_config_value.name == null ? ip_config_key : ip_config_value.name, ip_config_key)
+      name                 = coalesce(ip_config_value.name, ip_config_key)
       public_ip_address_id = module.fw_default_ips[ip_config_value.public_ip_key].public_ip_id
       subnet_id            = ip_config_value.is_default ? module.hub_virtual_network_subnets[ip_config_value.subnet_key].resource_id : null
     } }
@@ -47,12 +47,11 @@ locals {
       resource_group_name   = coalesce(vnet.firewall.resource_group_name, local.resource_group_names[vnet_name])
       private_ip_ranges     = vnet.firewall.private_ip_ranges
       tags                  = vnet.firewall.tags
-      management_ip_enabled = try(vnet.firewall.management_ip_enabled, true)
+      management_ip_enabled = vnet.firewall.management_ip_enabled
       management_ip_configuration = {
-        name = try(coalesce(vnet.firewall.management_ip_configuration.name, "defaultMgmt"), "defaultMgmt")
+        name = coalesce(vnet.firewall.management_ip_configuration.name, "defaultMgmt")
       }
-      zones                                      = vnet.firewall.zones
-      legacy_list_based_ip_configuration_enabled = try(vnet.firewall.legacy_list_based_ip_configuration_enabled, false)
+      zones = vnet.firewall.zones
     } if vnet.firewall != null
   }
   fw_default_ip_configuration_pip = { for public_ip in flatten([
@@ -60,46 +59,45 @@ locals {
       for ip_config_key, ip_config_value in vnet_value : {
         composite_key       = ip_config_value.public_ip_key
         location            = var.hub_virtual_networks[vnet_key].location
-        name                = coalesce(try(ip_config_value.public_ip_config.name, null), "pip-fw-${ip_config_value.public_ip_key}")
+        name                = coalesce(ip_config_value.public_ip_config.name, "pip-fw-${ip_config_value.public_ip_key}")
         resource_group_name = ip_config_value.public_ip_resource_group_name
-        ip_version          = try(ip_config_value.public_ip_config.ip_version, "IPv4")
-        sku_tier            = try(ip_config_value.public_ip_config.sku_tier, "Regional")
+        ip_version          = ip_config_value.public_ip_config.ip_version
+        sku_tier            = ip_config_value.public_ip_config.sku_tier
         tags                = var.hub_virtual_networks[vnet_key].firewall.tags
-        zones               = try(ip_config_value.public_ip_config.zones, null)
+        zones               = ip_config_value.public_ip_config.zones
       }
     ]
   ]) : public_ip.composite_key => public_ip }
   fw_management_ip_configuration_pip = {
     for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {
       location            = vnet.location
-      name                = coalesce(try(vnet.firewall.management_ip_configuration.public_ip_config.name, null), "pip-fw-mgmt-${vnet_name}")
+      name                = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.name, "pip-fw-mgmt-${vnet_name}")
       resource_group_name = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.resource_group_name, local.resource_group_names[vnet_name])
-      ip_version          = try(vnet.firewall.management_ip_configuration.public_ip_config.ip_version, "IPv4")
-      sku_tier            = try(vnet.firewall.management_ip_configuration.public_ip_config.sku_tier, "Regional")
+      ip_version          = vnet.firewall.management_ip_configuration.public_ip_config.ip_version
+      sku_tier            = vnet.firewall.management_ip_configuration.public_ip_config.sku_tier
       tags                = vnet.firewall.tags
-      zones               = try(vnet.firewall.management_ip_configuration.public_ip_config.zones, null)
-    } if vnet.firewall != null && try(vnet.firewall.management_ip_enabled, true)
+      zones               = vnet.firewall.management_ip_configuration.public_ip_config.zones
+    } if vnet.firewall != null && vnet.firewall.management_ip_enabled
   }
   fw_policies = {
     for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {
-      name                              = try(vnet.firewall.firewall_policy.name, "fwp-${vnet_name}")
-      location                          = vnet.location
+      name                              = coalesce(vnet.firewall.firewall_policy.name, "fwp-${vnet_name}")
+      location                          = coalesce(vnet.firewall.firewall_policy.location, vnet.location)
       resource_group_name               = coalesce(vnet.firewall.firewall_policy.resource_group_name, local.resource_group_names[vnet_name])
-      sku                               = try(vnet.firewall.firewall_policy.sku, "Standard")
-      auto_learn_private_ranges_enabled = try(vnet.firewall.firewall_policy.auto_learn_private_ranges_enabled, null)
-      base_policy_id                    = try(vnet.firewall.firewall_policy.base_policy_id, null)
-      dns                               = try(vnet.firewall.firewall_policy.dns, null)
-      threat_intelligence_allowlist     = try(vnet.firewall.firewall_policy.threat_intelligence_allowlist, null)
-      explicit_proxy                    = try(vnet.firewall.firewall_policy.explicit_proxy, null)
-      identity                          = try(vnet.firewall.firewall_policy.identity, null)
-      insights                          = try(vnet.firewall.firewall_policy.insights, null)
-      intrusion_detection               = try(vnet.firewall.firewall_policy.intrusion_detection, null)
-      private_ip_ranges                 = try(vnet.firewall.firewall_policy.private_ip_ranges, null)
-      sql_redirect_allowed              = try(vnet.firewall.firewall_policy.sql_redirect_allowed, null)
-      threat_intelligence_mode          = try(vnet.firewall.firewall_policy.threat_intelligence_mode, null)
-      timeouts                          = try(vnet.firewall.firewall_policy.timeouts, null)
-      tls_certificate                   = try(vnet.firewall.firewall_policy.tls_certificate, null)
+      sku                               = vnet.firewall.firewall_policy.sku
+      auto_learn_private_ranges_enabled = vnet.firewall.firewall_policy.auto_learn_private_ranges_enabled
+      base_policy_id                    = vnet.firewall.firewall_policy.base_policy_id
+      dns                               = vnet.firewall.firewall_policy.dns
+      threat_intelligence_allowlist     = vnet.firewall.firewall_policy.threat_intelligence_allowlist
+      explicit_proxy                    = vnet.firewall.firewall_policy.explicit_proxy
+      identity                          = vnet.firewall.firewall_policy.identity
+      insights                          = vnet.firewall.firewall_policy.insights
+      intrusion_detection               = vnet.firewall.firewall_policy.intrusion_detection
+      private_ip_ranges                 = vnet.firewall.firewall_policy.private_ip_ranges
+      sql_redirect_allowed              = vnet.firewall.firewall_policy.sql_redirect_allowed
+      threat_intelligence_mode          = vnet.firewall.firewall_policy.threat_intelligence_mode
+      tls_certificate                   = vnet.firewall.firewall_policy.tls_certificate
       tags                              = vnet.firewall.tags
-    } if vnet.firewall != null && try(vnet.firewall.firewall_policy, null) != null && try(vnet.firewall.firewall_policy_id, null) == null
+    } if vnet.firewall != null && vnet.firewall.firewall_policy != null && vnet.firewall.firewall_policy_id == null
   }
 }

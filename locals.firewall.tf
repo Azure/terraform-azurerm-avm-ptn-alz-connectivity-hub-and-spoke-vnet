@@ -30,8 +30,9 @@ locals {
     })
   }
   firewall_policies = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] ? merge(value.firewall_policy, {
-    name = coalesce(value.firewall_policy.name, local.default_names[key].firewall_policy_name)
-    dns  = value.firewall_policy.dns != null ? value.firewall_policy.dns : local.firewall_policy_dns_defaults[key]
+    name     = coalesce(value.firewall_policy.name, local.default_names[key].firewall_policy_name)
+    location = coalesce(value.firewall_policy.location, value.location)
+    dns      = value.firewall_policy.dns != null ? value.firewall_policy.dns : local.firewall_policy_dns_defaults[key]
   }) : null }
   firewall_policy_dns_defaults = { for key, value in var.hub_virtual_networks : key => local.private_dns_resolver_enabled[key] && local.private_dns_zones_enabled[key] && local.firewall_enabled[key] && !local.firewall_sku_is_basic[key] && value.private_dns_resolver.default_inbound_endpoint_enabled ? {
     proxy_enabled = true
