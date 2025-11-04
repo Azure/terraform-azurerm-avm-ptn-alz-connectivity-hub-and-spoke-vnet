@@ -64,7 +64,7 @@ locals {
 module "test" {
   source = "../../"
 
-  enable_telemetry                = false
+  enable_telemetry                = var.enable_telemetry
   hub_and_spoke_networks_settings = local.hub_and_spoke_networks_settings
   hub_virtual_networks            = local.hub_virtual_networks
   tags                            = module.config.tags
