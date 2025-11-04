@@ -29,9 +29,9 @@ locals {
     tags = coalesce(value.private_dns_zones.tags, var.tags, {})
   } if local.private_dns_zones_enabled[key] }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
-    location            = value.location
-    domain_name         = coalesce(value.private_dns_zones.auto_registration_zone_name, "${value.location}.azure.local")
-    resource_group_name = coalesce(value.private_dns_zones.auto_registration_zone_resource_group_name, local.private_dns_zones[key].resource_group_name)
+    location    = value.location
+    domain_name = coalesce(value.private_dns_zones.auto_registration_zone_name, "${value.location}.azure.local")
+    parent_id   = coalesce(value.private_dns_zones.auto_registration_zone_parent_id, local.private_dns_zones[key].parent_id)
     virtual_network_links = {
       auto_registration = {
         vnetlinkname     = "vnet-link-${key}-auto-registration"

@@ -611,7 +611,7 @@ variable "hub_virtual_networks" {
       parent_id                                   = optional(string)
       auto_registration_zone_enabled              = optional(bool, true)
       auto_registration_zone_name                 = optional(string, null)
-      auto_registration_zone_resource_group_name  = optional(string, null)
+      auto_registration_zone_parent_id            = optional(string, null)
       private_dns_zone_network_link_name_template = optional(string, null)
       private_link_excluded_zones                 = optional(set(string), [])
       private_link_private_dns_zones = optional(map(object({
