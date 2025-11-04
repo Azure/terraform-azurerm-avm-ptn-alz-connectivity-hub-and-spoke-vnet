@@ -77,7 +77,7 @@ locals {
       sku_tier            = vnet.firewall.management_ip_configuration.public_ip_config.sku_tier
       tags                = vnet.firewall.tags
       zones               = vnet.firewall.management_ip_configuration.public_ip_config.zones
-    } if vnet.firewall != null && vnet.firewall.management_ip_enabled
+    } if vnet.firewall != null && try(vnet.firewall.management_ip_enabled, false)
   }
   fw_policies = {
     for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {
@@ -98,6 +98,6 @@ locals {
       threat_intelligence_mode          = vnet.firewall.firewall_policy.threat_intelligence_mode
       tls_certificate                   = vnet.firewall.firewall_policy.tls_certificate
       tags                              = vnet.firewall.tags
-    } if vnet.firewall != null && vnet.firewall.firewall_policy != null && vnet.firewall.firewall_policy_id == null
+    } if vnet.firewall != null && try(vnet.firewall.firewall_policy != null, false) && try(vnet.firewall.firewall_policy_id == null, false)
   }
 }
