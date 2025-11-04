@@ -86,7 +86,6 @@ locals {
       }
     ]
     # Dynamic VPN-specific properties
-    vpnType                         = var.type
     activeActive                    = var.type == "Vpn" && var.vpn_active_active_enabled == true ? true : false
     enableBgp                       = var.type == "Vpn" && var.vpn_bgp_enabled == true ? true : false
     vpnGatewayGeneration            = var.type == "Vpn" && var.vpn_generation != null ? var.vpn_generation : null
@@ -201,6 +200,8 @@ locals {
         }
       }
     ] : null
+    # VPN Type
+    vpnType = var.vpn_type
     # Express Route specific properties
     allowRemoteVnetTraffic = var.type == "ExpressRoute" ? var.express_route_remote_vnet_traffic_enabled : null
     allowVirtualWanTraffic = var.type == "ExpressRoute" ? var.express_route_virtual_wan_traffic_enabled : null
