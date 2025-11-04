@@ -86,7 +86,7 @@ locals {
       }
     ]
     # Dynamic VPN-specific properties
-    vpnType                         = var.type == "Vpn" ? var.vpn_type : var.type == "ExpressRoute" ? "PolicyBased" : "RouteBased"
+    vpnType                         = var.type
     activeActive                    = var.type == "Vpn" && var.vpn_active_active_enabled == true ? true : false
     enableBgp                       = var.type == "Vpn" && var.vpn_bgp_enabled == true ? true : false
     vpnGatewayGeneration            = var.type == "Vpn" && var.vpn_generation != null ? var.vpn_generation : null

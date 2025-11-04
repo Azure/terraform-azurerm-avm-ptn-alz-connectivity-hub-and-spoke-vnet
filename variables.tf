@@ -455,7 +455,8 @@ variable "hub_virtual_networks" {
             ), null)
           }), null)
         })))
-        tags = optional(map(string))
+        tags     = optional(map(string))
+        vpn_type = optional(string, "RouteBased")
       }), {})
 
       vpn = optional(object({
@@ -1005,6 +1006,7 @@ The following top level attributes are supported:
         - `local_address_prefixes` - A list of local address prefixes (required).
         - `remote_address_prefixes` - A list of remote address prefixes (required).
   - `tags` - (Optional) A map of tags to apply to the ExpressRoute gateway.
+  - `vpn_type` - (Optional) The VPN type. Possible values are `RouteBased`, `PolicyBased`.
 
 ### VPN Gateway
 
