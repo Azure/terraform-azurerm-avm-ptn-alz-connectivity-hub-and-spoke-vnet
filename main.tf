@@ -78,19 +78,17 @@ module "dns_resolver" {
 }
 
 module "private_dns_zones" {
-  # source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
-  # version  = "0.19.0"
-  source = "git::https://github.com/Azure/terraform-azurerm-avm-ptn-network-private-link-private-dns-zones.git?depth=1&ref=feat/add-resolution-policy-per-vnet-link"
+  source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
+  version  = "0.19.0"
   for_each = local.private_dns_zones
 
   location                                    = each.value.location
-  resource_group_name                         = each.value.resource_group_name
+  parent_id                                   = each.value.parent_id
   enable_telemetry                            = var.enable_telemetry
   private_link_excluded_zones                 = each.value.private_link_excluded_zones
   private_link_private_dns_zones              = each.value.private_link_private_dns_zones
   private_link_private_dns_zones_additional   = each.value.private_link_private_dns_zones_additional
   private_link_private_dns_zones_regex_filter = each.value.private_link_private_dns_zones_regex_filter
-  resource_group_creation_enabled             = false
   tags                                        = var.tags
 }
 

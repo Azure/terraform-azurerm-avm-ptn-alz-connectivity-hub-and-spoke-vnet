@@ -608,7 +608,7 @@ variable "hub_virtual_networks" {
     }), {})
 
     private_dns_zones = optional(object({
-      resource_group_name                         = optional(string, null)
+      parent_id                                   = optional(string)
       auto_registration_zone_enabled              = optional(bool, true)
       auto_registration_zone_name                 = optional(string, null)
       auto_registration_zone_resource_group_name  = optional(string, null)

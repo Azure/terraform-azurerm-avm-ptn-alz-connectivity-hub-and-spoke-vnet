@@ -553,6 +553,7 @@ The following top level attributes are supported:
   - `private_link_private_dns_zones` - (Optional) A map of private link DNS zones. Each zone is an object with:
     - `zone_name` - (Optional) The DNS zone name.
     - `private_dns_zone_supports_private_link` - (Optional) Does this zone support private link? Default `true`.
+    - `resolution_policy` - (Optional) The resolution policy. Possible values are `Default` and `NxDomainRedirect`. Default value is `Default`.
     - `custom_iterator` - (Optional) An object with the following fields:
       - `replacement_placeholder` - The placeholder string to replace (required).
       - `replacement_values` - A map of replacement values (required).
@@ -1114,7 +1115,7 @@ map(object({
     }), {})
 
     private_dns_zones = optional(object({
-      resource_group_name                         = optional(string, null)
+      parent_id                                   = optional(string)
       auto_registration_zone_enabled              = optional(bool, true)
       auto_registration_zone_name                 = optional(string, null)
       auto_registration_zone_resource_group_name  = optional(string, null)
@@ -1123,6 +1124,7 @@ map(object({
       private_link_private_dns_zones = optional(map(object({
         zone_name                              = optional(string, null)
         private_dns_zone_supports_private_link = optional(bool, true)
+        resolution_policy                      = optional(string, "Default")
         custom_iterator = optional(object({
           replacement_placeholder = string
           replacement_values      = map(string)
@@ -1282,6 +1284,10 @@ Description: Names of the virtual networks
 
 Description: Resource IDs of the private DNS zones
 
+### <a name="output_private_link_private_dns_zone_with_network_links"></a> [private\_link\_private\_dns\_zone\_with\_network\_links](#output\_private\_link\_private\_dns\_zone\_with\_network\_links)
+
+Description: Private link private DNS zone links
+
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: Resource IDs of the virtual networks
@@ -1356,7 +1362,7 @@ Version: 0.3.3
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.15.0
+Version: 0.19.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
