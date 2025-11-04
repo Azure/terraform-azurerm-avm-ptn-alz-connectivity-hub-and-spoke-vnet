@@ -41,7 +41,7 @@ variable "enable_telemetry" {
   description = "Flag to enable/disable telemetry"
 }
 
-variable "hub_and_spoke_vnet_settings" {
+variable "hub_and_spoke_networks_settings" {
   type        = any
   default     = {}
   description = <<DESCRIPTION
@@ -54,7 +54,7 @@ The following attributes are supported:
 DESCRIPTION
 }
 
-variable "hub_and_spoke_vnet_virtual_networks" {
+variable "hub_virtual_networks" {
   type        = any
   default     = {}
   description = <<DESCRIPTION

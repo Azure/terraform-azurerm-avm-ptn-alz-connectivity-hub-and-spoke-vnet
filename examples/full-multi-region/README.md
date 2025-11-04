@@ -25,20 +25,19 @@ data "azurerm_client_config" "current" {}
 module "config" {
   source = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating?ref=main"
 
-  connectivity_resource_groups        = var.connectivity_resource_groups
-  custom_replacements                 = var.custom_replacements
-  enable_telemetry                    = var.enable_telemetry
-  hub_and_spoke_vnet_settings         = var.hub_and_spoke_vnet_settings
-  hub_and_spoke_vnet_virtual_networks = var.hub_and_spoke_vnet_virtual_networks
-  management_group_settings           = var.management_group_settings
-  management_resource_settings        = var.management_resource_settings
-  root_parent_management_group_id     = ""
-  starter_locations                   = var.starter_locations
-  subscription_id_connectivity        = data.azurerm_client_config.current.subscription_id
-  subscription_id_identity            = data.azurerm_client_config.current.subscription_id
-  subscription_id_management          = data.azurerm_client_config.current.subscription_id
-  subscription_id_security            = data.azurerm_client_config.current.subscription_id
-  tags                                = var.tags
+  connectivity_resource_groups    = var.connectivity_resource_groups
+  custom_replacements             = var.custom_replacements
+  hub_and_spoke_networks_settings = var.hub_and_spoke_networks_settings
+  hub_virtual_networks            = var.hub_virtual_networks
+  management_group_settings       = var.management_group_settings
+  management_resource_settings    = var.management_resource_settings
+  root_parent_management_group_id = ""
+  starter_locations               = var.starter_locations
+  subscription_id_connectivity    = data.azurerm_client_config.current.subscription_id
+  subscription_id_identity        = data.azurerm_client_config.current.subscription_id
+  subscription_id_management      = data.azurerm_client_config.current.subscription_id
+  subscription_id_security        = data.azurerm_client_config.current.subscription_id
+  tags                            = var.tags
 }
 
 module "resource_groups" {
@@ -54,8 +53,8 @@ module "resource_groups" {
 
 # Build an implicit dependency on the resource groups
 locals {
-  hub_and_spoke_vnet_settings         = merge(module.config.hub_and_spoke_vnet_settings, local.resource_groups)
-  hub_and_spoke_vnet_virtual_networks = (merge({ vnets = module.config.hub_and_spoke_vnet_virtual_networks }, local.resource_groups)).vnets
+  hub_and_spoke_networks_settings = merge(module.config.hub_and_spoke_networks_settings, local.resource_groups)
+  hub_virtual_networks            = (merge({ vnets = module.config.hub_virtual_networks }, local.resource_groups)).vnets
   resource_groups = {
     resource_groups = module.resource_groups
   }
@@ -66,8 +65,8 @@ module "test" {
   source = "../../"
 
   enable_telemetry                = false
-  hub_and_spoke_networks_settings = local.hub_and_spoke_vnet_settings
-  hub_virtual_networks            = local.hub_and_spoke_vnet_virtual_networks
+  hub_and_spoke_networks_settings = local.hub_and_spoke_networks_settings
+  hub_virtual_networks            = local.hub_virtual_networks
   tags                            = module.config.tags
 }
 ```
@@ -156,7 +155,7 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_hub_and_spoke_vnet_settings"></a> [hub\_and\_spoke\_vnet\_settings](#input\_hub\_and\_spoke\_vnet\_settings)
+### <a name="input_hub_and_spoke_networks_settings"></a> [hub\_and\_spoke\_networks\_settings](#input\_hub\_and\_spoke\_networks\_settings)
 
 Description: The shared settings for the hub and spoke networks. This is where global resources are defined.
 
@@ -168,7 +167,7 @@ Type: `any`
 
 Default: `{}`
 
-### <a name="input_hub_and_spoke_vnet_virtual_networks"></a> [hub\_and\_spoke\_vnet\_virtual\_networks](#input\_hub\_and\_spoke\_vnet\_virtual\_networks)
+### <a name="input_hub_virtual_networks"></a> [hub\_virtual\_networks](#input\_hub\_virtual\_networks)
 
 Description: A map of hub networks to create.
 

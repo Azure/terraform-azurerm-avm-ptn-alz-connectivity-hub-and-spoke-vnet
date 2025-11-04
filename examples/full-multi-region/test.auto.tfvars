@@ -311,7 +311,7 @@ connectivity_resource_groups = {
   }
 }
 
-hub_and_spoke_vnet_settings = {
+hub_and_spoke_networks_settings = {
   enabled_resources = {
     ddos_protection_plan = "$${ddos_protection_plan_enabled}"
   }
@@ -323,7 +323,7 @@ hub_and_spoke_vnet_settings = {
   }
 }
 
-hub_and_spoke_vnet_virtual_networks = {
+hub_virtual_networks = {
   primary = {
     enabled_resources = {
       firewall                           = "$${primary_firewall_enabled}"
