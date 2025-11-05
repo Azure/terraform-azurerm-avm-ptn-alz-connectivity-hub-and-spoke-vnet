@@ -614,23 +614,289 @@ variable "hub_virtual_networks" {
     }), {})
 
     private_dns_zones = optional(object({
-      resource_group_name                         = optional(string, null)
+      parent_id                                   = optional(string)
       auto_registration_zone_enabled              = optional(bool, true)
       auto_registration_zone_name                 = optional(string, null)
-      auto_registration_zone_resource_group_name  = optional(string, null)
+      auto_registration_zone_parent_id            = optional(string, null)
       private_dns_zone_network_link_name_template = optional(string, null)
       private_link_excluded_zones                 = optional(set(string), [])
       private_link_private_dns_zones = optional(map(object({
         zone_name                              = optional(string, null)
         private_dns_zone_supports_private_link = optional(bool, true)
+        resolution_policy                      = optional(string, "Default")
         custom_iterator = optional(object({
           replacement_placeholder = string
           replacement_values      = map(string)
         }))
-      })))
+        })),
+        {
+          azure_container_apps = {
+            zone_name = "privatelink.{regionName}.azurecontainerapps.io"
+          }
+          azure_ml = {
+            zone_name = "privatelink.api.azureml.ms"
+          }
+          azure_ml_notebooks = {
+            zone_name = "privatelink.notebooks.azure.net"
+          }
+          azure_ai_cog_svcs = {
+            zone_name = "privatelink.cognitiveservices.azure.com"
+          }
+          azure_ai_oai = {
+            zone_name = "privatelink.openai.azure.com"
+          }
+          azure_ai_services = {
+            zone_name = "privatelink.services.ai.azure.com"
+          }
+          azure_bot_svc_bot = {
+            zone_name = "privatelink.directline.botframework.com"
+          }
+          azure_bot_svc_token = {
+            zone_name = "privatelink.token.botframework.com"
+          }
+          azure_service_hub = {
+            zone_name = "privatelink.servicebus.windows.net"
+          }
+          azure_data_factory = {
+            zone_name = "privatelink.datafactory.azure.net"
+          }
+          azure_data_factory_portal = {
+            zone_name = "privatelink.adf.azure.com"
+          }
+          azure_hdinsight = {
+            zone_name = "privatelink.azurehdinsight.net"
+          }
+          azure_data_explorer = {
+            zone_name = "privatelink.{regionName}.kusto.windows.net"
+          }
+          azure_storage_blob = {
+            zone_name = "privatelink.blob.core.windows.net"
+          }
+          azure_storage_queue = {
+            zone_name = "privatelink.queue.core.windows.net"
+          }
+          azure_storage_table = {
+            zone_name = "privatelink.table.core.windows.net"
+          }
+          azure_storage_file = {
+            zone_name = "privatelink.file.core.windows.net"
+          }
+          azure_storage_web = {
+            zone_name = "privatelink.web.core.windows.net"
+          }
+          azure_data_lake_gen2 = {
+            zone_name = "privatelink.dfs.core.windows.net"
+          }
+          azure_file_sync = {
+            zone_name = "privatelink.afs.azure.net"
+          }
+          azure_power_bi_tenant_analysis = {
+            zone_name = "privatelink.analysis.windows.net"
+          }
+          azure_power_bi_dedicated = {
+            zone_name = "privatelink.pbidedicated.windows.net"
+          }
+          azure_power_bi_power_query = {
+            zone_name = "privatelink.tip1.powerquery.microsoft.com"
+          }
+          azure_databricks_ui_api = {
+            zone_name = "privatelink.azuredatabricks.net"
+          }
+          azure_fabric = {
+            zone_name = "privatelink.fabric.microsoft.com"
+          }
+          azure_batch = {
+            zone_name = "privatelink.batch.azure.com"
+          }
+          azure_avd_global = {
+            zone_name = "privatelink-global.wvd.microsoft.com"
+          }
+          azure_avd_feed_mgmt = {
+            zone_name = "privatelink.wvd.microsoft.com"
+          }
+          azure_aks_mgmt = {
+            zone_name = "privatelink.{regionName}.azmk8s.io"
+          }
+          azure_acr_registry = {
+            zone_name = "privatelink.azurecr.io"
+          }
+          azure_sql_server = {
+            zone_name = "privatelink.database.windows.net"
+          }
+          azure_cosmos_db_sql = {
+            zone_name = "privatelink.documents.azure.com"
+          }
+          azure_cosmos_db_mongo = {
+            zone_name = "privatelink.mongo.cosmos.azure.com"
+          }
+          azure_cosmos_db_mongo_vcore = {
+            zone_name = "privatelink.mongocluster.cosmos.azure.com"
+          }
+          azure_cosmos_db_cassandra = {
+            zone_name = "privatelink.cassandra.cosmos.azure.com"
+          }
+          azure_cosmos_db_gremlin = {
+            zone_name = "privatelink.gremlin.cosmos.azure.com"
+          }
+          azure_cosmos_db_table = {
+            zone_name = "privatelink.table.cosmos.azure.com"
+          }
+          azure_cosmos_db_analytical = {
+            zone_name = "privatelink.analytics.cosmos.azure.com"
+          }
+          azure_cosmos_db_postgres = {
+            zone_name = "privatelink.postgres.cosmos.azure.com"
+          }
+          azure_maria_db_server = {
+            zone_name = "privatelink.mariadb.database.azure.com"
+          }
+          azure_postgres_sql_server = {
+            zone_name = "privatelink.postgres.database.azure.com"
+          }
+          azure_mysql_db_server = {
+            zone_name = "privatelink.mysql.database.azure.com"
+          }
+          azure_redis_cache = {
+            zone_name = "privatelink.redis.cache.windows.net"
+          }
+          azure_redis_enterprise = {
+            zone_name = "privatelink.redisenterprise.cache.azure.net"
+          }
+          azure_arc_hybrid_compute = {
+            zone_name = "privatelink.his.arc.azure.com"
+          }
+          azure_arc_guest_configuration = {
+            zone_name = "privatelink.guestconfiguration.azure.com"
+          }
+          azure_arc_kubernetes = {
+            zone_name = "privatelink.dp.kubernetesconfiguration.azure.com"
+          }
+          azure_event_grid = {
+            zone_name = "privatelink.eventgrid.azure.net"
+          }
+          azure_api_management = {
+            zone_name = "privatelink.azure-api.net"
+          }
+          azure_healthcare = {
+            zone_name = "privatelink.azurehealthcareapis.com"
+          }
+          azure_healthcare_workspaces = {
+            zone_name = "privatelink.workspace.azurehealthcareapis.com"
+          }
+          azure_healthcare_fhir = {
+            zone_name = "privatelink.fhir.azurehealthcareapis.com"
+          }
+          azure_healthcare_dicom = {
+            zone_name = "privatelink.dicom.azurehealthcareapis.com"
+          }
+          azure_iot_hub = {
+            zone_name = "privatelink.azure-devices.net"
+          }
+          azure_iot_hub_provisioning = {
+            zone_name = "privatelink.azure-devices-provisioning.net"
+          }
+          azure_iot_hub_update = {
+            zone_name = "privatelink.api.adu.microsoft.com"
+          }
+          azure_iot_central = {
+            zone_name = "privatelink.azureiotcentral.com"
+          }
+          azure_digital_twins = {
+            zone_name = "privatelink.digitaltwins.azure.net"
+          }
+          azure_media_services_delivery = {
+            zone_name = "privatelink.media.azure.net"
+          }
+          azure_automation = {
+            zone_name = "privatelink.azure-automation.net"
+          }
+          azure_backup = {
+            zone_name = "privatelink.{regionCode}.backup.windowsazure.com"
+          }
+          azure_site_recovery = {
+            zone_name = "privatelink.siterecovery.windowsazure.com"
+          }
+          azure_monitor = {
+            zone_name = "privatelink.monitor.azure.com"
+          }
+          azure_log_analytics = {
+            zone_name = "privatelink.oms.opinsights.azure.com"
+          }
+          azure_log_analytics_data = {
+            zone_name = "privatelink.ods.opinsights.azure.com"
+          }
+          azure_monitor_agent = {
+            zone_name = "privatelink.agentsvc.azure-automation.net"
+          }
+          azure_managed_prometheus = {
+            zone_name = "privatelink.{regionName}.prometheus.monitor.azure.com"
+          }
+          azure_purview_account = {
+            zone_name = "privatelink.purview.azure.com"
+          }
+          azure_purview_studio = {
+            zone_name = "privatelink.purviewstudio.azure.com"
+          }
+          azure_migration_service = {
+            zone_name = "privatelink.prod.migration.windowsazure.com"
+          }
+          azure_grafana = {
+            zone_name = "privatelink.grafana.azure.com"
+          }
+          azure_key_vault = {
+            zone_name = "privatelink.vaultcore.azure.net"
+          }
+          azure_managed_hsm = {
+            zone_name = "privatelink.managedhsm.azure.net"
+          }
+          azure_app_configuration = {
+            zone_name = "privatelink.azconfig.io"
+          }
+          azure_attestation = {
+            zone_name = "privatelink.attest.azure.net"
+          }
+          azure_search = {
+            zone_name = "privatelink.search.windows.net"
+          }
+          azure_app_service = {
+            zone_name = "privatelink.azurewebsites.net"
+          }
+          azure_signalr_service = {
+            zone_name = "privatelink.service.signalr.net"
+          }
+          azure_static_web_apps = {
+            zone_name = "privatelink.azurestaticapps.net"
+          }
+          azure_static_web_apps_partitioned = {
+            zone_name = "privatelink.{partitionId}.azurestaticapps.net"
+            custom_iterator = {
+              replacement_placeholder = "partitionId"
+              replacement_values = {
+                1 = "1"
+                2 = "2"
+                3 = "3"
+                4 = "4"
+                5 = "5"
+              }
+            }
+          }
+          azure_synapse = {
+            zone_name = "privatelink.azuresynapse.net"
+          }
+          azure_synapse_sql = {
+            zone_name = "privatelink.sql.azuresynapse.net"
+          }
+          azure_synapse_dev = {
+            zone_name = "privatelink.dev.azuresynapse.net"
+          }
+          azure_web_pubsub = {
+            zone_name = "privatelink.webpubsub.azure.com"
+          }
+      })
       private_link_private_dns_zones_additional = optional(map(object({
         zone_name                              = optional(string, null)
         private_dns_zone_supports_private_link = optional(bool, true)
+        resolution_policy                      = optional(string, "Default")
         custom_iterator = optional(object({
           replacement_placeholder = string
           replacement_values      = map(string)
@@ -1079,15 +1345,16 @@ The following top level attributes are supported:
 ## Private DNS Zones
 
 - `private_dns_zones` - (Optional) An object with the following fields:
-  - `resource_group_name` - (Optional) The resource group name for the private DNS zones. If not specified, uses the hub virtual network's parent resource group.
+  - `parent_id` - (Optional) The resource group resource id for the private DNS zones. If not specified, uses the hub virtual network's parent resource id.
   - `auto_registration_zone_enabled` - (Optional) Should an auto-registration zone be created? Default `true`.
   - `auto_registration_zone_name` - (Optional) The name of the auto-registration zone.
-  - `auto_registration_zone_resource_group_name` - (Optional) The resource group name for the auto-registration zone.
+  - `auto_registration_zone_parent_id` - (Optional) The resource group resource id for the auto-registration zone.
   - `private_dns_zone_network_link_name_template` - (Optional) The template for naming private DNS zone virtual network links.
   - `private_link_excluded_zones` - (Optional) A set of private link zones to exclude from creation. Default `[]`.
   - `private_link_private_dns_zones` - (Optional) A map of private link DNS zones. Each zone is an object with:
     - `zone_name` - (Optional) The DNS zone name.
     - `private_dns_zone_supports_private_link` - (Optional) Does this zone support private link? Default `true`.
+    - `resolution_policy` - (Optional) The resolution policy. Possible values are `Default` and `NxDomainRedirect`. Default value is `Default`.
     - `custom_iterator` - (Optional) An object with the following fields:
       - `replacement_placeholder` - The placeholder string to replace (required).
       - `replacement_values` - A map of replacement values (required).
