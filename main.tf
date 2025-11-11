@@ -81,7 +81,7 @@ module "dns_resolver" {
 module "private_dns_zones" {
   # source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
   # version  = "0.19.0"
-  source   = "git::https://github.com/Azure/terraform-azurerm-avm-ptn-network-private-link-private-dns-zones.git?depth=1&ref=fix/add-virtual-network-links-var"
+  source   = "git::https://github.com/Azure/terraform-azurerm-avm-ptn-network-private-link-private-dns-zones.git?depth=1&ref=fix/add-virtual-network-links-old"
   for_each = local.private_dns_zones
 
   location                                    = each.value.location
