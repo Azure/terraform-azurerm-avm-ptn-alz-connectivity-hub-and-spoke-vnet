@@ -12,7 +12,7 @@ locals {
     private_dns_settings = value.private_dns_zones
     virtual_network_link_overrides = try(length(value.private_dns_zones.virtual_network_link_overrides), 0) > 0 ? {
       for zone_k, zone_v in value.private_dns_zones.virtual_network_link_overrides :  zone_k => {
-        key = zone_v
+        (key) = zone_v
       }
     } : {}
     tags = coalesce(value.private_dns_zones.tags, var.tags, {})
