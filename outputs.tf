@@ -53,6 +53,11 @@ output "private_dns_zone_resource_ids" {
   value       = { for key, value in module.private_dns_zones : key => value.private_dns_zone_resource_ids }
 }
 
+output "private_link_private_dns_zones_virtual_network_overrides" {
+  description = "Overrides applied to the virtual network links for DNS zones."
+  value       = local.private_link_private_dns_zones_network_link_overrides_by_zone
+}
+
 output "resource_id" {
   description = "Resource IDs of the virtual networks"
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.id }
@@ -73,6 +78,13 @@ output "route_tables_user_subnets" {
   value       = module.hub_and_spoke_vnet.hub_route_tables_user_subnets
 }
 
+output "virtual_network_overrides" {
+  description = "Overrides applied to the virtual networks."
+  value = {
+    for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
+  }
+}
+
 output "virtual_network_resource_ids" {
   description = "Resource IDs of the virtual networks."
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.id }
@@ -81,28 +93,4 @@ output "virtual_network_resource_ids" {
 output "virtual_network_resource_names" {
   description = "Resource names of the virtual networks."
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.name }
-}
-
-output "virtual_network_overrides" {
-  description = "Overrides applied to the virtual networks."
-  value = {
-    for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
-  }
-}
-
-output "private_link_private_dns_zones_virtual_network_overrides" {
-  description = "Overrides applied to the virtual networks."
-  value = {
-    for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
-  }
-}
-
-output "private_link_private_dns_zones_virtual_network_overrides_preview" {
-  description = "Overrides applied to the virtual networks (Preview)."
-  value = local.private_link_private_dns_zones_network_link_overrides_by_zone
-}
-
-output "private_link_private_dns_zones_virtual_network_links" {
-  description = "Overrides applied to the virtual networks."
-  value       = local.private_dns_zones_virtual_network_links
 }

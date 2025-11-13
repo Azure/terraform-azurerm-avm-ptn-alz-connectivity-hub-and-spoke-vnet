@@ -1314,6 +1314,10 @@ Description: Names of the virtual networks
 
 Description: Resource IDs of the private DNS zones
 
+### <a name="output_private_link_private_dns_zones_virtual_network_overrides"></a> [private\_link\_private\_dns\_zones\_virtual\_network\_overrides](#output\_private\_link\_private\_dns\_zones\_virtual\_network\_overrides)
+
+Description: Overrides applied to the virtual network links for DNS zones.
+
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: Resource IDs of the virtual networks
@@ -1329,6 +1333,10 @@ Description: Route tables associated with the gateway subnet.
 ### <a name="output_route_tables_user_subnets"></a> [route\_tables\_user\_subnets](#output\_route\_tables\_user\_subnets)
 
 Description: Route tables associated with the user subnets.
+
+### <a name="output_virtual_network_overrides"></a> [virtual\_network\_overrides](#output\_virtual\_network\_overrides)
+
+Description: Overrides applied to the virtual networks.
 
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 
