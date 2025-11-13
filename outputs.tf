@@ -99,7 +99,7 @@ output "private_link_private_dns_zones_virtual_network_overrides" {
 
 output "private_link_private_dns_zones_virtual_network_overrides_preview" {
   description = "Overrides applied to the virtual networks (Preview)."
-  value = local.private_link_private_dns_zones_network_link_overrides
+  value = local.private_link_private_dns_zones_network_link_ovverrides_by_zone
 }
 
 output "private_link_private_dns_zones_virtual_network_links" {
