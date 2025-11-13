@@ -629,7 +629,7 @@ variable "hub_virtual_networks" {
           replacement_values      = map(string)
         }))
       })))
-      virtual_network_link_overrides = map(map(object({
+      virtual_network_link_overrides = optional(map(object({
         name              = optional(string)
         resolution_policy = optional(string)
         enabled           = optional(bool, true)
