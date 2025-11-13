@@ -92,7 +92,7 @@ module "private_dns_zones" {
   private_link_private_dns_zones_additional   = each.value.private_dns_settings.private_link_private_dns_zones_additional
   private_link_private_dns_zones_regex_filter = each.value.private_link_private_dns_zones_regex_filter
   tags                                        = var.tags
-  virtual_network_link_overrides              = each.value.private_dns_settings.virtual_network_link_overrides
+  virtual_network_link_overrides              = each.value.virtual_network_link_overrides
   virtual_network_links_default               = local.private_dns_zones_virtual_network_links
 }
 
