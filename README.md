@@ -1334,10 +1334,6 @@ Description: Route tables associated with the gateway subnet.
 
 Description: Route tables associated with the user subnets.
 
-### <a name="output_virtual_network_overrides"></a> [virtual\_network\_overrides](#output\_virtual\_network\_overrides)
-
-Description: Overrides applied to the virtual networks.
-
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 
 Description: Resource IDs of the virtual networks.

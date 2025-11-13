@@ -78,13 +78,6 @@ output "route_tables_user_subnets" {
   value       = module.hub_and_spoke_vnet.hub_route_tables_user_subnets
 }
 
-output "virtual_network_overrides" {
-  description = "Overrides applied to the virtual networks."
-  value = {
-    for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
-  }
-}
-
 output "virtual_network_resource_ids" {
   description = "Resource IDs of the virtual networks."
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.id }
