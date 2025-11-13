@@ -24,23 +24,18 @@ locals {
       }
     }
   }
-  private_link_private_dns_zones_network_link_ovverrides_by_zone = reduce(
-    values(local.private_link_private_dns_zones_network_link_overrides_by_network),
-    {},
-    lambda(
-      acc,
-      item,
-      merge(
-        acc,
-        {
-          for zone_name, zone_val in item : zone_name => merge(
-            lookup(acc, zone_name, {}),
-            zone_val
-          )
-        }
-      )
-    )
-  )
+  private_link_private_dns_zones_network_link_overrides_by_zone = {
+    for zone_name in distinct(
+      flatten([
+        for overrides in values(local.private_link_private_dns_zones_network_link_overrides_by_network) : keys(overrides)
+      ])
+    ) :
+    zone_name => {
+      for hub_key, hub_overrides in local.private_link_private_dns_zones_network_link_overrides_by_network :
+      hub_key => hub_overrides[zone_name][hub_key]
+      if contains(keys(hub_overrides), zone_name)
+    }
+  }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
     location    = value.location
     domain_name = coalesce(value.private_dns_zones.auto_registration_zone_name, "${value.location}.azure.local")
