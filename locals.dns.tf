@@ -11,12 +11,20 @@ locals {
     }
     private_dns_settings = value.private_dns_zones
     virtual_network_link_overrides = try(length(value.private_dns_zones.virtual_network_link_overrides), 0) > 0 ? {
-      for zone_k, zone_v in value.private_dns_zones.virtual_network_link_overrides :  zone_k => {
+      for zone_k, zone_v in value.private_dns_zones.virtual_network_link_overrides : zone_k => {
         (key) = zone_v
       }
     } : {}
     tags = coalesce(value.private_dns_zones.tags, var.tags, {})
   } if local.private_dns_zones_enabled[key] }
+  private_link_private_dns_zones_network_link_overrides = {
+    for zone_name in distinct(flatten([
+      for _, hub_config in var.hub_virtual_networks : keys(try(hub_config.private_dns_zones.private_link_private_dns_zones_network_link_overrides, {}))
+      ])) : zone_name => {
+      for hub_key, hub_config in var.hub_virtual_networks : hub_key => hub_config.private_dns_zones.private_link_private_dns_zones_network_link_overrides[zone_name]
+      if try(hub_config.private_dns_zones.private_link_private_dns_zones_network_link_overrides[zone_name], null) != null
+    }
+  }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
     location    = value.location
     domain_name = coalesce(value.private_dns_zones.auto_registration_zone_name, "${value.location}.azure.local")

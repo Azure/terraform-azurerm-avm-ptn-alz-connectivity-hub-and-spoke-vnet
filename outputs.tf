@@ -85,16 +85,21 @@ output "virtual_network_resource_names" {
 
 output "virtual_network_overrides" {
   description = "Overrides applied to the virtual networks."
-  value       = {
+  value = {
     for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
   }
 }
 
 output "private_link_private_dns_zones_virtual_network_overrides" {
   description = "Overrides applied to the virtual networks."
-  value       = {
+  value = {
     for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
   }
+}
+
+output "private_link_private_dns_zones_virtual_network_overrides_preview" {
+  description = "Overrides applied to the virtual networks (Preview)."
+  value = local.private_link_private_dns_zones_network_link_overrides
 }
 
 output "private_link_private_dns_zones_virtual_network_links" {

@@ -326,15 +326,15 @@ hub_and_spoke_networks_settings = {
 hub_virtual_networks = {
   primary = {
     enabled_resources = {
-      firewall                           = "$${primary_firewall_enabled}"
-      firewall_policy                    = "$${primary_firewall_enabled}"
-      virtual_network_gateway_express_route =  "$${primary_virtual_network_gateway_express_route_enabled}"
-      virtual_network_gateway_vpn        = "$${primary_virtual_network_gateway_vpn_enabled}"
-      private_dns_zones                  = "$${primary_private_dns_zones_enabled}"
-      private_dns_resolver               = "$${primary_private_dns_resolver_enabled}"
-      bastion                            = "$${primary_bastion_enabled}"
+      firewall                              = "$${primary_firewall_enabled}"
+      firewall_policy                       = "$${primary_firewall_enabled}"
+      virtual_network_gateway_express_route = "$${primary_virtual_network_gateway_express_route_enabled}"
+      virtual_network_gateway_vpn           = "$${primary_virtual_network_gateway_vpn_enabled}"
+      private_dns_zones                     = "$${primary_private_dns_zones_enabled}"
+      private_dns_resolver                  = "$${primary_private_dns_resolver_enabled}"
+      bastion                               = "$${primary_bastion_enabled}"
     }
-    location                      = "$${starter_location_01}"
+    location          = "$${starter_location_01}"
     default_parent_id = "$${connectivity_hub_primary_resource_group_id}"
     hub_virtual_network = {
       name                          = "$${primary_virtual_network_name}"
@@ -350,13 +350,13 @@ hub_virtual_networks = {
       name                             = "$${primary_firewall_name}"
       default_ip_configuration = {
         public_ip_config = {
-          name  = "$${primary_firewall_public_ip_name}"
+          name = "$${primary_firewall_public_ip_name}"
         }
       }
       management_ip_enabled = "$${primary_firewall_management_ip_enabled}"
       management_ip_configuration = {
         public_ip_config = {
-          name  = "$${primary_firewall_management_public_ip_name}"
+          name = "$${primary_firewall_management_public_ip_name}"
         }
       }
     }
@@ -367,32 +367,32 @@ hub_virtual_networks = {
       subnet_address_prefix                     = "$${primary_gateway_subnet_address_prefix}"
       route_table_creation_enabled              = true
       route_table_bgp_route_propagation_enabled = true
-      route_table_name = "rt-hub-gateway-uksouth"
+      route_table_name                          = "rt-hub-gateway-uksouth"
       express_route = {
         name                                  = "$${primary_virtual_network_gateway_express_route_name}"
         hosted_on_behalf_of_public_ip_enabled = "$${primary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
-            name  = "vnetGatewayConfigdefault"
+            name = "vnetGatewayConfigdefault"
             public_ip = {
-              name  = "$${primary_virtual_network_gateway_express_route_public_ip_name}"
+              name = "$${primary_virtual_network_gateway_express_route_public_ip_name}"
             }
           }
         }
       }
       vpn = {
-        name    = "$${primary_virtual_network_gateway_vpn_name}"
+        name = "$${primary_virtual_network_gateway_vpn_name}"
         ip_configurations = {
           active_active_1 = {
             name = "vnetGatewayConfigactive_active_1"
             public_ip = {
-              name  = "$${primary_virtual_network_gateway_vpn_public_ip_name_1}"
+              name = "$${primary_virtual_network_gateway_vpn_public_ip_name_1}"
             }
           }
           active_active_2 = {
             name = "vnetGatewayConfigactive_active_2"
             public_ip = {
-              name  = "$${primary_virtual_network_gateway_vpn_public_ip_name_2}"
+              name = "$${primary_virtual_network_gateway_vpn_public_ip_name_2}"
             }
           }
         }
@@ -408,27 +408,27 @@ hub_virtual_networks = {
     }
     private_dns_resolver = {
       subnet_address_prefix = "$${primary_private_dns_resolver_subnet_address_prefix}"
-      name = "$${primary_private_dns_resolver_name}"
+      name                  = "$${primary_private_dns_resolver_name}"
     }
     bastion = {
       subnet_address_prefix = "$${primary_bastion_subnet_address_prefix}"
-      name  = "$${primary_bastion_host_name}"
+      name                  = "$${primary_bastion_host_name}"
       bastion_public_ip = {
-        name  = "$${primary_bastion_host_public_ip_name}"
+        name = "$${primary_bastion_host_public_ip_name}"
       }
     }
   }
   secondary = {
     enabled_resources = {
-      firewall                           = "$${secondary_firewall_enabled}"
-      firewall_policy                    = "$${secondary_firewall_enabled}"
-      virtual_network_gateway_express_route =  "$${secondary_virtual_network_gateway_express_route_enabled}"
-      virtual_network_gateway_vpn        = "$${secondary_virtual_network_gateway_vpn_enabled}"
-      private_dns_zones                  = "$${secondary_private_dns_zones_enabled}"
-      private_dns_resolver               = "$${secondary_private_dns_resolver_enabled}"
-      bastion                            = "$${secondary_bastion_enabled}"
+      firewall                              = "$${secondary_firewall_enabled}"
+      firewall_policy                       = "$${secondary_firewall_enabled}"
+      virtual_network_gateway_express_route = "$${secondary_virtual_network_gateway_express_route_enabled}"
+      virtual_network_gateway_vpn           = "$${secondary_virtual_network_gateway_vpn_enabled}"
+      private_dns_zones                     = "$${secondary_private_dns_zones_enabled}"
+      private_dns_resolver                  = "$${secondary_private_dns_resolver_enabled}"
+      bastion                               = "$${secondary_bastion_enabled}"
     }
-    location                      = "$${starter_location_02}"
+    location          = "$${starter_location_02}"
     default_parent_id = "$${connectivity_hub_secondary_resource_group_id}"
     hub_virtual_network = {
       name                          = "$${secondary_virtual_network_name}"
@@ -444,13 +444,13 @@ hub_virtual_networks = {
       name                             = "$${secondary_firewall_name}"
       default_ip_configuration = {
         public_ip_config = {
-          name  = "$${secondary_firewall_public_ip_name}"
+          name = "$${secondary_firewall_public_ip_name}"
         }
       }
       management_ip_enabled = "$${secondary_firewall_management_ip_enabled}"
       management_ip_configuration = {
         public_ip_config = {
-          name  = "$${secondary_firewall_management_public_ip_name}"
+          name = "$${secondary_firewall_management_public_ip_name}"
         }
       }
     }
@@ -466,27 +466,27 @@ hub_virtual_networks = {
         hosted_on_behalf_of_public_ip_enabled = "$${secondary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"
         ip_configurations = {
           default = {
-            name  = "vnetGatewayConfigdefault"
+            name = "vnetGatewayConfigdefault"
             public_ip = {
-              name  = "$${secondary_virtual_network_gateway_express_route_public_ip_name}"
+              name = "$${secondary_virtual_network_gateway_express_route_public_ip_name}"
             }
           }
         }
       }
       vpn = {
-        name    = "$${secondary_virtual_network_gateway_vpn_name}"
-        sku = "VpnGw1"
+        name = "$${secondary_virtual_network_gateway_vpn_name}"
+        sku  = "VpnGw1"
         ip_configurations = {
           active_active_1 = {
             name = "vnetGatewayConfigactive_active_1"
             public_ip = {
-              name  = "$${secondary_virtual_network_gateway_vpn_public_ip_name_1}"
+              name = "$${secondary_virtual_network_gateway_vpn_public_ip_name_1}"
             }
           }
           active_active_2 = {
             name = "vnetGatewayConfigactive_active_2"
             public_ip = {
-              name  = "$${secondary_virtual_network_gateway_vpn_public_ip_name_2}"
+              name = "$${secondary_virtual_network_gateway_vpn_public_ip_name_2}"
             }
           }
         }
@@ -501,15 +501,15 @@ hub_virtual_networks = {
       auto_registration_zone_name    = "$${secondary_auto_registration_zone_name}"
     }
     private_dns_resolver = {
-      subnet_address_prefix = "$${secondary_private_dns_resolver_subnet_address_prefix}"
-      name = "$${secondary_private_dns_resolver_name}"
+      subnet_address_prefix            = "$${secondary_private_dns_resolver_subnet_address_prefix}"
+      name                             = "$${secondary_private_dns_resolver_name}"
       default_inbound_endpoint_enabled = false
     }
     bastion = {
       subnet_address_prefix = "$${secondary_bastion_subnet_address_prefix}"
-      name  = "$${secondary_bastion_host_name}"
+      name                  = "$${secondary_bastion_host_name}"
       bastion_public_ip = {
-        name  = "$${secondary_bastion_host_public_ip_name}"
+        name = "$${secondary_bastion_host_public_ip_name}"
       }
     }
   }
