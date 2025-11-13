@@ -82,3 +82,22 @@ output "virtual_network_resource_names" {
   description = "Resource names of the virtual networks."
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.name }
 }
+
+output "virtual_network_overrides" {
+  description = "Overrides applied to the virtual networks."
+  value       = {
+    for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
+  }
+}
+
+output "private_link_private_dns_zones_virtual_network_overrides" {
+  description = "Overrides applied to the virtual networks."
+  value       = {
+    for key, value in local.private_dns_zones : key => value.virtual_network_link_overrides
+  }
+}
+
+output "private_link_private_dns_zones_virtual_network_links" {
+  description = "Overrides applied to the virtual networks."
+  value       = local.private_dns_zones_virtual_network_links
+}
