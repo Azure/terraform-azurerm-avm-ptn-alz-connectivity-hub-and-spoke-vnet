@@ -10,7 +10,10 @@ locals {
       enabled = key != local.primary_region_key
     }
     private_dns_settings = value.private_dns_zones
-    tags                 = coalesce(value.private_dns_zones.tags, var.tags, {})
+    virtual_network_link_overrides = {
+      (key) = try(value.private_dns_zones.virtual_network_link_overrides, null)
+    }
+    tags = coalesce(value.private_dns_zones.tags, var.tags, {})
   } if local.private_dns_zones_enabled[key] }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
     location    = value.location
