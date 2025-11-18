@@ -1390,9 +1390,9 @@ Version: 0.4.2
 
 ### <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones)
 
-Source: git::https://github.com/Azure/terraform-azurerm-avm-ptn-network-private-link-private-dns-zones.git?depth=1&ref=fix/add-virtual-network-links-variable
+Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version:
+Version: 0.20.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 

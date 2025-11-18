@@ -141,6 +141,7 @@ custom_replacements = {
     connectivity_hub_primary_resource_group_id   = "/subscriptions/$${subscription_id_connectivity}/resourceGroups/$${connectivity_hub_primary_resource_group_name}"
     connectivity_hub_secondary_resource_group_id = "/subscriptions/$${subscription_id_connectivity}/resourceGroups/$${connectivity_hub_secondary_resource_group_name}"
     ddos_protection_plan_resource_group_id       = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${ddos_resource_group_name}"
+    dns_resource_group_id                        = "/subscriptions/$${subscription_id_connectivity}/resourcegroups/$${dns_resource_group_name}"
   }
 
   /*
@@ -399,7 +400,15 @@ hub_virtual_networks = {
       }
     }
     private_dns_zones = {
-      resource_group_name = "$${dns_resource_group_name}"
+      parent_id                        = "$${dns_resource_group_id}"
+      virtual_network_link_overrides = {
+        "azure_storage_blob" = {
+          resolution_policy = "NxDomainRedirect"
+        }
+        "azure_api_management" = {
+          resolution_policy = "NxDomainRedirect"
+        }
+      }
       private_link_private_dns_zones_regex_filter = {
         enabled = false
       }
@@ -493,7 +502,15 @@ hub_virtual_networks = {
       }
     }
     private_dns_zones = {
-      resource_group_name = "$${dns_resource_group_name}"
+      parent_id                        = "$${dns_resource_group_id}"
+      virtual_network_link_overrides = {
+        "azure_storage_blob" = {
+          resolution_policy = "NxDomainRedirect"
+        }
+        "azure_api_management" = {
+          resolution_policy = "NxDomainRedirect"
+        }
+      }
       private_link_private_dns_zones_regex_filter = {
         enabled = true
       }
