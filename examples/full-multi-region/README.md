@@ -22,22 +22,29 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
+locals {
+  config_templating_inputs = {
+    connectivity_resource_groups    = var.connectivity_resource_groups
+    hub_and_spoke_networks_settings = var.hub_and_spoke_networks_settings
+    hub_virtual_networks            = var.hub_virtual_networks
+    management_group_settings       = var.management_group_settings
+    management_resource_settings    = var.management_resource_settings
+    tags                            = var.tags
+    connectivity_tags               = var.connectivity_tags
+  }
+}
+
 module "config" {
   source = "github.com/Azure/alz-terraform-accelerator//templates/platform_landing_zone/modules/config-templating?ref=main"
 
-  connectivity_resource_groups    = var.connectivity_resource_groups
   custom_replacements             = var.custom_replacements
-  hub_and_spoke_networks_settings = var.hub_and_spoke_networks_settings
-  hub_virtual_networks            = var.hub_virtual_networks
-  management_group_settings       = var.management_group_settings
-  management_resource_settings    = var.management_resource_settings
+  inputs                          = local.config_templating_inputs
   root_parent_management_group_id = ""
   starter_locations               = var.starter_locations
   subscription_id_connectivity    = data.azurerm_client_config.current.subscription_id
   subscription_id_identity        = data.azurerm_client_config.current.subscription_id
   subscription_id_management      = data.azurerm_client_config.current.subscription_id
   subscription_id_security        = data.azurerm_client_config.current.subscription_id
-  tags                            = var.tags
 }
 
 module "resource_groups" {
@@ -114,6 +121,14 @@ map(object({
 ```
 
 Default: `{}`
+
+### <a name="input_connectivity_tags"></a> [connectivity\_tags](#input\_connectivity\_tags)
+
+Description: (Optional) Tags of the connectivity resource.
+
+Type: `map(string)`
+
+Default: `null`
 
 ### <a name="input_connectivity_type"></a> [connectivity\_type](#input\_connectivity\_type)
 
