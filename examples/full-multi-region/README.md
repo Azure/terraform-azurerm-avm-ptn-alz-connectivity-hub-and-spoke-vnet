@@ -50,18 +50,18 @@ module "config" {
 module "resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
   version  = "0.2.0"
-  for_each = module.config.connectivity_resource_groups
+  for_each = module.config.outputs.connectivity_resource_groups
 
   location         = each.value.location
   name             = each.value.name
   enable_telemetry = false
-  tags             = module.config.tags
+  tags             = module.config.outputs.tags
 }
 
 # Build an implicit dependency on the resource groups
 locals {
-  hub_and_spoke_networks_settings = merge(module.config.hub_and_spoke_networks_settings, local.resource_groups)
-  hub_virtual_networks            = (merge({ vnets = module.config.hub_virtual_networks }, local.resource_groups)).vnets
+  hub_and_spoke_networks_settings = merge(module.config.outputs.hub_and_spoke_networks_settings, local.resource_groups)
+  hub_virtual_networks            = (merge({ vnets = module.config.outputs.hub_virtual_networks }, local.resource_groups)).vnets
   resource_groups = {
     resource_groups = module.resource_groups
   }
@@ -74,7 +74,7 @@ module "test" {
   enable_telemetry                = var.enable_telemetry
   hub_and_spoke_networks_settings = local.hub_and_spoke_networks_settings
   hub_virtual_networks            = local.hub_virtual_networks
-  tags                            = module.config.tags
+  tags                            = module.config.outputs.tags
 }
 ```
 
