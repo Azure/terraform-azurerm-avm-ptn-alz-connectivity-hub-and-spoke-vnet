@@ -401,11 +401,11 @@ hub_virtual_networks = {
     }
     private_dns_zones = {
       parent_id                        = "$${dns_resource_group_id}"
-      virtual_network_link_overrides = {
-        "azure_storage_blob" = {
+      virtual_network_link_overrides_by_zone = {
+        azure_storage_blob = {
           resolution_policy = "NxDomainRedirect"
         }
-        "azure_api_management" = {
+        azure_api_management = {
           resolution_policy = "NxDomainRedirect"
         }
       }
@@ -503,14 +503,6 @@ hub_virtual_networks = {
     }
     private_dns_zones = {
       parent_id                        = "$${dns_resource_group_id}"
-      virtual_network_link_overrides = {
-        "azure_storage_blob" = {
-          resolution_policy = "NxDomainRedirect"
-        }
-        "azure_api_management" = {
-          resolution_policy = "NxDomainRedirect"
-        }
-      }
       private_link_private_dns_zones_regex_filter = {
         enabled = true
       }

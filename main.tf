@@ -80,19 +80,24 @@ module "dns_resolver" {
 
 module "private_dns_zones" {
   source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
-  version  = "0.20.0"
+  version  = "0.22.0"
   for_each = local.private_dns_zones
 
-  location                                    = each.value.location
-  parent_id                                   = each.value.parent_id
-  enable_telemetry                            = var.enable_telemetry
-  private_link_excluded_zones                 = each.value.private_dns_settings.private_link_excluded_zones
-  private_link_private_dns_zones              = each.value.private_dns_settings.private_link_private_dns_zones
-  private_link_private_dns_zones_additional   = each.value.private_dns_settings.private_link_private_dns_zones_additional
-  private_link_private_dns_zones_regex_filter = each.value.private_link_private_dns_zones_regex_filter
-  tags                                        = var.tags
-  virtual_network_link_overrides              = local.private_link_private_dns_zones_network_link_overrides_by_zone
-  virtual_network_links_default               = local.private_dns_zones_virtual_network_links
+  location                                                   = each.value.location
+  parent_id                                                  = each.value.parent_id
+  enable_telemetry                                           = var.enable_telemetry
+  private_link_excluded_zones                                = each.value.private_link_excluded_zones
+  private_link_private_dns_zones                             = each.value.private_link_private_dns_zones
+  private_link_private_dns_zones_additional                  = each.value.private_link_private_dns_zones_additional
+  private_link_private_dns_zones_regex_filter                = each.value.private_link_private_dns_zones_regex_filter
+  tags                                                       = var.tags
+  virtual_network_link_by_zone_and_virtual_network           = each.value.virtual_network_link_by_zone_and_virtual_network
+  virtual_network_link_default_virtual_networks              = each.value.virtual_network_link_default_virtual_networks
+  virtual_network_link_name_template                         = each.value.virtual_network_link_name_template
+  virtual_network_link_overrides_by_virtual_network          = each.value.virtual_network_link_overrides_by_virtual_network
+  virtual_network_link_overrides_by_zone                     = each.value.virtual_network_link_overrides_by_zone
+  virtual_network_link_overrides_by_zone_and_virtual_network = each.value.virtual_network_link_overrides_by_zone_and_virtual_network
+  virtual_network_link_resolution_policy_default             = each.value.virtual_network_link_resolution_policy_default
 }
 
 module "private_dns_zone_auto_registration" {

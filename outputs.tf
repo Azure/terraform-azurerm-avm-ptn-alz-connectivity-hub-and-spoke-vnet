@@ -53,9 +53,9 @@ output "private_dns_zone_resource_ids" {
   value       = { for key, value in module.private_dns_zones : key => value.private_dns_zone_resource_ids }
 }
 
-output "private_link_private_dns_zones_virtual_network_overrides" {
-  description = "Overrides applied to the virtual network links for DNS zones."
-  value       = local.private_link_private_dns_zones_network_link_overrides_by_zone
+output "private_link_private_dns_zones_maps" {
+  description = "Final configuration applied to the private DNS zones and associated virtual network links."
+  value       = { for key, value in module.private_dns_zones : key => value.private_link_private_dns_zones_map }
 }
 
 output "resource_id" {

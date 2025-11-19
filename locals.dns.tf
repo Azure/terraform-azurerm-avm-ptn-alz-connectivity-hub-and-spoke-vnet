@@ -6,11 +6,20 @@ locals {
   private_dns_zones = { for key, value in var.hub_virtual_networks : key => {
     location  = value.location
     parent_id = coalesce(value.private_dns_zones.parent_id, value.hub_virtual_network.parent_id, value.default_parent_id)
-    private_link_private_dns_zones_regex_filter = value.private_dns_zones.private_link_private_dns_zones_regex_filter != null ? value.private_dns_zones.private_link_private_dns_zones_regex_filter : {
+    private_link_private_dns_zones_regex_filter = coalesce(value.private_dns_zones.private_link_private_dns_zones_regex_filter, {
       enabled = key != local.primary_region_key
-    }
-    private_dns_settings = value.private_dns_zones
-    tags                 = coalesce(value.private_dns_zones.tags, var.tags, {})
+    })
+    private_link_excluded_zones                                = value.private_dns_zones.private_link_excluded_zones
+    private_link_private_dns_zones                             = value.private_dns_zones.private_link_private_dns_zones
+    private_link_private_dns_zones_additional                  = value.private_dns_zones.private_link_private_dns_zones_additional
+    virtual_network_link_default_virtual_networks              = coalesce(value.private_dns_zones.virtual_network_link_default_virtual_networks, local.private_dns_zones_virtual_network_link_default_virtual_networks)
+    virtual_network_link_by_zone_and_virtual_network           = value.private_dns_zones.virtual_network_link_by_zone_and_virtual_network
+    virtual_network_link_overrides_by_virtual_network          = value.private_dns_zones.virtual_network_link_overrides_by_virtual_network
+    virtual_network_link_overrides_by_zone                     = value.private_dns_zones.virtual_network_link_overrides_by_zone
+    virtual_network_link_overrides_by_zone_and_virtual_network = value.private_dns_zones.virtual_network_link_overrides_by_zone_and_virtual_network
+    virtual_network_link_name_template                         = value.private_dns_zones.virtual_network_link_name_template
+    virtual_network_link_resolution_policy_default             = value.private_dns_zones.virtual_network_link_resolution_policy_default
+    tags                                                       = coalesce(value.private_dns_zones.tags, var.tags, {})
   } if local.private_dns_zones_enabled[key] }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
     location    = value.location
@@ -25,29 +34,11 @@ locals {
       }
     }
   } if local.private_dns_zones_enabled[key] && value.private_dns_zones.auto_registration_zone_enabled }
-  private_dns_zones_virtual_network_links = {
+  private_dns_zones_virtual_network_link_default_virtual_networks = {
     for key, value in module.hub_and_spoke_vnet.virtual_networks : key => {
       virtual_network_resource_id                 = value.id
-      virtual_network_link_name_template_override = var.hub_virtual_networks[key].private_dns_zones.private_dns_zone_network_link_name_template
-    }
-  }
-  private_link_private_dns_zones_network_link_overrides_by_network = {
-    for key, value in var.hub_virtual_networks : key => {
-      for zone_k, zone_v in try(length(value.private_dns_zones.virtual_network_link_overrides), 0) > 0 ? value.private_dns_zones.virtual_network_link_overrides : {} : zone_k => {
-        (key) = zone_v
-      }
-    }
-  }
-  private_link_private_dns_zones_network_link_overrides_by_zone = {
-    for zone_name in distinct(
-      flatten([
-        for overrides in values(local.private_link_private_dns_zones_network_link_overrides_by_network) : keys(overrides)
-      ])
-    ) :
-    zone_name => {
-      for hub_key, hub_overrides in local.private_link_private_dns_zones_network_link_overrides_by_network :
-      hub_key => hub_overrides[zone_name][hub_key]
-      if contains(keys(hub_overrides), zone_name)
+      virtual_network_link_name_template_override = var.hub_virtual_networks[key].private_dns_zones.virtual_network_link_name_template
+      resolution_policy                           = "Default"
     }
   }
 }
