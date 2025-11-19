@@ -1236,6 +1236,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_private_dns_zone_virtual_network_link_moved_block_template_module_prefix"></a> [private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix](#input\_private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix)
+
+Description: (Optional) A prefix to use for the moved block template module for virtual network links.
+
+Type: `string`
+
+Default: `""`
+
 ### <a name="input_retry"></a> [retry](#input\_retry)
 
 Description: Retry configuration for the resource operations
@@ -1335,6 +1343,10 @@ Description: Names of the virtual networks
 ### <a name="output_private_dns_zone_resource_ids"></a> [private\_dns\_zone\_resource\_ids](#output\_private\_dns\_zone\_resource\_ids)
 
 Description: Resource IDs of the private DNS zones
+
+### <a name="output_private_dns_zone_virtual_network_link_moved_blocks"></a> [private\_dns\_zone\_virtual\_network\_link\_moved\_blocks](#output\_private\_dns\_zone\_virtual\_network\_link\_moved\_blocks)
+
+Description: Moved blocks for private DNS zone virtual network links.
 
 ### <a name="output_private_link_private_dns_zones_maps"></a> [private\_link\_private\_dns\_zones\_maps](#output\_private\_link\_private\_dns\_zones\_maps)
 
