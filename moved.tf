@@ -21,16 +21,6 @@ MOVED_BLOCK
 
 # Manually added moved blocks
 moved {
-  from = module.private_dns_zone_auto_registration["primary"].azurerm_private_dns_zone.this
-  to   = module.private_dns_zone_auto_registration["primary"].azapi_resource.private_dns_zone
-}
-
-moved {
-  from = module.private_dns_zone_auto_registration["secondary"].azurerm_private_dns_zone.this
-  to   = module.private_dns_zone_auto_registration["secondary"].azapi_resource.private_dns_zone
-}
-
-moved {
   from = module.private_dns_zone_auto_registration["primary"].azurerm_private_dns_zone_virtual_network_link.this["auto_registration"]
   to   = module.private_dns_zone_auto_registration["primary"].module.virtual_network_links["auto_registration"].azapi_resource.private_dns_zone_network_link
 }

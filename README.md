@@ -1424,7 +1424,7 @@ Version:
 
 Source: Azure/avm-res-network-privatednszone/azurerm
 
-Version: 0.4.2
+Version: 0.4.3
 
 ### <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones)
 
