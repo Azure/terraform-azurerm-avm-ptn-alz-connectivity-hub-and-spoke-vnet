@@ -1236,9 +1236,11 @@ map(object({
 
 Default: `{}`
 
-### <a name="input_private_dns_zone_virtual_network_link_moved_block_template_module_prefix"></a> [private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix](#input\_private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix)
+### <a name="input_private_link_private_dns_zone_virtual_network_link_moved_block_template_module_prefix"></a> [private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix](#input\_private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix)
 
 Description: (Optional) A prefix to use for the moved block template module for virtual network links.
+
+NOTE: This is a temporary variable to support migration to the new module and will be moved in the next major version.
 
 Type: `string`
 
@@ -1344,9 +1346,11 @@ Description: Names of the virtual networks
 
 Description: Resource IDs of the private DNS zones
 
-### <a name="output_private_dns_zone_virtual_network_link_moved_blocks"></a> [private\_dns\_zone\_virtual\_network\_link\_moved\_blocks](#output\_private\_dns\_zone\_virtual\_network\_link\_moved\_blocks)
+### <a name="output_private_link_private_dns_zone_virtual_network_link_moved_blocks"></a> [private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_blocks](#output\_private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_blocks)
 
-Description: Moved blocks for private DNS zone virtual network links.
+Description: Moved blocks for private link private DNS zone virtual network links.
+
+NOTE: This is a temporary output to support migration to the new module and will be moved in the next major version.
 
 ### <a name="output_private_link_private_dns_zones_maps"></a> [private\_link\_private\_dns\_zones\_maps](#output\_private\_link\_private\_dns\_zones\_maps)
 
@@ -1426,7 +1430,7 @@ Version: 0.4.2
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.22.0
+Version: 0.22.1
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 

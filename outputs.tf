@@ -53,10 +53,7 @@ output "private_dns_zone_resource_ids" {
   value       = { for key, value in module.private_dns_zones : key => value.private_dns_zone_resource_ids }
 }
 
-output "private_dns_zone_virtual_network_link_moved_blocks" {
-  description = "Moved blocks for private DNS zone virtual network links."
-  value       = local.moved_blocks_final
-}
+
 
 output "private_link_private_dns_zones_maps" {
   description = "Final configuration applied to the private DNS zones and associated virtual network links."

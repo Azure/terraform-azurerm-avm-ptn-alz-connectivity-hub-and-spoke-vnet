@@ -1176,14 +1176,6 @@ The following top level attributes are supported:
 DESCRIPTION
 }
 
-variable "private_dns_zone_virtual_network_link_moved_block_template_module_prefix" {
-  type        = string
-  default     = ""
-  description = <<DESCRIPTION
-(Optional) A prefix to use for the moved block template module for virtual network links.
-DESCRIPTION
-}
-
 variable "retry" {
   type = object({
     error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])

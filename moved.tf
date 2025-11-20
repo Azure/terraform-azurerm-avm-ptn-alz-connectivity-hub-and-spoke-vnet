@@ -1,8 +1,8 @@
 locals {
   moved_block_template = <<MOVED_BLOCK
 moved {
-  from = ${var.private_dns_zone_virtual_network_link_moved_block_template_module_prefix}module.private_dns_zones["$${virtual_network_key}"].module.avm_res_network_privatednszone["$${dns_zone_key}"].azurerm_private_dns_zone_virtual_network_link.this["$${virtual_network_link_key}"]
-  to   = ${var.private_dns_zone_virtual_network_link_moved_block_template_module_prefix}module.private_dns_zones["$${virtual_network_key}"].module.avm_res_network_privatednszone["$${dns_zone_key}"].module.virtual_network_links["$${virtual_network_link_key}"].azapi_resource.private_dns_zone_network_link
+  from = ${var.private_link_private_dns_zone_virtual_network_link_moved_block_template_module_prefix}module.private_dns_zones["$${virtual_network_key}"].module.avm_res_network_privatednszone["$${dns_zone_key}"].azurerm_private_dns_zone_virtual_network_link.this["$${virtual_network_link_key}"]
+  to   = ${var.private_link_private_dns_zone_virtual_network_link_moved_block_template_module_prefix}module.private_dns_zones["$${virtual_network_key}"].module.avm_res_network_privatednszone["$${dns_zone_key}"].module.virtual_network_links["$${virtual_network_link_key}"].azapi_resource.private_dns_zone_network_link
 }
 MOVED_BLOCK
   moved_blocks = flatten([for virtual_network_key, virtual_network_value in module.private_dns_zones : [
