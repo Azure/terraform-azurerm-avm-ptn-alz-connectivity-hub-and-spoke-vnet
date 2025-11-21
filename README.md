@@ -547,15 +547,16 @@ The following top level attributes are supported:
 ## Private DNS Zones
 
 - `private_dns_zones` - (Optional) An object with the following fields:
-  - `resource_group_name` - (Optional) The resource group name for the private DNS zones. If not specified, uses the hub virtual network's parent resource group.
+  - `parent_id` - (Optional) The resource group resource id for the private DNS zones. If not specified, uses the hub virtual network's parent resource id.
   - `auto_registration_zone_enabled` - (Optional) Should an auto-registration zone be created? Default `true`.
   - `auto_registration_zone_name` - (Optional) The name of the auto-registration zone.
-  - `auto_registration_zone_resource_group_name` - (Optional) The resource group name for the auto-registration zone.
+  - `auto_registration_zone_parent_id` - (Optional) The resource group resource id for the auto-registration zone.
   - `private_dns_zone_network_link_name_template` - (Optional) The template for naming private DNS zone virtual network links.
   - `private_link_excluded_zones` - (Optional) A set of private link zones to exclude from creation. Default `[]`.
   - `private_link_private_dns_zones` - (Optional) A map of private link DNS zones. Each zone is an object with:
     - `zone_name` - (Optional) The DNS zone name.
     - `private_dns_zone_supports_private_link` - (Optional) Does this zone support private link? Default `true`.
+    - `resolution_policy` - (Optional) The resolution policy. Possible values are `Default` and `NxDomainRedirect`. Default value is `Default`.
     - `custom_iterator` - (Optional) An object with the following fields:
       - `replacement_placeholder` - The placeholder string to replace (required).
       - `replacement_values` - A map of replacement values (required).
@@ -563,6 +564,9 @@ The following top level attributes are supported:
   - `private_link_private_dns_zones_regex_filter` - (Optional) An object with the following fields:
     - `enabled` - (Optional) Should regex filtering be enabled? Default `false`.
     - `regex_filter` - (Optional) The regex filter pattern. Default `{regionName}|{regionCode}`.
+  - `virtual_network_link_overrides` - (Optional) A map of virtual network link overrides. The key is the the Private DNS Zone map key from the `private_link_private_dns_zones` or `private_link_private_dns_zones_additional` variables. For the full list please check out the varaible declaration at https://github.com/Azure/terraform-azurerm-avm-ptn-network-private-link-private-dns-zones/blob/main/variables.tf
+    - `name` - (Optional) The name of the virtual network link to override the default name.
+    - `resolution_policy` - (Optional) The resolution policy for the Virtual Network Link. Possible value are `Default` and `NxDomainRedirect`.
   - `tags` - (Optional) A map of tags to apply to the private DNS zones.
 
 ## Private DNS Resolver
@@ -1123,15 +1127,16 @@ map(object({
     }), {})
 
     private_dns_zones = optional(object({
-      resource_group_name                         = optional(string, null)
-      auto_registration_zone_enabled              = optional(bool, true)
-      auto_registration_zone_name                 = optional(string, null)
-      auto_registration_zone_resource_group_name  = optional(string, null)
-      private_dns_zone_network_link_name_template = optional(string, null)
-      private_link_excluded_zones                 = optional(set(string), [])
+      parent_id                        = optional(string)
+      auto_registration_zone_enabled   = optional(bool, true)
+      auto_registration_zone_name      = optional(string, null)
+      auto_registration_zone_parent_id = optional(string, null)
+
+      private_link_excluded_zones = optional(set(string), [])
       private_link_private_dns_zones = optional(map(object({
         zone_name                              = optional(string, null)
         private_dns_zone_supports_private_link = optional(bool, true)
+        resolution_policy                      = optional(string)
         custom_iterator = optional(object({
           replacement_placeholder = string
           replacement_values      = map(string)
@@ -1140,6 +1145,7 @@ map(object({
       private_link_private_dns_zones_additional = optional(map(object({
         zone_name                              = optional(string, null)
         private_dns_zone_supports_private_link = optional(bool, true)
+        resolution_policy                      = optional(string)
         custom_iterator = optional(object({
           replacement_placeholder = string
           replacement_values      = map(string)
@@ -1149,7 +1155,34 @@ map(object({
         enabled      = optional(bool, false)
         regex_filter = optional(string, "{regionName}|{regionCode}")
       }))
-      tags = optional(map(string), null)
+      virtual_network_link_default_virtual_networks = optional(map(object({
+        virtual_network_resource_id                 = optional(string)
+        virtual_network_link_name_template_override = optional(string)
+        resolution_policy                           = optional(string)
+      })))
+      virtual_network_link_by_zone_and_virtual_network = optional(map(map(object({
+        virtual_network_resource_id = optional(string, null)
+        name                        = optional(string, null)
+        resolution_policy           = optional(string)
+      }))))
+      virtual_network_link_overrides_by_zone = optional(map(object({
+        virtual_network_link_name_template_override = optional(string)
+        resolution_policy                           = optional(string)
+        enabled                                     = optional(bool, true)
+      })))
+      virtual_network_link_overrides_by_virtual_network = optional(map(object({
+        virtual_network_link_name_template_override = optional(string)
+        resolution_policy                           = optional(string)
+        enabled                                     = optional(bool, true)
+      })))
+      virtual_network_link_overrides_by_zone_and_virtual_network = optional(map(map(object({
+        name              = optional(string)
+        resolution_policy = optional(string)
+        enabled           = optional(bool, true)
+      }))))
+      virtual_network_link_name_template             = optional(string, null)
+      virtual_network_link_resolution_policy_default = optional(string)
+      tags                                           = optional(map(string), null)
     }), {})
 
     private_dns_resolver = optional(object({
@@ -1202,6 +1235,16 @@ map(object({
 ```
 
 Default: `{}`
+
+### <a name="input_private_link_private_dns_zone_virtual_network_link_moved_block_template_module_prefix"></a> [private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix](#input\_private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_block\_template\_module\_prefix)
+
+Description: (Optional) A prefix to use for the moved block template module for virtual network links.
+
+NOTE: This is a temporary variable to support migration to the new module and will be moved in the next major version.
+
+Type: `string`
+
+Default: `""`
 
 ### <a name="input_retry"></a> [retry](#input\_retry)
 
@@ -1303,6 +1346,16 @@ Description: Names of the virtual networks
 
 Description: Resource IDs of the private DNS zones
 
+### <a name="output_private_link_private_dns_zone_virtual_network_link_moved_blocks"></a> [private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_blocks](#output\_private\_link\_private\_dns\_zone\_virtual\_network\_link\_moved\_blocks)
+
+Description: Moved blocks for private link private DNS zone virtual network links.
+
+NOTE: This is a temporary output to support migration to the new module and will be moved in the next major version.
+
+### <a name="output_private_link_private_dns_zones_maps"></a> [private\_link\_private\_dns\_zones\_maps](#output\_private\_link\_private\_dns\_zones\_maps)
+
+Description: Final configuration applied to the private DNS zones and associated virtual network links.
+
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: Resource IDs of the virtual networks
@@ -1371,13 +1424,13 @@ Version:
 
 Source: Azure/avm-res-network-privatednszone/azurerm
 
-Version: 0.3.3
+Version: 0.4.3
 
 ### <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones)
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.15.0
+Version: 0.22.1
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
