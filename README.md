@@ -567,6 +567,10 @@ The following top level attributes are supported:
     - `virtual_network_resource_id` - (Optional) The resource ID of the virtual network.
     - `virtual_network_link_name_template_override` - (Optional) Override the default name template for the virtual network link.
     - `resolution_policy` - (Optional) The resolution policy for the virtual network link. Possible values are `Default` and `NxDomainRedirect`.
+  - `virtual_network_link_additional_virtual_networks` - (Optional) A map of additional virtual network links to create beyond the default virtual networks. Each link is an object with:
+    - `virtual_network_resource_id` - (Optional) The resource ID of the virtual network.
+    - `virtual_network_link_name_template_override` - (Optional) Override the default name template for the virtual network link.
+    - `resolution_policy` - (Optional) The resolution policy for the virtual network link. Possible values are `Default` and `NxDomainRedirect`.
   - `virtual_network_link_by_zone_and_virtual_network` - (Optional) A map of maps for configuring virtual network links by specific zone and virtual network combinations. Each entry is keyed by zone, then by virtual network, with an object containing:
     - `virtual_network_resource_id` - (Optional) The resource ID of the virtual network.
     - `name` - (Optional) The name of the virtual network link.
@@ -1178,6 +1182,11 @@ map(object({
         virtual_network_link_name_template_override = optional(string)
         resolution_policy                           = optional(string)
       })))
+      virtual_network_link_additional_virtual_networks = optional(map(object({
+        virtual_network_resource_id                 = optional(string)
+        virtual_network_link_name_template_override = optional(string)
+        resolution_policy                           = optional(string)
+      })))
       virtual_network_link_by_zone_and_virtual_network = optional(map(map(object({
         virtual_network_resource_id = optional(string, null)
         name                        = optional(string, null)
@@ -1448,7 +1457,7 @@ Version: 0.4.3
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.22.1
+Version: 0.22.2
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 

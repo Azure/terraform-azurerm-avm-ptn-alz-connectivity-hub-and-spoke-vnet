@@ -80,7 +80,7 @@ module "dns_resolver" {
 
 module "private_dns_zones" {
   source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
-  version  = "0.22.1"
+  version  = "0.22.2"
   for_each = local.private_dns_zones
 
   location                                                   = each.value.location
@@ -91,6 +91,7 @@ module "private_dns_zones" {
   private_link_private_dns_zones_additional                  = each.value.private_link_private_dns_zones_additional
   private_link_private_dns_zones_regex_filter                = each.value.private_link_private_dns_zones_regex_filter
   tags                                                       = var.tags
+  virtual_network_link_additional_virtual_networks           = each.value.virtual_network_link_additional_virtual_networks
   virtual_network_link_by_zone_and_virtual_network           = each.value.virtual_network_link_by_zone_and_virtual_network
   virtual_network_link_default_virtual_networks              = each.value.virtual_network_link_default_virtual_networks
   virtual_network_link_name_template                         = each.value.virtual_network_link_name_template

@@ -13,6 +13,7 @@ locals {
     private_link_private_dns_zones                             = value.private_dns_zones.private_link_private_dns_zones
     private_link_private_dns_zones_additional                  = value.private_dns_zones.private_link_private_dns_zones_additional
     virtual_network_link_default_virtual_networks              = coalesce(value.private_dns_zones.virtual_network_link_default_virtual_networks, local.private_dns_zones_virtual_network_link_default_virtual_networks)
+    virtual_network_link_additional_virtual_networks           = value.private_dns_zones.virtual_network_link_additional_virtual_networks
     virtual_network_link_by_zone_and_virtual_network           = value.private_dns_zones.virtual_network_link_by_zone_and_virtual_network
     virtual_network_link_overrides_by_virtual_network          = value.private_dns_zones.virtual_network_link_overrides_by_virtual_network
     virtual_network_link_overrides_by_zone                     = value.private_dns_zones.virtual_network_link_overrides_by_zone
