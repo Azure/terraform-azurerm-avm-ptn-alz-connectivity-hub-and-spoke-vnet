@@ -78,7 +78,7 @@ locals {
       sku_tier            = vnet.firewall.management_ip_configuration.public_ip_config.sku_tier
       tags                = vnet.firewall.tags
       zones               = vnet.firewall.management_ip_configuration.public_ip_config.zones
-      public_ip_prefix_id = try(ip_config_value.public_ip_config.public_ip_prefix_id, null)
+      public_ip_prefix_id = try(vnet.firewall.management_ip_configuration.public_ip_config.public_ip_prefix_id, null)
     } if vnet.firewall != null && vnet.firewall.management_ip_enabled
   }
   fw_policies = {
