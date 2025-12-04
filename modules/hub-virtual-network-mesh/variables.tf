@@ -106,6 +106,7 @@ variable "hub_virtual_networks" {
           resource_group_name = optional(string)
           sku_tier            = optional(string, "Regional")
           zones               = optional(set(string))
+          public_ip_prefix_id = optional(string, null)
         }))
       }))
       ip_configurations = optional(map(object({
@@ -117,6 +118,7 @@ variable "hub_virtual_networks" {
           resource_group_name = optional(string)
           sku_tier            = optional(string, "Regional")
           zones               = optional(set(string))
+          public_ip_prefix_id = optional(string, null)
         }))
       })), {})
       management_ip_configuration = optional(object({
@@ -127,6 +129,7 @@ variable "hub_virtual_networks" {
           resource_group_name = optional(string)
           sku_tier            = optional(string, "Regional")
           zones               = optional(set(string))
+          public_ip_prefix_id = optional(string, null)
         }))
       }))
       firewall_policy = optional(object({
@@ -282,6 +285,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
+      - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
   - `ip_configurations` - (Optional) A map of the default IP configuration for the Azure Firewall. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
     - `is_default` - (Optional) Indicates this is the default IP configuration, which will be linked to the Firewall subnet. If not specified will be `false`. At least one and only one IP configuration must have this set to `true`.
@@ -290,6 +294,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
+      - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
   - `management_ip_configuration` - (Optional) An object with the following fields. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
     - `public_ip_config` - (Optional) An object with the following fields:
@@ -297,6 +302,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
+      - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
   - `firewall_policy` - (Optional) An object with the following fields. Cannot be used with `firewall_policy_id`. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the firewall policy. If not specified will use `afw-policy-{vnetname}`.
     - `sku` - (Optional) The SKU to use for the firewall policy. Possible values include `Standard`, `Premium`.
