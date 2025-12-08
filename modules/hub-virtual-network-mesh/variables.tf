@@ -106,7 +106,7 @@ variable "hub_virtual_networks" {
           resource_group_name = optional(string)
           sku_tier            = optional(string, "Regional")
           zones               = optional(set(string))
-          public_ip_prefix_id = optional(string, null)
+          public_ip_prefix_id = optional(string)
         }))
       }))
       ip_configurations = optional(map(object({
@@ -118,7 +118,7 @@ variable "hub_virtual_networks" {
           resource_group_name = optional(string)
           sku_tier            = optional(string, "Regional")
           zones               = optional(set(string))
-          public_ip_prefix_id = optional(string, null)
+          public_ip_prefix_id = optional(string)
         }))
       })), {})
       management_ip_configuration = optional(object({
@@ -129,7 +129,7 @@ variable "hub_virtual_networks" {
           resource_group_name = optional(string)
           sku_tier            = optional(string, "Regional")
           zones               = optional(set(string))
-          public_ip_prefix_id = optional(string, null)
+          public_ip_prefix_id = optional(string)
         }))
       }))
       firewall_policy = optional(object({
