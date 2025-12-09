@@ -90,7 +90,7 @@ module "private_dns_zones" {
   private_link_private_dns_zones                             = each.value.private_link_private_dns_zones
   private_link_private_dns_zones_additional                  = each.value.private_link_private_dns_zones_additional
   private_link_private_dns_zones_regex_filter                = each.value.private_link_private_dns_zones_regex_filter
-  tags                                                       = var.tags
+  tags                                                       = each.value.tags
   virtual_network_link_additional_virtual_networks           = each.value.virtual_network_link_additional_virtual_networks
   virtual_network_link_by_zone_and_virtual_network           = each.value.virtual_network_link_by_zone_and_virtual_network
   virtual_network_link_default_virtual_networks              = each.value.virtual_network_link_default_virtual_networks
@@ -109,7 +109,7 @@ module "private_dns_zone_auto_registration" {
   domain_name           = each.value.domain_name
   parent_id             = each.value.parent_id
   enable_telemetry      = var.enable_telemetry
-  tags                  = var.tags
+  tags                  = each.value.tags
   virtual_network_links = each.value.virtual_network_links
 }
 

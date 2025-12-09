@@ -26,12 +26,13 @@ locals {
     location    = value.location
     domain_name = coalesce(value.private_dns_zones.auto_registration_zone_name, "${value.location}.azure.local")
     parent_id   = coalesce(value.private_dns_zones.auto_registration_zone_parent_id, value.private_dns_zones.parent_id, value.hub_virtual_network.parent_id, value.default_parent_id)
+    tags        = coalesce(value.private_dns_zones.tags, var.tags, {})
     virtual_network_links = {
       auto_registration = {
         name                 = "vnet-link-${key}-auto-registration"
         virtual_network_id   = module.hub_and_spoke_vnet.virtual_networks[key].id
         registration_enabled = true
-        tags                 = var.tags
+        tags                 = coalesce(value.private_dns_zones.tags, var.tags, {})
       }
     }
   } if local.private_dns_zones_enabled[key] && value.private_dns_zones.auto_registration_zone_enabled }
