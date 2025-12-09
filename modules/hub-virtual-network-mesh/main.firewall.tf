@@ -32,6 +32,7 @@ module "fw_default_ips" {
   allocation_method   = "Static"
   enable_telemetry    = var.enable_telemetry
   ip_version          = each.value.ip_version
+  public_ip_prefix_id = each.value.public_ip_prefix_id
   sku                 = "Standard"
   sku_tier            = each.value.sku_tier
   tags                = each.value.tags == null ? var.tags : each.value.tags
@@ -49,6 +50,7 @@ module "fw_management_ips" {
   allocation_method   = "Static"
   enable_telemetry    = var.enable_telemetry
   ip_version          = each.value.ip_version
+  public_ip_prefix_id = each.value.public_ip_prefix_id
   sku                 = "Standard"
   sku_tier            = each.value.sku_tier
   tags                = each.value.tags == null ? var.tags : each.value.tags
