@@ -1,9 +1,3 @@
-data "azurerm_firewall" "azfws" {
-  for_each = local.hub_virtual_networks
-  name                = each.value.firewall.name
-  resource_group_name = each.value.firewall.resource_group_name
-}
-
 module "hub_and_spoke_vnet" {
   source = "./modules/hub-virtual-network-mesh"
 
@@ -68,6 +62,10 @@ module "gateway_route_table" {
   subnet_resource_ids           = each.value.subnet_resource_ids
   enable_telemetry              = var.enable_telemetry
   tags                          = var.tags
+
+  depends_on = [
+    module.virtual_network_gateway
+  ]
 }
 
 module "dns_resolver" {
