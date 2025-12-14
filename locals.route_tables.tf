@@ -1,13 +1,13 @@
 locals {
-#   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
-#     virtual_network_key    = key
-#     key                    = key
-#     name                   = "${key}-${replace(value.address_space, "/", "-")}"
-#     address_prefix         = value.address_space
-#     next_hop_type          = "VirtualAppliance"
-#     next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].output.private_ip_address
-#     }
-#   }
+  gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
+    virtual_network_key    = key
+    key                    = key
+    name                   = "${key}-${replace(value.address_space, "/", "-")}"
+    address_prefix         = value.address_space
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].output.private_ip_address
+    }
+  }
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.routes : routeKey => {
       virtual_network_key    = key
@@ -24,7 +24,7 @@ locals {
     location                      = value.location
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
-    routes                        = local.gateway_route_table_routes[key]
+    routes                        = merge(local.gateway_route_table_routes[key], local.gateway_route_table_default_route)
     # Assumes only assigning gw route table to one subnet in each region
     subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { default = try(module.virtual_network_gateway.subnet.id, null) } : {}
     } if local.gateway_route_table_enabled[key]
