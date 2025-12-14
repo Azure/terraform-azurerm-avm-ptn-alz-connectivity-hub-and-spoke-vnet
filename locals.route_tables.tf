@@ -19,12 +19,14 @@ locals {
     }
     }
   }
+  final_gateway_route_table_routes = merge(local.gateway_route_table_routes, local.gateway_route_table_default_route)
+
   gateway_route_table = { for key, value in var.hub_virtual_networks : key => {
     name                          = coalesce(value.virtual_network_gateways.route_table_name, local.default_names[key].virtual_network_gateway_route_table_name)
     location                      = value.location
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
-    routes                        = merge(local.gateway_route_table_routes[key], local.gateway_route_table_default_route)
+    routes                        = local.final_gateway_route_table_routes[key]
     # Assumes only assigning gw route table to one subnet in each region
     subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { default = try(module.virtual_network_gateway.subnet.id, null) } : {}
     } if local.gateway_route_table_enabled[key]

@@ -18,7 +18,7 @@ locals {
       name             = "GatewaySubnet"
       route_table = {
         # Handled by separate logic to be able to use outputs from modules without getting cycle error, therefore id can not be set here
-        id                           = null #local.gateway_route_table_enabled[key] ? module.gateway_route_table[key].resource_id : null
+        id                           = null
         assign_generated_route_table = false
       }
       default_outbound_access_enabled = value.virtual_network_gateways.subnet_default_outbound_access_enabled
