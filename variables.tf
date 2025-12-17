@@ -1221,6 +1221,11 @@ variable "hub_virtual_networks_sensitive" {
             shared_key = optional(string, null)
           }), null)
         })), {})
+        local_network_gateways = optional(map(object({
+          connection = optional(object({
+            shared_key = optional(string, null)
+          }), null)
+        })), {})
       }), {})
       vpn = optional(object({
         local_network_gateways = optional(map(object({
@@ -1244,6 +1249,9 @@ The structure mirrors `hub_virtual_networks` but only includes sensitive fields:
         - `shared_key` - (Optional) The shared key for the connection.
       - `peering` - (Optional) Peering settings.
         - `shared_key` - (Optional) The shared key for the peering.
+    - `local_network_gateways` - (Optional) Map of local network gateways.
+      - `connection` - (Optional) Connection settings.
+        - `shared_key` - (Optional) The shared key for the connection.
   - `vpn` - (Optional) VPN gateway sensitive configuration.
     - `local_network_gateways` - (Optional) Map of local network gateways.
       - `connection` - (Optional) Connection settings.
@@ -1264,6 +1272,13 @@ hub_virtual_networks_sensitive = {
             }
             peering = {
               shared_key = random_password.er_peering_key.result
+            }
+          }
+        }
+        local_network_gateways = {
+          onprem = {
+            connection = {
+              shared_key = random_password.er_lgw_key.result
             }
           }
         }

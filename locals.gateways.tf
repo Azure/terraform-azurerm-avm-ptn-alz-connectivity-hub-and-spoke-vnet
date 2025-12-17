@@ -14,6 +14,13 @@ locals {
               }) : null
             })
           }
+          local_network_gateways = {
+            for lgw_key, lgw_value in coalesce(value.virtual_network_gateways.express_route.local_network_gateways, {}) : lgw_key => merge(lgw_value, {
+              connection = lgw_value.connection != null ? merge(lgw_value.connection, {
+                shared_key = try(var.hub_virtual_networks_sensitive[key].virtual_network_gateways.express_route.local_network_gateways[lgw_key].connection.shared_key, lgw_value.connection.shared_key)
+              }) : null
+            })
+          }
         })
         vpn = merge(value.virtual_network_gateways.vpn, {
           local_network_gateways = {
