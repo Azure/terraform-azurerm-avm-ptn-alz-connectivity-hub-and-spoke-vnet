@@ -13,7 +13,7 @@ locals {
       public_ip_settings  = value.bastion.bastion_public_ip
     } if local.bastions_enabled[key]
   })
-  bastion_hosts = {
+  bastion_hosts = nonsensitive({
     for key, value in var.hub_virtual_networks : key => {
       name                = coalesce(value.bastion.name, local.default_names[key].bastion_host_name)
       location            = value.location
@@ -28,5 +28,5 @@ locals {
       }
       bastion_settings = value.bastion
     } if local.bastions_enabled[key]
-  }
+  })
 }

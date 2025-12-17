@@ -1,5 +1,5 @@
 locals {
-  virtual_network_gateways = merge(local.virtual_network_gateways_express_route, local.virtual_network_gateways_vpn)
+  virtual_network_gateways = nonsensitive(merge(local.virtual_network_gateways_express_route, local.virtual_network_gateways_vpn))
   virtual_network_gateways_express_route = {
     for hub_network_key, hub_network_value in var.hub_virtual_networks : "${hub_network_key}-express-route" => {
       name                              = coalesce(hub_network_value.virtual_network_gateways.express_route.name, local.default_names[hub_network_key].virtual_network_gateway_express_route_name)

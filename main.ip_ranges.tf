@@ -31,12 +31,12 @@ module "virtual_network_ip_prefixes" {
 }
 
 locals {
-  virtual_network_subnet_default_ip_prefix_input = {
+  virtual_network_subnet_default_ip_prefix_input = nonsensitive({
     for key, value in module.virtual_network_ip_prefixes : key => {
       address_space    = value.address_prefixes["hub"]
       address_prefixes = local.virtual_network_subnet_default_ip_prefix_sizes
     }
-  }
+  })
 }
 
 module "virtual_network_subnet_ip_prefixes" {
