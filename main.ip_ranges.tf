@@ -10,14 +10,14 @@ locals {
 }
 
 locals {
-  virtual_network_default_ip_prefix_input = {
+  virtual_network_default_ip_prefix_input = nonsensitive({
     for key, value in var.hub_virtual_networks : key => {
       address_space = value.default_hub_address_space == null ? "10.${index(keys(var.hub_virtual_networks), key)}.0.0/16" : value.default_hub_address_space
       address_prefixes = {
         hub = local.virtual_network_default_ip_prefix_size
       }
     }
-  }
+  })
 }
 
 module "virtual_network_ip_prefixes" {
