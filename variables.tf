@@ -118,20 +118,22 @@ variable "hub_virtual_networks" {
     location                  = string
 
     hub_virtual_network = optional(object({
-      name                          = optional(string)
-      address_space                 = optional(list(string))
-      parent_id                     = optional(string)
-      route_table_name_firewall     = optional(string)
-      route_table_name_user_subnets = optional(string)
-      bgp_community                 = optional(string)
-      ddos_protection_plan_id       = optional(string)
-      dns_servers                   = optional(list(string))
-      flow_timeout_in_minutes       = optional(number, 4)
-      mesh_peering_enabled          = optional(bool, true)
-      peering_names                 = optional(map(string))
-      routing_address_space         = optional(list(string), [])
-      hub_router_ip_address         = optional(string)
-      tags                          = optional(map(string))
+      name                             = optional(string)
+      address_space                    = optional(list(string))
+      parent_id                        = optional(string)
+      route_table_firewall_enabled     = optional(bool, true)
+      route_table_user_subnets_enabled = optional(bool, true)
+      route_table_name_firewall        = optional(string)
+      route_table_name_user_subnets    = optional(string)
+      bgp_community                    = optional(string)
+      ddos_protection_plan_id          = optional(string)
+      dns_servers                      = optional(list(string))
+      flow_timeout_in_minutes          = optional(number, 4)
+      mesh_peering_enabled             = optional(bool, true)
+      peering_names                    = optional(map(string))
+      routing_address_space            = optional(list(string), [])
+      hub_router_ip_address            = optional(string)
+      tags                             = optional(map(string))
 
       route_table_entries_firewall = optional(set(object({
         name                = string
@@ -318,6 +320,7 @@ variable "hub_virtual_networks" {
       tags                                   = optional(map(string), null)
       tunneling_enabled                      = optional(bool, false)
       zones                                  = optional(set(string), null)
+      resource_group_name                    = optional(string)
 
       bastion_public_ip = optional(object({
         name                    = optional(string)
@@ -335,6 +338,7 @@ variable "hub_virtual_networks" {
         edge_zone               = optional(string, null)
         ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
         ddos_protection_plan_id = optional(string, null)
+        resource_group_name     = optional(string)
       }), {})
     }), {})
 
@@ -758,6 +762,8 @@ The following top level attributes are supported:
   - `name` - (Optional) The name of the Virtual Network.
   - `address_space` - (Optional) A list of IPv4 address spaces that are used by this virtual network in CIDR format, e.g. `["192.168.0.0/24"]`.
   - `parent_id` - (Optional) The ID of the parent resource group where the virtual network should be created.
+  - `route_table_firewall_enabled` - (Optional) Should the firewall route table be created? Default `true`.
+  - `route_table_user_subnets_enabled` - (Optional) Should the user subnets route table be created? Default `true`.
   - `bgp_community` - The BGP community associated with the virtual network.
   - `ddos_protection_plan_id` - The ID of the DDoS protection plan associated with the virtual network.
   - `dns_servers` - A list of DNS servers IP addresses for the virtual network.
@@ -919,6 +925,7 @@ The following top level attributes are supported:
   - `tags` - (Optional) A map of tags to apply to the Azure Bastion.
   - `tunneling_enabled` - (Optional) Should tunneling be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
   - `zones` - (Optional) A set of availability zones for the Azure Bastion.
+  - `resource_group_name` - (Optional) The name of the resource group where the Azure Bastion should be created. If not specified will use the parent resource group of the virtual network.
   - `bastion_public_ip` - (Optional) An object with the following fields:
     - `name` - (Optional) The name of the public IP for the Azure Bastion. If not specified will use `pip-bastion-{vnetname}`.
     - `allocation_method` - (Optional) The allocation method for the public IP. Possible values are `Static`, `Dynamic`. Default `Static`.
@@ -935,6 +942,7 @@ The following top level attributes are supported:
     - `edge_zone` - (Optional) The edge zone for the public IP.
     - `ddos_protection_mode` - (Optional) The DDoS protection mode. Possible values are `Disabled`, `Enabled`, `VirtualNetworkInherited`. Default `VirtualNetworkInherited`.
     - `ddos_protection_plan_id` - (Optional) The ID of the DDoS protection plan.
+    - `resource_group_name` - (Optional) The name of the resource group where the public IP should be created. If not specified will use the bastion resource group name or the parent resource group of the virtual network.
 
 ## Virtual Network Gateways
 
