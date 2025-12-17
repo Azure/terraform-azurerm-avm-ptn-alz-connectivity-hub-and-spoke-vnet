@@ -1209,6 +1209,50 @@ The following top level attributes are supported:
 DESCRIPTION
 }
 
+variable "hub_virtual_networks_sensitive" {
+  type = map(object({
+    virtual_network_gateways = optional(object({
+      express_route = optional(object({
+        express_route_circuits = optional(map(object({
+          connection = optional(object({
+            shared_key = optional(string, null)
+          }), null)
+          peering = optional(object({
+            shared_key = optional(string, null)
+          }), null)
+        })), {})
+      }), {})
+      vpn = optional(object({
+        local_network_gateways = optional(map(object({
+          connection = optional(object({
+            shared_key = optional(string, null)
+          }), null)
+        })), {})
+      }), {})
+    }), {})
+  }))
+  default     = {}
+  sensitive   = true
+  description = <<DESCRIPTION
+(Optional) A map of sensitive values for hub virtual networks. This variable should contain only sensitive data such as shared keys.
+The structure mirrors `hub_virtual_networks` but only includes sensitive fields:
+
+- `virtual_network_gateways` - (Optional) Configuration for virtual network gateways.
+  - `express_route` - (Optional) ExpressRoute gateway sensitive configuration.
+    - `express_route_circuits` - (Optional) Map of ExpressRoute circuits.
+      - `connection` - (Optional) Connection settings.
+        - `shared_key` - (Optional) The shared key for the connection.
+      - `peering` - (Optional) Peering settings.
+        - `shared_key` - (Optional) The shared key for the peering.
+  - `vpn` - (Optional) VPN gateway sensitive configuration.
+    - `local_network_gateways` - (Optional) Map of local network gateways.
+      - `connection` - (Optional) Connection settings.
+        - `shared_key` - (Optional) The shared key for the connection.
+
+These values will be merged into the main `hub_virtual_networks` variable where needed.
+DESCRIPTION
+}
+
 variable "retry" {
   type = object({
     error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
