@@ -2,7 +2,7 @@ module "hub_and_spoke_vnet" {
   source = "./modules/hub-virtual-network-mesh"
 
   enable_telemetry     = var.enable_telemetry
-  hub_virtual_networks = local.hub_virtual_networks
+  hub_virtual_networks = local.hub_virtual_networks_processed
   retry                = var.retry
   tags                 = var.tags
   timeouts             = var.timeouts
