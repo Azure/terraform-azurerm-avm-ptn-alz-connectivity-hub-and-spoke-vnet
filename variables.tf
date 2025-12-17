@@ -1250,6 +1250,37 @@ The structure mirrors `hub_virtual_networks` but only includes sensitive fields:
         - `shared_key` - (Optional) The shared key for the connection.
 
 These values will be merged into the main `hub_virtual_networks` variable where needed.
+
+Example usage:
+```terraform
+hub_virtual_networks_sensitive = {
+  primary = {
+    virtual_network_gateways = {
+      express_route = {
+        express_route_circuits = {
+          circuit1 = {
+            connection = {
+              shared_key = random_password.er_connection_key.result
+            }
+            peering = {
+              shared_key = random_password.er_peering_key.result
+            }
+          }
+        }
+      }
+      vpn = {
+        local_network_gateways = {
+          onprem = {
+            connection = {
+              shared_key = random_password.vpn_key.result
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 DESCRIPTION
 }
 
