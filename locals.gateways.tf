@@ -5,7 +5,7 @@ locals {
       virtual_network_gateways = merge(value.virtual_network_gateways, {
         express_route = merge(value.virtual_network_gateways.express_route, {
           express_route_circuits = {
-            for circuit_key, circuit_value in value.virtual_network_gateways.express_route.express_route_circuits : circuit_key => merge(circuit_value, {
+            for circuit_key, circuit_value in coalesce(value.virtual_network_gateways.express_route.express_route_circuits, {}) : circuit_key => merge(circuit_value, {
               connection = circuit_value.connection != null ? merge(circuit_value.connection, {
                 shared_key = try(var.hub_virtual_networks_sensitive[key].virtual_network_gateways.express_route.express_route_circuits[circuit_key].connection.shared_key, circuit_value.connection.shared_key)
               }) : null
@@ -17,7 +17,7 @@ locals {
         })
         vpn = merge(value.virtual_network_gateways.vpn, {
           local_network_gateways = {
-            for lgw_key, lgw_value in value.virtual_network_gateways.vpn.local_network_gateways : lgw_key => merge(lgw_value, {
+            for lgw_key, lgw_value in coalesce(value.virtual_network_gateways.vpn.local_network_gateways, {}) : lgw_key => merge(lgw_value, {
               connection = lgw_value.connection != null ? merge(lgw_value.connection, {
                 shared_key = try(var.hub_virtual_networks_sensitive[key].virtual_network_gateways.vpn.local_network_gateways[lgw_key].connection.shared_key, lgw_value.connection.shared_key)
               }) : null
