@@ -218,21 +218,23 @@ Type:
 
 ```hcl
 map(object({
-    name                          = string
-    address_space                 = list(string)
-    location                      = string
-    parent_id                     = string
-    route_table_name_firewall     = optional(string)
-    route_table_name_user_subnets = optional(string)
-    bgp_community                 = optional(string)
-    ddos_protection_plan_id       = optional(string)
-    dns_servers                   = optional(list(string))
-    flow_timeout_in_minutes       = optional(number, 4)
-    mesh_peering_enabled          = optional(bool, true)
-    peering_names                 = optional(map(string))
-    routing_address_space         = optional(list(string), [])
-    hub_router_ip_address         = optional(string)
-    tags                          = optional(map(string))
+    name                             = string
+    address_space                    = list(string)
+    location                         = string
+    parent_id                        = string
+    route_table_firewall_enabled     = optional(bool, true)
+    route_table_user_subnets_enabled = optional(bool, true)
+    route_table_name_firewall        = optional(string)
+    route_table_name_user_subnets    = optional(string)
+    bgp_community                    = optional(string)
+    ddos_protection_plan_id          = optional(string)
+    dns_servers                      = optional(list(string))
+    flow_timeout_in_minutes          = optional(number, 4)
+    mesh_peering_enabled             = optional(bool, true)
+    peering_names                    = optional(map(string))
+    routing_address_space            = optional(list(string), [])
+    hub_router_ip_address            = optional(string)
+    tags                             = optional(map(string))
 
     route_table_entries_firewall = optional(set(object({
       name           = string
