@@ -440,7 +440,6 @@ The following top level attributes are supported:
       - `reverse_fqdn` - (Optional) The reverse FQDN.
       - `sku_tier` - (Optional) The SKU tier. Default `Regional`.
   - `local_network_gateways` - (Optional) A map of local network gateways. Each gateway is an object with:
-    - `id` - (Optional) The ID of an existing local network gateway.
     - `name` - (Optional) The name of the local network gateway.
     - `resource_group_name` - (Optional) The resource group name.
     - `address_space` - (Optional) A list of address spaces.
@@ -493,8 +492,71 @@ The following top level attributes are supported:
   - `sku` - (Optional) The SKU of the VPN gateway. Possible values include `Basic`, `VpnGw1`, `VpnGw2`, `VpnGw3`, `VpnGw4`, `VpnGw5`, `VpnGw1AZ`, `VpnGw2AZ`, `VpnGw3AZ`, `VpnGw4AZ`, `VpnGw5AZ`. Default `VpnGw1AZ`.
   - `edge_zone` - (Optional) The edge zone for the VPN gateway.
   - `hosted_on_behalf_of_public_ip_enabled` - (Optional) Should hosted on behalf of public IP be enabled? Default `false`.
-  - `ip_configurations` - (Optional) A map of IP configurations. Same structure as ExpressRoute gateway IP configurations.
-  - `local_network_gateways` - (Optional) A map of local network gateways. Same structure as ExpressRoute gateway local network gateways.
+  - `ip_configurations` - (Optional) A map of IP configurations. Each configuration is an object with:
+    - `name` - (Optional) The name of the IP configuration.
+    - `apipa_addresses` - (Optional) A list of APIPA addresses.
+    - `private_ip_address_allocation` - (Optional) The private IP address allocation method. Possible values are `Dynamic`, `Static`. Default `Dynamic`.
+    - `public_ip` - (Optional) An object with the following fields:
+      - `creation_enabled` - (Optional) Should the public IP be created? Default `true`.
+      - `id` - (Optional) The ID of an existing public IP.
+      - `name` - (Optional) The name of the public IP.
+      - `resource_group_name` - (Optional) The resource group name for the public IP.
+      - `allocation_method` - (Optional) The allocation method. Possible values are `Static`, `Dynamic`. Default `Static`.
+      - `sku` - (Optional) The SKU. Possible values are `Basic`, `Standard`. Default `Standard`.
+      - `tags` - (Optional) A map of tags.
+      - `zones` - (Optional) A list of availability zones.
+      - `edge_zone` - (Optional) The edge zone.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`.
+      - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID.
+      - `domain_name_label` - (Optional) The domain name label.
+      - `idle_timeout_in_minutes` - (Optional) The idle timeout in minutes.
+      - `ip_tags` - (Optional) A map of IP tags.
+      - `ip_version` - (Optional) The IP version. Default `IPv4`.
+      - `public_ip_prefix_id` - (Optional) The public IP prefix ID.
+      - `reverse_fqdn` - (Optional) The reverse FQDN.
+      - `sku_tier` - (Optional) The SKU tier. Default `Regional`.
+  - `local_network_gateways` - (Optional) A map of local network gateways. Each gateway is an object with:
+    - `name` - (Optional) The name of the local network gateway.
+    - `resource_group_name` - (Optional) The resource group name.
+    - `address_space` - (Optional) A list of address spaces.
+    - `gateway_fqdn` - (Optional) The gateway FQDN.
+    - `gateway_address` - (Optional) The gateway IP address.
+    - `tags` - (Optional) A map of tags.
+    - `bgp_settings` - (Optional) An object with the following fields:
+      - `asn` - The ASN (required).
+      - `bgp_peering_address` - The BGP peering address (required).
+      - `peer_weight` - (Optional) The peer weight.
+    - `connection` - (Optional) An object with the following fields:
+      - `name` - (Optional) The connection name.
+      - `resource_group_name` - (Optional) The resource group name.
+      - `type` - The connection type (required). Possible values are `IPsec`, `Vnet2Vnet`, `ExpressRoute`.
+      - `connection_mode` - (Optional) The connection mode.
+      - `connection_protocol` - (Optional) The connection protocol.
+      - `dpd_timeout_seconds` - (Optional) The DPD timeout in seconds.
+      - `egress_nat_rule_ids` - (Optional) A list of egress NAT rule IDs.
+      - `enable_bgp` - (Optional) Should BGP be enabled?
+      - `ingress_nat_rule_ids` - (Optional) A list of ingress NAT rule IDs.
+      - `local_azure_ip_address_enabled` - (Optional) Should local Azure IP address be enabled?
+      - `peer_virtual_network_gateway_id` - (Optional) The peer virtual network gateway ID.
+      - `routing_weight` - (Optional) The routing weight.
+      - `shared_key` - (Optional) The shared key.
+      - `tags` - (Optional) A map of tags.
+      - `use_policy_based_traffic_selectors` - (Optional) Should policy-based traffic selectors be used?
+      - `custom_bgp_addresses` - (Optional) An object with the following fields:
+        - `primary` - The primary BGP address (required).
+        - `secondary` - The secondary BGP address (required).
+      - `ipsec_policy` - (Optional) An object with the following fields:
+        - `dh_group` - The DH group (required).
+        - `ike_encryption` - The IKE encryption (required).
+        - `ike_integrity` - The IKE integrity (required).
+        - `ipsec_encryption` - The IPsec encryption (required).
+        - `ipsec_integrity` - The IPsec integrity (required).
+        - `pfs_group` - The PFS group (required).
+        - `sa_datasize` - (Optional) The SA data size.
+        - `sa_lifetime` - (Optional) The SA lifetime.
+      - `traffic_selector_policy` - (Optional) A list of objects with the following fields:
+        - `local_address_prefixes` - A list of local address prefixes (required).
+        - `remote_address_prefixes` - A list of remote address prefixes (required).
   - `tags` - (Optional) A map of tags to apply to the VPN gateway.
   - `vpn_active_active_enabled` - (Optional) Should active-active mode be enabled? Default `true`.
   - `vpn_bgp_enabled` - (Optional) Should BGP be enabled? Default `false`.
@@ -955,7 +1017,6 @@ map(object({
           }), {})
         })), {})
         local_network_gateways = optional(map(object({
-          id                  = optional(string, null)
           name                = optional(string, null)
           resource_group_name = optional(string, null)
           address_space       = optional(list(string), null)
@@ -1044,7 +1105,6 @@ map(object({
           active_active_2 = {}
         })
         local_network_gateways = optional(map(object({
-          id                  = optional(string, null)
           name                = optional(string, null)
           resource_group_name = optional(string, null)
           address_space       = optional(list(string), null)
