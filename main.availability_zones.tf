@@ -11,6 +11,6 @@ module "regions" {
 
 locals {
   availability_zones = local.has_regions ? {
-    for key, value in var.hub_virtual_networks : key => module.regions[0].regions_by_name[value.location].zones == null ? [] : module.regions[0].regions_by_name[value.location].zones
+    for key, value in local.hub_virtual_networks : key => module.regions[0].regions_by_name[value.location].zones == null ? [] : module.regions[0].regions_by_name[value.location].zones
   } : null
 }

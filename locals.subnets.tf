@@ -1,5 +1,5 @@
 locals {
-  bastion_subnets = { for key, value in var.hub_virtual_networks : key => {
+  bastion_subnets = { for key, value in local.hub_virtual_networks : key => {
     bastion = {
       hub_network_key  = key
       address_prefixes = [coalesce(value.bastion.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["bastion"])]
@@ -11,7 +11,7 @@ locals {
       default_outbound_access_enabled = value.bastion.subnet_default_outbound_access_enabled
     } } if local.bastions_enabled[key]
   }
-  gateway_subnets = { for key, value in var.hub_virtual_networks : key => {
+  gateway_subnets = { for key, value in local.hub_virtual_networks : key => {
     gateway = {
       hub_network_key  = key
       address_prefixes = [coalesce(value.virtual_network_gateways.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["gateway"])]
@@ -23,7 +23,7 @@ locals {
       default_outbound_access_enabled = value.virtual_network_gateways.subnet_default_outbound_access_enabled
     } } if(local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key])
   }
-  private_dns_resolver_subnets = { for key, value in var.hub_virtual_networks : key => {
+  private_dns_resolver_subnets = { for key, value in local.hub_virtual_networks : key => {
     dns_resolver = {
       hub_network_key  = key
       address_prefixes = [coalesce(value.private_dns_resolver.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["dns_resolver"])]
@@ -41,5 +41,5 @@ locals {
       default_outbound_access_enabled = value.private_dns_resolver.subnet_default_outbound_access_enabled
     } } if local.private_dns_resolver_enabled[key] && value.private_dns_resolver.default_inbound_endpoint_enabled
   }
-  subnets = { for key, value in var.hub_virtual_networks : key => merge(lookup(local.private_dns_resolver_subnets, key, {}), lookup(local.bastion_subnets, key, {}), lookup(local.gateway_subnets, key, {})) }
+  subnets = { for key, value in local.hub_virtual_networks : key => merge(lookup(local.private_dns_resolver_subnets, key, {}), lookup(local.bastion_subnets, key, {}), lookup(local.gateway_subnets, key, {})) }
 }
