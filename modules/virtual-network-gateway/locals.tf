@@ -2,7 +2,7 @@ locals {
   azurerm_express_route_circuit_peering           = nonsensitive(sensitive(local.express_route_circuit_peerings))
   azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
-    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway if local_network_gateway.id == null
+    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway
   }
   azurerm_public_ip = var.hosted_on_behalf_of_public_ip_enabled ? {} : {
     for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
