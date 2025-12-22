@@ -1,4 +1,15 @@
 locals {
+  final_gateway_route_table_routes = merge(local.gateway_route_table_routes, local.gateway_route_table_default_route)
+  gateway_route_table = { for key, value in var.hub_virtual_networks : key => {
+    name                          = coalesce(value.virtual_network_gateways.route_table_name, local.default_names[key].virtual_network_gateway_route_table_name)
+    location                      = value.location
+    resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
+    bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
+    routes                        = local.final_gateway_route_table_routes[key]
+    # Assumes only assigning gw route table to one subnet in each region
+    subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { default = try(module.virtual_network_gateway.subnet.id, null) } : {}
+    } if local.gateway_route_table_enabled[key]
+  }
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
     virtual_network_key    = key
     key                    = key
@@ -8,6 +19,7 @@ locals {
     next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].output.private_ip_address
     }
   }
+  gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.routes : routeKey => {
       virtual_network_key    = key
@@ -19,17 +31,4 @@ locals {
     }
     }
   }
-  final_gateway_route_table_routes = merge(local.gateway_route_table_routes, local.gateway_route_table_default_route)
-
-  gateway_route_table = { for key, value in var.hub_virtual_networks : key => {
-    name                          = coalesce(value.virtual_network_gateways.route_table_name, local.default_names[key].virtual_network_gateway_route_table_name)
-    location                      = value.location
-    resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
-    bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
-    routes                        = local.final_gateway_route_table_routes[key]
-    # Assumes only assigning gw route table to one subnet in each region
-    subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { default = try(module.virtual_network_gateway.subnet.id, null) } : {}
-    } if local.gateway_route_table_enabled[key]
-  }
-  gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
 }

@@ -58,9 +58,9 @@ module "gateway_route_table" {
   name                          = each.value.name
   resource_group_name           = each.value.resource_group_name
   bgp_route_propagation_enabled = each.value.bgp_route_propagation_enabled
+  enable_telemetry              = var.enable_telemetry
   routes                        = each.value.routes
   subnet_resource_ids           = each.value.subnet_resource_ids
-  enable_telemetry              = var.enable_telemetry
   tags                          = var.tags
 
   depends_on = [
