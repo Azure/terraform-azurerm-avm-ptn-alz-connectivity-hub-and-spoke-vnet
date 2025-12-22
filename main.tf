@@ -49,18 +49,23 @@ module "virtual_network_gateway" {
     module.hub_and_spoke_vnet
   ]
 }
-
 module "gateway_route_table" {
   source   = "Azure/avm-res-network-routetable/azurerm"
-  version  = "0.3.1"
-  for_each = local.gateway_route_table
+  version  = "0.4.1"
+  for_each = local.final_gateway_route_table_routes
 
   location                      = each.value.location
   name                          = each.value.name
   resource_group_name           = each.value.resource_group_name
   bgp_route_propagation_enabled = each.value.bgp_route_propagation_enabled
+  routes                        = each.value.routes
+  subnet_resource_ids           = each.value.subnet_resource_ids
   enable_telemetry              = var.enable_telemetry
   tags                          = var.tags
+
+  depends_on = [
+    module.virtual_network_gateway
+  ]
 }
 
 module "dns_resolver" {

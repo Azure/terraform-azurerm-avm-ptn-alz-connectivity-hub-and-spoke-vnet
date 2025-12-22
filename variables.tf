@@ -344,6 +344,12 @@ variable "hub_virtual_networks" {
       route_table_creation_enabled              = optional(bool, false)
       route_table_name                          = optional(string)
       route_table_bgp_route_propagation_enabled = optional(bool, false)
+      routes = optional(map(object({
+        name                   = optional(string, null)
+        address_prefix         = string
+        next_hop_type          = optional(string, null)
+        next_hop_in_ip_address = optional(string, null)
+      })), {})
 
       express_route = optional(object({
         name      = optional(string)
@@ -944,6 +950,11 @@ The following top level attributes are supported:
   - `route_table_creation_enabled` - (Optional) Should a route table be created for the Gateway subnet? Default `false`.
   - `route_table_name` - (Optional) The name of the route table for the Gateway subnet.
   - `route_table_bgp_route_propagation_enabled` - (Optional) Should BGP route propagation be enabled for the Gateway subnet route table? Default `false`.
+  - `routes` - (Optional) Routes for route table
+    - `name` - (Optional) Name of route, will be populated by default values if not set
+    - `address_prefix` - (Required) The destination to which the route applies. Can be CIDR (such as 10.1.0.0/16) or Azure Service Tag (such as ApiManagement, AzureBackup or AzureMonitor) format.
+    - `next_hop_type` - (Optional) The type of Azure hop the packet should be sent to. Possible values are VirtualNetworkGateway, VnetLocal, Internet, VirtualAppliance and None. Will be populated with 'VirtualAppliance' if not set.
+    - `next_hop_in_ip_address` - (Optional) Contains the IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance. Will be populated by Azure Firewall internal IP if not set.
 
 ### ExpressRoute Gateway
 
