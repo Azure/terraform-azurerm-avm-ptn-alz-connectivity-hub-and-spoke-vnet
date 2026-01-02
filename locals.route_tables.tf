@@ -2,7 +2,7 @@ locals {
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
     virtual_network_gateways = {
       routes = {
-        default_route = {
+        default_fw_route = {
           name                   = "${key}-${replace(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes, "/", "-")}"
           address_prefix         = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes
           next_hop_type          = "VirtualAppliance"
@@ -51,16 +51,14 @@ locals {
   #     ]) : route.key => route
   #   }
 
-  final_gateway_route_table_routes = merge(local.gateway_route_table_routes, local.gateway_route_table_default_route)
-
   gateway_route_table = { for key, value in var.hub_virtual_networks : key => {
     name                          = coalesce(value.virtual_network_gateways.route_table_name, local.default_names[key].virtual_network_gateway_route_table_name)
     location                      = value.location
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
-    routes                        = local.final_gateway_route_table_routes[key].virtual_network_gateways.routes
-    subnet_resource_ids           = can(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id) ? { default = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id } : {}
-    # subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { default = try(module.virtual_network_gateway.subnet.id, null) } : {}
+    routes                        = merge(local.gateway_route_table_routes[key].virtual_network_gateways.routes, local.gateway_route_table_default_route[key].virtual_network_gateways.routes)
+    # subnet_resource_ids           = can(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id) ? { default = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id } : {}
+    subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { default = try(module.virtual_network_gateway.subnet.id, null) } : {}
     } if local.gateway_route_table_enabled[key]
   }
   gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
