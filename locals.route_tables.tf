@@ -1,17 +1,14 @@
 locals {
-  # Bypassing virtual_network_gateways object in structure as routes are the only ones used in merge
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
-    routes = {
-      default_fw_route = {
-        name                   = "${key}-${replace(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes, "/", "-")}"
-        address_prefix         = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes
-        next_hop_type          = "VirtualAppliance"
-        next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].private_ip_address
-      }
+    default_fw_route = {
+      name                   = "${key}-${replace(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes, "/", "-")}"
+      address_prefix         = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes
+      next_hop_type          = "VirtualAppliance"
+      next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].private_ip_address
     }
     }
   }
-  # Bypassing virtual_network_gateways object in structure as routes are the only ones used in merge
+
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
       name                   = can(route.name) ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
@@ -55,7 +52,7 @@ locals {
     location                      = value.location
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
-    routes                        = merge(local.gateway_route_table_routes[key].routes, local.gateway_route_table_default_route[key].routes)
+    routes                        = merge(local.gateway_route_table_routes[key], local.gateway_route_table_default_route[key])
     # subnet_resource_ids           = can(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id) ? { gw-subnet = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id } : {}
     subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { gw-subnet = module.virtual_network_gateway.subnet.id } : {}
     } if local.gateway_route_table_enabled[key]
