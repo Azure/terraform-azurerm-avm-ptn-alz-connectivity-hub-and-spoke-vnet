@@ -69,13 +69,13 @@ output "route_tables_firewall" {
 }
 
 output "route_tables_gateway_resource_ids" {
-  description = "Route tables associated with the gateway subnet."
+  description = "Resource IDs of route tables associated with the gateway."
   value       = { for key, value in module.gateway_route_table : key => value.resource_id }
 }
 
 output "route_tables_gateway" {
-  description = "Route tables associated with the gateway."
-  value       = { for key, value in local.gateway_route_table : key => local.gateway_route_table_enabled[key] ? value.routes : null }
+  description = "Route tables routes associated with the gateway."
+  value       = { for key, value in module.gateway_route_table : key => local.gateway_route_table_enabled[key] ? value.routes : null }
 }
 output "route_tables_user_subnets" {
   description = "Route tables associated with the user subnets."
