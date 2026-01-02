@@ -1,21 +1,20 @@
 locals {
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
-    routes = {
-      default_route = {
-        virtual_network_key    = key
-        key                    = "default_route"
-        name                   = "${key}-${replace(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes, "/", "-")}"
-        address_prefix         = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes
-        next_hop_type          = "VirtualAppliance"
-        next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].private_ip_address
+    virtual_network_gateways = {
+      routes = {
+        default_route = {
+          name                   = "${key}-${replace(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes, "/", "-")}"
+          address_prefix         = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes
+          next_hop_type          = "VirtualAppliance"
+          next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].private_ip_address
+        }
       }
     }
     }
   }
+
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
-      virtual_network_key    = key
-      key                    = routeKey
       name                   = can(route.name) ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
       address_prefix         = route.address_prefix
       next_hop_type          = can(route.next_hop_type) ? route.next_hop_type : "VirtualAppliance"
@@ -23,6 +22,35 @@ locals {
     }
     }
   }
+
+  #   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
+  #         routes = {
+  #         default_route = {
+  #             virtual_network_key    = key
+  #             name                   = "${key}-${replace(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes, "/", "-")}"
+  #             address_prefix         = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes
+  #             next_hop_type          = "VirtualAppliance"
+  #             next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].private_ip_address
+  #         }
+  #     }
+  #   }
+
+  #   gateway_route_table_routes = {
+  #     for route in flatten([
+  #       for k_src, v_src in var.hub_virtual_networks : [
+  #         for route_table_entry in v_src.virtual_network_gateways.routes : {
+  #           virtual_network_key    = k_src
+  #           key                    = can(route_table_entry.next_hop_in_ip_address) ? "${k_src}"
+  #           name                   = can(route_table_entry.name) ? route_table_entry.name : "${k_src}-${replace(route_table_entry.address_prefix, "/", "-")}"
+  #           address_prefix         = route_table_entry.address_prefix
+  #           next_hop_type          = can(route_table_entry.next_hop_type) ? route_table_entry.next_hop_type : "VirtualAppliance"
+  #           next_hop_in_ip_address = can(route_table_entry.next_hop_in_ip_address) ? route_table_entry.next_hop_in_ip_address : try(module.hub_and_spoke_vnet.firewalls[k_src].private_ip_address, null)
+  #           resource_group_name    = local.hub_virtual_networks_resource_group_names[k_src]
+  #         }
+  #       ]
+  #     ]) : route.key => route
+  #   }
+
   final_gateway_route_table_routes = merge(local.gateway_route_table_routes, local.gateway_route_table_default_route)
 
   gateway_route_table = { for key, value in var.hub_virtual_networks : key => {
@@ -30,7 +58,7 @@ locals {
     location                      = value.location
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
-    routes                        = local.final_gateway_route_table_routes[key]
+    routes                        = local.final_gateway_route_table_routes[key].virtual_network_gateways.routes
     subnet_resource_ids           = can(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id) ? { default = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id } : {}
     # subnet_resource_ids = can(module.virtual_network_gateway.subnet.id) ? { default = try(module.virtual_network_gateway.subnet.id, null) } : {}
     } if local.gateway_route_table_enabled[key]
