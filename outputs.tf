@@ -73,6 +73,10 @@ output "route_tables_gateway_resource_ids" {
   value       = { for key, value in module.gateway_route_table : key => value.resource_id }
 }
 
+output "route_tables_gateway" {
+  description = "Route tables associated with the gateway."
+  value       = { for key, value in local.gateway_route_table : key => local.gateway_route_table_enabled[key] ? value.virtual_network_gateways.routes : null }
+}
 output "route_tables_user_subnets" {
   description = "Route tables associated with the user subnets."
   value       = module.hub_and_spoke_vnet.hub_route_tables_user_subnets
