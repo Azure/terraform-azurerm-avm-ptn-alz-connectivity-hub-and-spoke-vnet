@@ -888,10 +888,10 @@ map(object({
       route_table_name                          = optional(string)
       route_table_bgp_route_propagation_enabled = optional(bool, false)
       routes = optional(map(object({
-        name                   = optional(string, null)
+        name                   = optional(string)
         address_prefix         = string
-        next_hop_type          = optional(string, null)
-        next_hop_in_ip_address = optional(string, null)
+        next_hop_type          = optional(string)
+        next_hop_in_ip_address = optional(string)
       })), {})
 
       express_route = optional(object({
@@ -1408,9 +1408,13 @@ Description: Resource IDs of the virtual networks
 
 Description: Route tables associated with the firewall.
 
+### <a name="output_route_tables_gateway"></a> [route\_tables\_gateway](#output\_route\_tables\_gateway)
+
+Description: Route tables routes associated with the gateway.
+
 ### <a name="output_route_tables_gateway_resource_ids"></a> [route\_tables\_gateway\_resource\_ids](#output\_route\_tables\_gateway\_resource\_ids)
 
-Description: Route tables associated with the gateway subnet.
+Description: Resource IDs of route tables associated with the gateway.
 
 ### <a name="output_route_tables_user_subnets"></a> [route\_tables\_user\_subnets](#output\_route\_tables\_user\_subnets)
 
