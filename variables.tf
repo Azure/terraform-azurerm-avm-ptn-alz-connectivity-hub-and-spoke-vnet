@@ -345,10 +345,10 @@ variable "hub_virtual_networks" {
       route_table_name                          = optional(string)
       route_table_bgp_route_propagation_enabled = optional(bool, false)
       routes = optional(map(object({
-        name                   = optional(string, null)
+        name                   = optional(string)
         address_prefix         = string
-        next_hop_type          = optional(string, null)
-        next_hop_in_ip_address = optional(string, null)
+        next_hop_type          = optional(string)
+        next_hop_in_ip_address = optional(string)
       })), {})
 
       express_route = optional(object({
