@@ -75,7 +75,7 @@ output "route_tables_gateway_resource_ids" {
 
 output "route_tables_gateway" {
   description = "Route tables associated with the gateway."
-  value       = { for key, value in local.gateway_route_table : key => local.gateway_route_table_enabled[key] ? value.virtual_network_gateways.routes : null }
+  value       = { for key, value in local.gateway_route_table : key => local.gateway_route_table_enabled[key] ? value.routes : null }
 }
 output "route_tables_user_subnets" {
   description = "Route tables associated with the user subnets."
