@@ -11,10 +11,10 @@ locals {
 
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
-      name                   = can(route.name) ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
+      name                   = null(route.name) ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
       address_prefix         = route.address_prefix
-      next_hop_type          = can(route.next_hop_type) ? route.next_hop_type : "VirtualAppliance"
-      next_hop_in_ip_address = can(route.next_hop_in_ip_address) ? route.next_hop_in_ip_address : try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
+      next_hop_type          = null(route.next_hop_type) ? route.next_hop_type : "VirtualAppliance"
+      next_hop_in_ip_address = null(route.next_hop_in_ip_address) ? route.next_hop_in_ip_address : try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
     }
     }
   }
