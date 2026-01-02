@@ -13,7 +13,7 @@ locals {
     }
   }
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
-    for routeKey, route in value.routes : routeKey => {
+    for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
       virtual_network_key    = key
       key                    = routeKey
       name                   = can(route.name) ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
