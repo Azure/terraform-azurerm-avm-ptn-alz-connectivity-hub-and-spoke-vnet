@@ -10,13 +10,13 @@ locals {
     } if local.gateway_route_table_enabled[key]
   }
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
-    default_fw_route = {
+    route-gw-fw = {
       name                   = "${key}-${replace(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes, "/", "-")}"
       address_prefix         = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].address_prefixes
       next_hop_type          = "VirtualAppliance"
       next_hop_in_ip_address = module.hub_and_spoke_vnet.firewalls[key].private_ip_address
     }
-    }
+    } if value.virtual_network_gateways.route_table_gw_fw_route_enabled
   }
   gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
