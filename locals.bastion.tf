@@ -7,7 +7,7 @@ locals {
     for key, value in var.hub_virtual_networks : key => {
       name                = coalesce(value.bastion.bastion_public_ip.name, local.default_names[key].bastion_host_public_ip_name)
       location            = value.location
-      resource_group_name = local.hub_virtual_networks_resource_group_names[key]
+      resource_group_name = coalesce(value.bastion.bastion_public_ip.resource_group_name, value.bastion.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
       tags                = coalesce(value.bastion.bastion_public_ip.tags, var.tags, {})
       zones               = coalesce(value.bastion.bastion_public_ip.zones, local.availability_zones[key])
       public_ip_settings  = value.bastion.bastion_public_ip
@@ -17,7 +17,7 @@ locals {
     for key, value in var.hub_virtual_networks : key => {
       name                = coalesce(value.bastion.name, local.default_names[key].bastion_host_name)
       location            = value.location
-      resource_group_name = local.hub_virtual_networks_resource_group_names[key]
+      resource_group_name = coalesce(value.bastion.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
       zones               = coalesce(value.bastion.zones, local.bastion_host_public_ips[key].zones, local.availability_zones[key], [])
       tags                = coalesce(value.bastion.tags, var.tags, {})
       ip_configuration = {
