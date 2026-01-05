@@ -257,6 +257,7 @@ DESCRIPTION
 
 variable "local_network_gateways" {
   type = map(object({
+    id                  = optional(string, null)
     name                = optional(string, null)
     resource_group_name = optional(string, null)
     address_space       = optional(list(string), null)
@@ -310,6 +311,7 @@ variable "local_network_gateways" {
   description = <<DESCRIPTION
 Map of Local Network Gateways and Virtual Network Gateway Connections to create for the Virtual Network Gateway.
 
+- `id` - (Optional) The resource ID of an existing Local Network Gateway to use. If specified, a new Local Network Gateway will not be created.
 - `name` - (Optional) The name of the Local Network Gateway to create.
 - `address_space` - (Optional) The list of address spaces for the Local Network Gateway.
 - `gateway_fqdn` - (Optional) The gateway FQDN for the Local Network Gateway.
