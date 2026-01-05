@@ -375,8 +375,9 @@ The following top level attributes are supported:
   - `route_table_creation_enabled` - (Optional) Should a route table be created for the Gateway subnet? Default `false`.
   - `route_table_name` - (Optional) The name of the route table for the Gateway subnet.
   - `route_table_bgp_route_propagation_enabled` - (Optional) Should BGP route propagation be enabled for the Gateway subnet route table? Default `false`.
+  - `route_table_gw_fw_route_enabled` - (Optional) Adds route from gw subnet range to azure firewall private ip. Default `true`.
   - `routes` - (Optional) Routes for route table
-    - `name` - (Optional) Name of route, will be populated by default values if not set
+    - `name` - (Optional) Name of route, will be populated by default values if not set.
     - `address_prefix` - (Required) The destination to which the route applies. Can be CIDR (such as 10.1.0.0/16) or Azure Service Tag (such as ApiManagement, AzureBackup or AzureMonitor) format.
     - `next_hop_type` - (Optional) The type of Azure hop the packet should be sent to. Possible values are VirtualNetworkGateway, VnetLocal, Internet, VirtualAppliance and None. Will be populated with 'VirtualAppliance' if not set.
     - `next_hop_in_ip_address` - (Optional) Contains the IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance. Will be populated by Azure Firewall internal IP if not set.
@@ -887,11 +888,12 @@ map(object({
       route_table_creation_enabled              = optional(bool, false)
       route_table_name                          = optional(string)
       route_table_bgp_route_propagation_enabled = optional(bool, false)
+      route_table_gw_fw_route_enabled           = optional(bool, true)
       routes = optional(map(object({
-        name                   = optional(string, null)
+        name                   = optional(string)
         address_prefix         = string
-        next_hop_type          = optional(string, null)
-        next_hop_in_ip_address = optional(string, null)
+        next_hop_type          = optional(string)
+        next_hop_in_ip_address = optional(string)
       })), {})
 
       express_route = optional(object({
@@ -1408,9 +1410,13 @@ Description: Resource IDs of the virtual networks
 
 Description: Route tables associated with the firewall.
 
+### <a name="output_route_tables_gateway"></a> [route\_tables\_gateway](#output\_route\_tables\_gateway)
+
+Description: Route tables routes associated with the gateway.
+
 ### <a name="output_route_tables_gateway_resource_ids"></a> [route\_tables\_gateway\_resource\_ids](#output\_route\_tables\_gateway\_resource\_ids)
 
-Description: Route tables associated with the gateway subnet.
+Description: Resource IDs of route tables associated with the gateway.
 
 ### <a name="output_route_tables_user_subnets"></a> [route\_tables\_user\_subnets](#output\_route\_tables\_user\_subnets)
 
