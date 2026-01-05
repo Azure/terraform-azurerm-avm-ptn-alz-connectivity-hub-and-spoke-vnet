@@ -1,5 +1,4 @@
 locals {
-  gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
   gateway_route_table = { for key, value in var.hub_virtual_networks : key => {
     name                          = coalesce(value.virtual_network_gateways.route_table_name, local.default_names[key].virtual_network_gateway_route_table_name)
     location                      = value.location
@@ -19,6 +18,7 @@ locals {
     }
     } if value.virtual_network_gateways.route_table_gw_fw_route_enabled
   }
+  gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
       name                   = try(route.name != null, false) ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
