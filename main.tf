@@ -64,6 +64,7 @@ module "gateway_route_table" {
   tags                          = var.tags
 
   depends_on = [
+    module.hub_and_spoke_vnet,
     module.virtual_network_gateway
   ]
 }
