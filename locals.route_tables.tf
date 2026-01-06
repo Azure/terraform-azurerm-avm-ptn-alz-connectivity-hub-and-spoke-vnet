@@ -5,8 +5,9 @@ locals {
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
     routes                        = length(local.gateway_route_table_default_route) == 0 ? can(value.virtual_network_gateways.routes) ? local.gateway_route_table_routes[key] : {} : merge(local.gateway_route_table_routes[key], local.gateway_route_table_default_route[key])
-    subnet_resource_ids           = try(local.static_subnet_resource_ids[key].gw-subnet, null) != null ? local.static_subnet_resource_ids[key] : {}
+    # use lookup to step around error plan triggers in foreach on var.subnet_resource_ids in submodule trying to feed in module output for uncreated subnet
     # subnet_resource_ids           = {}
+    subnet_resource_ids           = lookup(local.static_subnet_resource_ids[key], gw-subnet, {})
     } if local.gateway_route_table_enabled[key]
   }
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
