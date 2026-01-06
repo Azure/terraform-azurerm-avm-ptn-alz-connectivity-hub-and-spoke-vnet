@@ -7,7 +7,7 @@ locals {
     routes                        = length(local.gateway_route_table_default_route) == 0 ? can(value.virtual_network_gateways.routes) ? local.gateway_route_table_routes[key] : {} : merge(local.gateway_route_table_routes[key], local.gateway_route_table_default_route[key])
     # use lookup to step around error plan triggers in foreach on var.subnet_resource_ids in submodule trying to feed in module output for uncreated subnet
     # subnet_resource_ids           = {}
-    subnet_resource_ids           = lookup(local.static_subnet_resource_ids[key], gw-subnet, {})
+    subnet_resource_ids           = lookup(local.static_subnet_resource_ids[key], "gw-subnet", {})
     } if local.gateway_route_table_enabled[key]
   }
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
