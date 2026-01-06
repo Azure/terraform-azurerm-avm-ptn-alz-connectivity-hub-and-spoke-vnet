@@ -5,7 +5,7 @@ locals {
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
     routes                        = length(local.gateway_route_table_default_route) == 0 ? can(value.virtual_network_gateways.routes) ? local.gateway_route_table_routes[key] : {} : merge(local.gateway_route_table_routes[key], local.gateway_route_table_default_route[key])
-    subnet_resource_ids           = can(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id) ? { gw-subnet = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id } : {}
+    subnet_resource_ids           = try(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id != null, false) ? { gw-subnet = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id } : {gw-subnet = {}}
     } if local.gateway_route_table_enabled[key]
   }
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
