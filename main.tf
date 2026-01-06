@@ -51,7 +51,7 @@ module "virtual_network_gateway" {
 }
 module "gateway_route_table" {
   source   = "Azure/avm-res-network-routetable/azurerm"
-  version  = "0.4.1"
+  version  = "0.3.1"
   for_each = local.gateway_route_table
 
   location                      = each.value.location
