@@ -63,10 +63,10 @@ module "gateway_route_table" {
   subnet_resource_ids           = each.value.subnet_resource_ids
   tags                          = var.tags
 
-  depends_on = [
-    module.hub_and_spoke_vnet,
-    module.virtual_network_gateway
-  ]
+#   depends_on = [
+#     module.hub_and_spoke_vnet,
+#     module.virtual_network_gateway
+#   ]
 }
 
 module "dns_resolver" {
