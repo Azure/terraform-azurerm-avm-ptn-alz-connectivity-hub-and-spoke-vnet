@@ -17,7 +17,7 @@ locals {
       address_prefixes = [coalesce(value.virtual_network_gateways.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["gateway"])]
       name             = "GatewaySubnet"
       route_table = {
-        id                           = null
+        id                           = try(value.default_parent_id, null) != null && try(value.hub_virtual_network.name, null) != null ? "${value.default_parent_id}/providers/Microsoft.Network/virtualNetworks/${value.hub_virtual_network.name}/subnets/GatewaySubnet" : null
         assign_generated_route_table = false
       }
       default_outbound_access_enabled = value.virtual_network_gateways.subnet_default_outbound_access_enabled
