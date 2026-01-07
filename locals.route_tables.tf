@@ -34,7 +34,7 @@ locals {
     # gw-subnet = try(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id, null) != null ? module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id : null
     # using module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id throws error on plan for unknown value on input map
     # "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}"
-    gw-subnet = try(value.parent_id, null) != null && try(value.name, null) != null ? "${value.parent_id}/providers/Microsoft.Network/virtualNetworks/${value.name}/subnets/GatewaySubnet" : null
+    gw-subnet = try(value.default_parent_id, null) != null && try(value.name, null) != null ? "${value.default_parent_id}/providers/Microsoft.Network/virtualNetworks/${value.name}/subnets/GatewaySubnet" : null
     }
   }
 }
