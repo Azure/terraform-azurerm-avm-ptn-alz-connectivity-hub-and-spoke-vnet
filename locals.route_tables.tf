@@ -5,11 +5,10 @@ locals {
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
     routes                        = length(local.gateway_route_table_default_route) == 0 ? can(value.virtual_network_gateways.routes) ? local.gateway_route_table_routes[key] : {} : merge(local.gateway_route_table_routes[key], local.gateway_route_table_default_route[key])
-    # use lookup to step around error plan triggers in foreach on var.subnet_resource_ids in submodule trying to feed in module output for uncreated subnet
-    # subnet_resource_ids           = {}
     subnet_resource_ids           = try(local.static_subnet_resource_ids[key].gw-subnet, null) != null ? local.static_subnet_resource_ids[key] : {}
     } if local.gateway_route_table_enabled[key]
   }
+  gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
     route-gw-fw = {
       name                   = "${key}-${replace(value.virtual_network_gateways.subnet_address_prefix, "/", "-")}"
@@ -19,7 +18,6 @@ locals {
     }
     } if value.virtual_network_gateways.route_table_gw_fw_route_enabled
   }
-  gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
       name                   = try(route.name, null) != null ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
@@ -30,9 +28,7 @@ locals {
     } if can(value.virtual_network_gateways.routes)
   }
   static_subnet_resource_ids = { for key, value in var.hub_virtual_networks : key => {
-    # gw-subnet = can(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"]) ? length(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"]) != 0 ? module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id : null : null
-    # gw-subnet = try(module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id, null) != null ? module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id : null
-    # using module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id throws error on plan for unknown value on input map
+    # using module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id throws error on plan for unknown value on input map into route sub module, so subnet id must be built from known values
     # "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}"
     gw-subnet = try(value.default_parent_id, null) != null && try(value.name, null) != null ? "${value.default_parent_id}/providers/Microsoft.Network/virtualNetworks/${value.name}/subnets/GatewaySubnet" : null
     }
