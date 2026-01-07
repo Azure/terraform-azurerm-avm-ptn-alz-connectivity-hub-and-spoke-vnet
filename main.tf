@@ -60,7 +60,7 @@ module "gateway_route_table" {
   bgp_route_propagation_enabled = each.value.bgp_route_propagation_enabled
   enable_telemetry              = var.enable_telemetry
   routes                        = each.value.routes
-  subnet_resource_ids           = each.value.subnet_resource_ids
+#   subnet_resource_ids           = each.value.subnet_resource_ids
   tags                          = var.tags
 }
 

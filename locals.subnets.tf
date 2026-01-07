@@ -16,7 +16,10 @@ locals {
       hub_network_key                 = key
       address_prefixes                = [coalesce(value.virtual_network_gateways.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["gateway"])]
       name                            = "GatewaySubnet"
-      route_table                     = {}
+      route_table = {
+        id                           = local.gateway_route_table_enabled[key] ? module.gateway_route_table[key].resource_id : null
+        assign_generated_route_table = false
+      }
       default_outbound_access_enabled = value.virtual_network_gateways.subnet_default_outbound_access_enabled
     } } if(local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key])
   }
