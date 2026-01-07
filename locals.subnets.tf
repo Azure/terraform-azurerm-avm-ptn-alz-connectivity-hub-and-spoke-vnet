@@ -17,7 +17,6 @@ locals {
       address_prefixes = [coalesce(value.virtual_network_gateways.subnet_address_prefix, local.virtual_network_subnet_default_ip_prefixes[key]["gateway"])]
       name             = "GatewaySubnet"
       route_table = {
-        # Handled by separate logic to be able to use outputs from modules without getting cycle error, therefore id can not be set here
         id                           = null
         assign_generated_route_table = false
       }
