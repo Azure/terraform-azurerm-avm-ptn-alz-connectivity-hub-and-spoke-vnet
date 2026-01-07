@@ -30,7 +30,7 @@ locals {
   static_subnet_resource_ids = { for key, value in var.hub_virtual_networks : key => {
     # using module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-gateway"].resource_id throws error on plan for unknown value on input map into route sub module, so subnet id must be built from known values
     # "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}"
-    gw-subnet = try(value.default_parent_id, null) != null && try(value.name, null) != null ? "${value.default_parent_id}/providers/Microsoft.Network/virtualNetworks/${value.name}/subnets/GatewaySubnet" : null
+    gw-subnet = try(value.default_parent_id, null) != null && try(value.hub_virtual_network.name, null) != null ? "${value.default_parent_id}/providers/Microsoft.Network/virtualNetworks/${value.hub_virtual_network.name}/subnets/GatewaySubnet" : null
     }
   }
 }
