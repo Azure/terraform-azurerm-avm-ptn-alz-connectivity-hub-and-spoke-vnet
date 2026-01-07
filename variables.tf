@@ -343,12 +343,12 @@ variable "hub_virtual_networks" {
     }), {})
 
     virtual_network_gateways = optional(object({
-      subnet_address_prefix                     = optional(string)
-      subnet_default_outbound_access_enabled    = optional(bool, false)
-      route_table_creation_enabled              = optional(bool, false)
-      route_table_name                          = optional(string)
-      route_table_bgp_route_propagation_enabled = optional(bool, false)
-      route_table_gw_fw_route_enabled           = optional(bool, true)
+      subnet_address_prefix                      = optional(string)
+      subnet_default_outbound_access_enabled     = optional(bool, false)
+      route_table_creation_enabled               = optional(bool, false)
+      route_table_name                           = optional(string)
+      route_table_bgp_route_propagation_enabled  = optional(bool, false)
+      route_table_gateway_firewall_route_enabled = optional(bool, true)
       routes = optional(map(object({
         name                   = optional(string)
         address_prefix         = string

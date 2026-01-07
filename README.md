@@ -379,7 +379,7 @@ The following top level attributes are supported:
   - `route_table_creation_enabled` - (Optional) Should a route table be created for the Gateway subnet? Default `false`.
   - `route_table_name` - (Optional) The name of the route table for the Gateway subnet.
   - `route_table_bgp_route_propagation_enabled` - (Optional) Should BGP route propagation be enabled for the Gateway subnet route table? Default `false`.
-  - `route_table_gw_fw_route_enabled` - (Optional) Adds route from gw subnet range to azure firewall private ip. Default `true`.
+  - `route_table_gateway_firewall_route_enabled` - (Optional) Adds route from gw subnet range to azure firewall private ip. Default `true`.
   - `routes` - (Optional) Routes for route table
     - `name` - (Optional) Name of route, will be populated by default values if not set.
     - `address_prefix` - (Required) The destination to which the route applies. Can be CIDR (such as 10.1.0.0/16) or Azure Service Tag (such as ApiManagement, AzureBackup or AzureMonitor) format.

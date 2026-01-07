@@ -16,7 +16,7 @@ locals {
       next_hop_type          = "VirtualAppliance"
       next_hop_in_ip_address = try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
     }
-    } if value.virtual_network_gateways.route_table_gw_fw_route_enabled
+    } if value.virtual_network_gateways.route_table_gateway_firewall_route_enabled
   }
   gateway_route_table_routes = { for key, value in var.hub_virtual_networks : key => {
     for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
