@@ -62,6 +62,9 @@ module "gateway_route_table" {
   routes                        = each.value.routes
   subnet_resource_ids           = each.value.subnet_resource_ids
   tags                          = var.tags
+
+  # to stop api contention on gw subnet make sure route table is created after gw is finished
+  depends_on = [virtual_network_gateway]
 }
 
 module "dns_resolver" {
