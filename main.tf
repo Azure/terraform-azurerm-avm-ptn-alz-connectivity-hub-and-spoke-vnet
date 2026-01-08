@@ -59,7 +59,7 @@ module "gateway_route_table" {
   resource_group_name           = each.value.resource_group_name
   bgp_route_propagation_enabled = each.value.bgp_route_propagation_enabled
   enable_telemetry              = var.enable_telemetry
-  tags = var.tags
+  tags                          = var.tags
 }
 
 resource "azurerm_route" "gateway_route_table_routes" {
