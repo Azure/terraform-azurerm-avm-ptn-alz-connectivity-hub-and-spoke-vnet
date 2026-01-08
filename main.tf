@@ -63,7 +63,8 @@ module "gateway_route_table" {
 }
 
 resource "azurerm_route" "gateway_route_table_routes" {
-  for_each = local.gateway_route_table_routes
+#   for_each = local.gateway_route_table_routes
+  for_each = { for key_rt, value_rt in local.gateway_route_table_routes : key_rt => value_rt if length(module.gateway_route_table) != 0 }
 
   address_prefix         = each.value.address_prefix
   name                   = each.value.name
