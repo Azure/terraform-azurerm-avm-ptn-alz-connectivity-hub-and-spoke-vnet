@@ -49,7 +49,7 @@ locals {
           next_hop_in_ip_address = try(value_rt.next_hop_in_ip_address, null) != null ? value_rt.next_hop_in_ip_address : try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
         }
       ]
-    ]) : route.key => route if local.gateway_route_table_enabled[route.key]
+    ]) : route.key => route if local.gateway_route_table_enabled[route.virtual_network_key]
   }
   gateway_route_table_routes = merge(local.gateway_route_table_custom_routes, local.gateway_route_table_default_route)
 }
