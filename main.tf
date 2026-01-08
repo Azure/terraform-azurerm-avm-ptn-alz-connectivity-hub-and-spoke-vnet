@@ -59,9 +59,18 @@ module "gateway_route_table" {
   resource_group_name           = each.value.resource_group_name
   bgp_route_propagation_enabled = each.value.bgp_route_propagation_enabled
   enable_telemetry              = var.enable_telemetry
-  routes                        = each.value.routes
-#   subnet_resource_ids           = each.value.subnet_resource_ids
-  tags                          = var.tags
+  tags = var.tags
+}
+
+resource "azurerm_route" "gateway_route_table_routes" {
+  for_each = local.gateway_route_table_routes
+
+  address_prefix         = each.value.address_prefix
+  name                   = each.value.name
+  next_hop_type          = each.value.next_hop_type
+  resource_group_name    = each.value.resource_group_name
+  route_table_name       = module.gateway_route_table[each.value.virtual_network_key].name
+  next_hop_in_ip_address = each.value.next_hop_in_ip_address
 }
 
 module "dns_resolver" {
