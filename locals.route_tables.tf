@@ -4,19 +4,10 @@ locals {
     location                      = value.location
     resource_group_name           = local.hub_virtual_networks_resource_group_names[key]
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
-    # routes                        = length(local.gateway_route_table_default_route) == 0 ? can(value.gateway_route_table_custom_routes.routes) ? local.gateway_route_table_custom_routes[key] : {} : merge(local.gateway_route_table_custom_routes[key], local.gateway_route_table_default_route[key])
     } if local.gateway_route_table_enabled[key]
   }
   gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
-  #   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : key => {
-  #     route-gw-fw = {
-  #       name                   = "${key}-${replace(value.virtual_network_gateways.subnet_address_prefix, "/", "-")}"
-  #       address_prefix         = value.virtual_network_gateways.subnet_address_prefix
-  #       next_hop_type          = "VirtualAppliance"
-  #       next_hop_in_ip_address = try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
-  #     }
-  #     } if value.virtual_network_gateways.route_table_gateway_firewall_route_enabled
-  #   }
+
   gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : "${key}-route-gw-fw" => {
     virtual_network_key    = key
     key                    = "${key}-route-gw-fw"
@@ -28,15 +19,6 @@ locals {
     next_hop_in_ip_address = try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
     } if value.virtual_network_gateways.route_table_gateway_firewall_route_enabled && value.virtual_network_gateways.route_table_creation_enabled
   }
-  #   gateway_route_table_custom_routes = { for key, value in var.hub_virtual_networks : key => {
-  #     for routeKey, route in value.virtual_network_gateways.routes : routeKey => {
-  #       name                   = try(route.name, null) != null ? route.name : "${key}-${routeKey}-${replace(route.address_prefix, "/", "-")}"
-  #       address_prefix         = route.address_prefix
-  #       next_hop_type          = try(route.next_hop_type, null) != null ? route.next_hop_type : "VirtualAppliance"
-  #       next_hop_in_ip_address = try(route.next_hop_in_ip_address, null) != null ? route.next_hop_in_ip_address : try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
-  #     }
-  #     } if can(value.virtual_network_gateways.routes)
-  #   }
   gateway_route_table_custom_routes = {
     for route in flatten([
       for key, value in var.hub_virtual_networks : [

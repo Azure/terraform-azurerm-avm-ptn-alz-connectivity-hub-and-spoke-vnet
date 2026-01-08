@@ -87,18 +87,3 @@ output "virtual_network_resource_names" {
   description = "Resource names of the virtual networks."
   value       = { for key, value in module.hub_and_spoke_vnet.virtual_networks : key => value.name }
 }
-
-output "route_tables_gateway_routes" {
-  description = ""
-  value       = local.gateway_route_table_routes
-}
-
-output "route_tables_gateway_routes_default" {
-  description = ""
-  value       = local.gateway_route_table_default_route
-}
-
-output "route_tables_gateway_routes_custom" {
-  description = ""
-  value       = local.gateway_route_table_custom_routes
-}
