@@ -13,7 +13,7 @@ locals {
     key                    = "${key}-route-gw-fw"
     enabled                = value.virtual_network_gateways.route_table_gateway_firewall_route_enabled
     resource_group_name    = local.hub_virtual_networks_resource_group_names[key]
-    name                   = "${key}-${replace(value.virtual_network_gateways.subnet_address_prefix, "/", "-")}"
+    name                   = "${key}-default-${replace(value.virtual_network_gateways.subnet_address_prefix, "/", "-")}"
     address_prefix         = value.virtual_network_gateways.subnet_address_prefix
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
