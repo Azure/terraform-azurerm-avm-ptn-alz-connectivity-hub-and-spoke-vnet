@@ -835,6 +835,7 @@ The following top level attributes are supported:
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
+      - `domain_name_label` - (Optional) The domain name label for the public IP configuration.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
   - `ip_configurations` - (Optional) A map of the default IP configuration for the Azure Firewall. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
@@ -845,6 +846,7 @@ The following top level attributes are supported:
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
+      - `domain_name_label` - (Optional) The domain name label for the public IP configuration.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
   - `management_ip_configuration` - (Optional) An object with the following fields. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
@@ -854,6 +856,7 @@ The following top level attributes are supported:
       - `zones` - (Optional) A list of availability zones to use for the public IP configuration. If not specified will be `null`.
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
+      - `domain_name_label` - (Optional) The domain name label for the public IP configuration.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
 
 ## Azure Firewall Policy
