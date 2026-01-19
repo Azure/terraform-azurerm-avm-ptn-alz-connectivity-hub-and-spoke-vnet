@@ -1,7 +1,11 @@
 locals {
-  has_regions = length(var.hub_virtual_networks) > 0
-  hub_virtual_networks = {
-    for key, value in var.hub_virtual_networks : key => merge(value.hub_virtual_network, {
+  hub_virtual_networks = nonsensitive(sensitive(var.hub_virtual_networks))
+}
+
+locals {
+  has_regions = length(local.hub_virtual_networks) > 0
+  hub_virtual_networks_processed = {
+    for key, value in local.hub_virtual_networks : key => merge(value.hub_virtual_network, {
       parent_id                     = coalesce(value.hub_virtual_network.parent_id, value.default_parent_id)
       name                          = coalesce(value.hub_virtual_network.name, local.default_names[key].virtual_network_name)
       location                      = value.location
@@ -14,7 +18,7 @@ locals {
       route_table_name_user_subnets = coalesce(value.hub_virtual_network.route_table_name_user_subnets, local.default_names[key].route_table_user_subnets_name)
     })
   }
-  hub_virtual_networks_resource_group_names = { for key, value in var.hub_virtual_networks : key => provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", coalesce(value.default_parent_id, value.hub_virtual_network.parent_id)).resource_group_name }
-  primary_location                          = local.has_regions ? var.hub_virtual_networks[local.primary_region_key].location : null
-  primary_region_key                        = local.has_regions ? keys(var.hub_virtual_networks)[0] : null
+  hub_virtual_networks_resource_group_names = { for key, value in local.hub_virtual_networks : key => provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", coalesce(value.default_parent_id, value.hub_virtual_network.parent_id)).resource_group_name }
+  primary_location                          = local.has_regions ? local.hub_virtual_networks[local.primary_region_key].location : null
+  primary_region_key                        = local.has_regions ? keys(local.hub_virtual_networks)[0] : null
 }

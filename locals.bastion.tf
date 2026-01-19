@@ -1,10 +1,10 @@
 locals {
-  bastions_enabled = { for key, value in var.hub_virtual_networks : key => value.enabled_resources.bastion }
+  bastions_enabled = { for key, value in local.hub_virtual_networks : key => value.enabled_resources.bastion }
 }
 
 locals {
   bastion_host_public_ips = {
-    for key, value in var.hub_virtual_networks : key => {
+    for key, value in local.hub_virtual_networks : key => {
       name                = coalesce(value.bastion.bastion_public_ip.name, local.default_names[key].bastion_host_public_ip_name)
       location            = value.location
       resource_group_name = coalesce(value.bastion.bastion_public_ip.resource_group_name, value.bastion.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
@@ -14,7 +14,7 @@ locals {
     } if local.bastions_enabled[key]
   }
   bastion_hosts = {
-    for key, value in var.hub_virtual_networks : key => {
+    for key, value in local.hub_virtual_networks : key => {
       name                = coalesce(value.bastion.name, local.default_names[key].bastion_host_name)
       location            = value.location
       resource_group_name = coalesce(value.bastion.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
