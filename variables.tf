@@ -356,10 +356,10 @@ variable "hub_virtual_networks" {
       route_table_gateway_firewall_route_enabled = optional(bool, true)
       route_table_gateway_firewall_route_name    = optional(string)
       route_table_custom_routes = optional(map(object({
-        name                   = optional(string)
-        address_prefix         = string
-        next_hop_type          = optional(string)
-        next_hop_in_ip_address = optional(string)
+        name                = optional(string)
+        address_prefix      = string
+        next_hop_type       = optional(string)
+        next_hop_ip_address = optional(string)
       })), {})
       express_route = optional(object({
         name      = optional(string)
@@ -968,7 +968,7 @@ The following top level attributes are supported:
     - `name` - (Optional) The name of the route. If not specified, will be auto-generated.
     - `address_prefix` - (Required) The destination to which the route applies. Can be CIDR (such as `10.1.0.0/16`) or Azure Service Tag (such as `ApiManagement`, `AzureBackup` or `AzureMonitor`) format.
     - `next_hop_type` - (Optional) The type of Azure hop the packet should be sent to. Possible values are `VirtualNetworkGateway`, `VnetLocal`, `Internet`, `VirtualAppliance` and `None`. Default `VirtualAppliance`.
-    - `next_hop_in_ip_address` - (Optional) Contains the IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is `VirtualAppliance`. If not specified, will default to the Azure Firewall internal IP address.
+    - `next_hop_ip_address` - (Optional) Contains the IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is `VirtualAppliance`. If not specified, will default to the Azure Firewall internal IP address.
 
 ### ExpressRoute Gateway
 
