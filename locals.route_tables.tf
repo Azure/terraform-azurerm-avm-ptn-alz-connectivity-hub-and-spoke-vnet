@@ -6,34 +6,28 @@ locals {
     bgp_route_propagation_enabled = value.virtual_network_gateways.route_table_bgp_route_propagation_enabled
     } if local.gateway_route_table_enabled[key]
   }
-  gateway_route_table_enabled = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
-
-  gateway_route_table_default_route = { for key, value in var.hub_virtual_networks : "${key}-route-gw-fw" => {
-    virtual_network_key    = key
-    key                    = "${key}-route-gw-fw"
-    enabled                = value.virtual_network_gateways.route_table_gateway_firewall_route_enabled
-    resource_group_name    = local.hub_virtual_networks_resource_group_names[key]
-    name                   = "${key}-default-${replace(value.virtual_network_gateways.subnet_address_prefix, "/", "-")}"
-    address_prefix         = value.virtual_network_gateways.subnet_address_prefix
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
-    } if value.virtual_network_gateways.route_table_gateway_firewall_route_enabled && value.virtual_network_gateways.route_table_creation_enabled
-  }
   gateway_route_table_custom_routes = {
-    for route in flatten([
-      for key, value in var.hub_virtual_networks : [
-        for key_rt, value_rt in value.virtual_network_gateways.routes : {
-          virtual_network_key    = key
-          key                    = key_rt
-          enabled                = value.virtual_network_gateways.route_table_creation_enabled
-          resource_group_name    = local.hub_virtual_networks_resource_group_names[key]
-          name                   = try(value_rt.name, null) != null ? value_rt.name : "${key}-${key_rt}-${replace(value_rt.address_prefix, "/", "-")}"
-          address_prefix         = value_rt.address_prefix
-          next_hop_type          = try(value_rt.next_hop_type, null) != null ? value_rt.next_hop_type : "VirtualAppliance"
-          next_hop_in_ip_address = try(value_rt.next_hop_in_ip_address, null) != null ? value_rt.next_hop_in_ip_address : try(module.hub_and_spoke_vnet.firewalls[key].private_ip_address, null)
-        }
-      ]
-    ]) : route.key => route if route.enabled
+    for key, value in var.hub_virtual_networks : key => {
+      for key_rt, value_rt in value.virtual_network_gateways.route_table_custom_routes : key_rt => {
+        name                   = coalesce(value_rt.name, "${key}-${key_rt}")
+        address_prefix         = value_rt.address_prefix
+        next_hop_type          = coalesce(value_rt.next_hop_type, "VirtualAppliance")
+        next_hop_in_ip_address = value_rt.next_hop_in_ip_address != null ? value_rt.next_hop_in_ip_address : local.gateway_route_table_default_route_ip_address[key]
+      }
+    } if value.virtual_network_gateways.route_table_creation_enabled
   }
-  gateway_route_table_routes = merge(local.gateway_route_table_custom_routes, local.gateway_route_table_default_route)
+  gateway_route_table_default_route = {
+    for key, value in var.hub_virtual_networks : key => {
+      default_route = {
+        name                   = coalesce(value.virtual_network_gateways.route_table_gateway_firewall_route_name, "${key}-default")
+        address_prefix         = value.virtual_network_gateways.subnet_address_prefix
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = local.gateway_route_table_default_route_ip_address[key]
+      }
+    } if local.gateway_route_table_default_route_enabled[key]
+  }
+  gateway_route_table_default_route_enabled    = { for key, value in var.hub_virtual_networks : key => value.virtual_network_gateways.route_table_gateway_firewall_route_enabled && value.virtual_network_gateways.route_table_creation_enabled && (local.firewall_enabled[key] || value.hub_virtual_network.hub_router_ip_address != null) }
+  gateway_route_table_default_route_ip_address = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] ? module.hub_and_spoke_vnet.firewalls[key].private_ip_address : value.hub_virtual_network.hub_router_ip_address }
+  gateway_route_table_enabled                  = { for key, value in var.hub_virtual_networks : key => (local.virtual_network_gateways_express_route_enabled[key] || local.virtual_network_gateways_vpn_enabled[key]) && value.virtual_network_gateways.route_table_creation_enabled }
+  gateway_route_table_routes                   = { for key, value in var.hub_virtual_networks : key => merge(local.gateway_route_table_default_route[key], local.gateway_route_table_custom_routes[key]) }
 }

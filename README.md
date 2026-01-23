@@ -95,7 +95,10 @@ Default: `{}`
 
 ### <a name="input_default_naming_convention_sequence"></a> [default\_naming\_convention\_sequence](#input\_default\_naming\_convention\_sequence)
 
-Description: (Optional) Defines the starting number and padded length for the sequence placeholder in naming conventions.
+Description: (Optional) An object defining the starting number and padding format for the sequence placeholder in naming conventions.
+
+- `starting_number` - The starting number for the sequence. Default `1`.
+- `padding_format` - The printf-style format string for padding the sequence number. Default `"%03d"` (e.g., 001, 002, 003).
 
 Type:
 
@@ -117,8 +120,8 @@ Default:
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
-Description: This variable controls whether or not telemetry is enabled for the module.
-For more information see <https://aka.ms/avm/telemetryinfo>.
+Description: This variable controls whether or not telemetry is enabled for the module.  
+For more information see <https://aka.ms/avm/telemetryinfo>.  
 If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
@@ -379,12 +382,13 @@ The following top level attributes are supported:
   - `route_table_creation_enabled` - (Optional) Should a route table be created for the Gateway subnet? Default `false`.
   - `route_table_name` - (Optional) The name of the route table for the Gateway subnet.
   - `route_table_bgp_route_propagation_enabled` - (Optional) Should BGP route propagation be enabled for the Gateway subnet route table? Default `false`.
-  - `route_table_gateway_firewall_route_enabled` - (Optional) Adds route from gw subnet range to azure firewall private ip. Default `true`.
-  - `routes` - (Optional) Routes for route table
-    - `name` - (Optional) Name of route, will be populated by default values if not set.
-    - `address_prefix` - (Required) The destination to which the route applies. Can be CIDR (such as 10.1.0.0/16) or Azure Service Tag (such as ApiManagement, AzureBackup or AzureMonitor) format.
-    - `next_hop_type` - (Optional) The type of Azure hop the packet should be sent to. Possible values are VirtualNetworkGateway, VnetLocal, Internet, VirtualAppliance and None. Will be populated with 'VirtualAppliance' if not set.
-    - `next_hop_in_ip_address` - (Optional) Contains the IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance. Will be populated by Azure Firewall internal IP if not set.
+  - `route_table_gateway_firewall_route_enabled` - (Optional) Adds a route from the Gateway subnet address range to the Azure Firewall private IP address. Default `true`.
+  - `route_table_gateway_firewall_route_name` - (Optional) The name of the route for traffic from the Gateway subnet to the Azure Firewall.
+  - `route_table_custom_routes` - (Optional) A map of custom routes to add to the Gateway subnet route table. The map key is an arbitrary identifier. Each route is an object with the following fields:
+    - `name` - (Optional) The name of the route. If not specified, will be auto-generated.
+    - `address_prefix` - (Required) The destination to which the route applies. Can be CIDR (such as `10.1.0.0/16`) or Azure Service Tag (such as `ApiManagement`, `AzureBackup` or `AzureMonitor`) format.
+    - `next_hop_type` - (Optional) The type of Azure hop the packet should be sent to. Possible values are `VirtualNetworkGateway`, `VnetLocal`, `Internet`, `VirtualAppliance` and `None`. Default `VirtualAppliance`.
+    - `next_hop_in_ip_address` - (Optional) Contains the IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is `VirtualAppliance`. If not specified, will default to the Azure Firewall internal IP address.
 
 ### ExpressRoute Gateway
 
@@ -953,19 +957,19 @@ map(object({
     }), {})
 
     virtual_network_gateways = optional(object({
-      subnet_address_prefix                     = optional(string)
-      subnet_default_outbound_access_enabled    = optional(bool, false)
-      route_table_creation_enabled              = optional(bool, false)
-      route_table_name                          = optional(string)
-      route_table_bgp_route_propagation_enabled = optional(bool, false)
-      route_table_gw_fw_route_enabled           = optional(bool, true)
-      routes = optional(map(object({
+      subnet_address_prefix                      = optional(string)
+      subnet_default_outbound_access_enabled     = optional(bool, false)
+      route_table_creation_enabled               = optional(bool, false)
+      route_table_name                           = optional(string)
+      route_table_bgp_route_propagation_enabled  = optional(bool, false)
+      route_table_gateway_firewall_route_enabled = optional(bool, true)
+      route_table_gateway_firewall_route_name    = optional(string)
+      route_table_custom_routes = optional(map(object({
         name                   = optional(string)
         address_prefix         = string
         next_hop_type          = optional(string)
         next_hop_in_ip_address = optional(string)
       })), {})
-
       express_route = optional(object({
         name      = optional(string)
         parent_id = optional(string)
@@ -1362,7 +1366,11 @@ Default: `""`
 
 ### <a name="input_retry"></a> [retry](#input\_retry)
 
-Description: Retry configuration for the resource operations
+Description: (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
+
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
+- `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 
 Type:
 
@@ -1378,8 +1386,8 @@ Default: `{}`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
-Description: (Optional) A map of tags to assign to the resources created by this module.
-These tags will be applied to all resources that support tagging, unless overridden by resource-specific tag configurations.
+Description: (Optional) A map of tags to assign to the resources created by this module.  
+These tags will be applied to all resources that support tagging, unless overridden by resource-specific tag configurations.  
 Tags are key-value pairs that help you categorize resources and view consolidated billing by applying the same tag to multiple resources and resource groups.
 
 Example:
@@ -1397,7 +1405,12 @@ Default: `null`
 
 ### <a name="input_timeouts"></a> [timeouts](#input\_timeouts)
 
-Description: Timeouts for the resource operations
+Description: (Optional) An object defining the timeout durations for resource operations. These values control how long Terraform will wait for each operation to complete.
+
+- `create` - (Optional) The timeout for create operations. Default `"60m"`.
+- `read` - (Optional) The timeout for read operations. Default `"5m"`.
+- `update` - (Optional) The timeout for update operations. Default `"60m"`.
+- `delete` - (Optional) The timeout for delete operations. Default `"60m"`.
 
 Type:
 
@@ -1526,7 +1539,7 @@ Version: 0.7.3
 
 Source: Azure/avm-res-network-routetable/azurerm
 
-Version: 0.4.1
+Version: 0.3.1
 
 ### <a name="module_hub_and_spoke_vnet"></a> [hub\_and\_spoke\_vnet](#module\_hub\_and\_spoke\_vnet)
 
