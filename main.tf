@@ -49,7 +49,6 @@ module "virtual_network_gateway" {
     module.hub_and_spoke_vnet
   ]
 }
-
 module "gateway_route_table" {
   source   = "Azure/avm-res-network-routetable/azurerm"
   version  = "0.3.1"
@@ -61,6 +60,17 @@ module "gateway_route_table" {
   bgp_route_propagation_enabled = each.value.bgp_route_propagation_enabled
   enable_telemetry              = var.enable_telemetry
   tags                          = var.tags
+}
+
+resource "azurerm_route" "gateway_route_table_routes" {
+  for_each = { for key_rt, value_rt in local.gateway_route_table_routes : key_rt => value_rt if length(module.gateway_route_table) != 0 }
+
+  address_prefix         = each.value.address_prefix
+  name                   = each.value.name
+  next_hop_type          = each.value.next_hop_type
+  resource_group_name    = each.value.resource_group_name
+  route_table_name       = module.gateway_route_table[each.value.virtual_network_key].name
+  next_hop_in_ip_address = each.value.next_hop_in_ip_address
 }
 
 module "dns_resolver" {
