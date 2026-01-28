@@ -365,10 +365,20 @@ hub_virtual_networks = {
       name = "$${primary_firewall_policy_name}"
     }
     virtual_network_gateways = {
-      subnet_address_prefix                     = "$${primary_gateway_subnet_address_prefix}"
-      route_table_creation_enabled              = true
-      route_table_bgp_route_propagation_enabled = true
-      route_table_name                          = "rt-hub-gateway-uksouth"
+      subnet_address_prefix                      = "$${primary_gateway_subnet_address_prefix}"
+      route_table_creation_enabled               = true
+      route_table_bgp_route_propagation_enabled  = true
+      route_table_name                           = "rt-hub-gateway-uksouth"
+      route_table_gateway_firewall_route_enabled = true
+      route_table_gateway_firewall_route_name    = "rt-hub-gateway-fw-default"
+      route_table_custom_routes = {
+        custom_route_1 = {
+          name                = "custom-route-example"
+          address_prefix      = "192.168.0.0/24"
+          next_hop_type       = "VirtualAppliance"
+          next_hop_ip_address = "192.168.200.1"
+        }
+      }
       express_route = {
         name                                  = "$${primary_virtual_network_gateway_express_route_name}"
         hosted_on_behalf_of_public_ip_enabled = "$${primary_virtual_network_gateway_express_route_hobo_public_ip_enabled}"

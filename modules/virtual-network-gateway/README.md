@@ -416,7 +416,11 @@ Default: `{}`
 
 ### <a name="input_retry"></a> [retry](#input\_retry)
 
-Description: Retry configuration for the resource operations
+Description: (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
+
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
+- `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 
 Type:
 
@@ -504,7 +508,12 @@ Default: `null`
 
 ### <a name="input_timeouts"></a> [timeouts](#input\_timeouts)
 
-Description: Timeouts for the resource operations
+Description: (Optional) An object defining the timeout durations for resource operations. These values control how long Terraform will wait for each operation to complete.
+
+- `create` - (Optional) The timeout for create operations. Default `"60m"`.
+- `read` - (Optional) The timeout for read operations. Default `"5m"`.
+- `update` - (Optional) The timeout for update operations. Default `"60m"`.
+- `delete` - (Optional) The timeout for delete operations. Default `"60m"`.
 
 Type:
 
