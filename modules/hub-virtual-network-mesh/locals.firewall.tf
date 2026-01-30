@@ -66,6 +66,7 @@ locals {
         tags                = var.hub_virtual_networks[vnet_key].firewall.tags
         zones               = ip_config_value.public_ip_config.zones
         public_ip_prefix_id = ip_config_value.public_ip_config.public_ip_prefix_id
+        domain_name_label   = ip_config_value.public_ip_config.domain_name_label
       }
     ]
   ]) : public_ip.composite_key => public_ip }
@@ -79,6 +80,7 @@ locals {
       tags                = vnet.firewall.tags
       zones               = vnet.firewall.management_ip_configuration.public_ip_config.zones
       public_ip_prefix_id = vnet.firewall.management_ip_configuration.public_ip_config.public_ip_prefix_id
+      domain_name_label   = vnet.firewall.management_ip_configuration.public_ip_config.domain_name_label
     } if vnet.firewall != null && vnet.firewall.management_ip_enabled
   }
   fw_policies = {
