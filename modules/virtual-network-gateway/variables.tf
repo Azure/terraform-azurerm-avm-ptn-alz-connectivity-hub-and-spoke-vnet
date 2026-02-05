@@ -355,7 +355,7 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   nullable    = false
 
   validation {
-    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : (v.gateway_fqdn == null && v.gateway_address == null ? false : true) if v.id == null])
+    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : (v.gateway_fqdn == null && v.gateway_address == null ? false : true)])
     error_message = "At least one of gateway_fqdn or gateway_address must be specified for local_network_gateways."
   }
 }
