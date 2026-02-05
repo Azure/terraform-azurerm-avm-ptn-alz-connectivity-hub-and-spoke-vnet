@@ -267,7 +267,7 @@ Description: Map of IP Configurations to create for the Virtual Network Gateway.
   - `allocation_method` - (Optional) The allocation method of the Public IP Address. Possible values are Static or Dynamic. Defaults to Dynamic.
   - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
   - `tags` - (Optional) A mapping of tags to assign to the resource.
-  - `zones` - (Optional) The list of availability zones for the Public IP Address.
+  - `zones` - (Optional) The list of availability zones for the Public IP Address. Set to `[]` for no zones.
   - `edge_zone` - (Optional) Specifies the Edge Zone within the Azure Region where this Public IP should exist. Changing this forces a new Public IP to be created.
   - `ddos_protection_mode` - (Optional) The DDoS protection mode of the Public IP Address. Possible values are Disabled, Enabled or VirtualNetworkInherited. Defaults to VirtualNetworkInherited.
   - `ddos_protection_plan_id` - (Optional) The ID of the DDoS protection plan for the Public IP Address.
