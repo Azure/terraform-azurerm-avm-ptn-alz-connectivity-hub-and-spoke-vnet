@@ -202,6 +202,9 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
       remote_address_cidrs = traffic_selector_policy.value.remote_address_prefixes
     }
   }
+  lifecycle {
+    ignore_changes = [ shared_key ]
+  }
 }
 
 resource "azurerm_express_route_circuit_peering" "vgw" {
