@@ -72,6 +72,7 @@ module "test" {
   }
   hub_virtual_networks = {
     primary = {
+      is_primary = true
       enabled_resources = {
         virtual_network_gateway_express_route = false
         virtual_network_gateway_vpn           = false
