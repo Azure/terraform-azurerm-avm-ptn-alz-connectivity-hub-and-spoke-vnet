@@ -283,12 +283,7 @@ locals {
     if express_route_circuit.connection != null
   }
   local_network_gateway_virtual_network_gateway_connections = {
-    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : "lgw-${local_network_gateway_key}" => merge(
-      local_network_gateway.connection,
-      {
-        local_network_gateway_id = local_network_gateway.id
-      }
-    )
+    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : "lgw-${local_network_gateway_key}" => local_network_gateway.connection
     if local_network_gateway.connection != null
   }
 }
