@@ -286,7 +286,7 @@ locals {
     for local_network_gateway_key, local_network_gateway in var.local_network_gateways : "lgw-${local_network_gateway_key}" => merge(
       local_network_gateway.connection,
       {
-        local_network_gateway_id = local_network_gateway.id
+        local_network_gateway_id = null
       }
     )
     if local_network_gateway.connection != null
