@@ -257,9 +257,9 @@ DESCRIPTION
 
 variable "local_network_gateways" {
   type = map(object({
-    id                          = optional(string, null)
-    name                        = optional(string, null)
-    resource_group_name         = optional(string, null)
+    id                  = optional(string, null)
+    name                = optional(string, null)
+    resource_group_name = optional(string, null)
     address_space       = optional(list(string), null)
     gateway_fqdn        = optional(string, null)
     gateway_address     = optional(string, null)
