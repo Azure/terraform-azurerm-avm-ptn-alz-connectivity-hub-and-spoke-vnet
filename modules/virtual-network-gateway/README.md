@@ -315,6 +315,7 @@ Default: `{}`
 
 Description: Map of Local Network Gateways and Virtual Network Gateway Connections to create for the Virtual Network Gateway.
 
+- `id` - (Optional) The resource ID of an existing Local Network Gateway to use instead of creating a new one. When specified, the other gateway properties (`name`, `address_space`, `gateway_fqdn`, `gateway_address`, `bgp_settings`, `tags`) are ignored.
 - `name` - (Optional) The name of the Local Network Gateway to create.
 - `address_space` - (Optional) The list of address spaces for the Local Network Gateway.
 - `gateway_fqdn` - (Optional) The gateway FQDN for the Local Network Gateway.
@@ -361,6 +362,7 @@ Type:
 
 ```hcl
 map(object({
+    id                  = optional(string, null)
     name                = optional(string, null)
     resource_group_name = optional(string, null)
     address_space       = optional(list(string), null)
