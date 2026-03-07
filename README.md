@@ -398,7 +398,9 @@ The following top level attributes are supported:
 - `express_route` - (Optional) An object with the following fields:
   - `name` - (Optional) The name of the ExpressRoute gateway.
   - `parent_id` - (Optional) The ID of the parent resource group. If not specified, uses the hub virtual network's parent\_id.
-  - `sku` - (Optional) The SKU of the ExpressRoute gateway. Possible values include `Standard`, `HighPerformance`, `UltraPerformance`, `ErGw1AZ`, `ErGw2AZ`, `ErGw3AZ`.
+  - `sku` - (Optional) The SKU of the ExpressRoute gateway. Possible values include `Standard`, `HighPerformance`, `UltraPerformance`, `ErGw1AZ`, `ErGw2AZ`, `ErGw3AZ`, `ErGwScale`.
+  - `express_route_scale_unit_min` - (Optional) The minimum number of scale units for the ExpressRoute Gateway when using the `ErGwScale` SKU. Must be between 1 and 40. Default `1`.
+  - `express_route_scale_unit_max` - (Optional) The maximum number of scale units for the ExpressRoute Gateway when using the `ErGwScale` SKU. Must be between 1 and 40. Default `1`.
   - `edge_zone` - (Optional) The edge zone for the ExpressRoute gateway.
   - `express_route_circuits` - (Optional) A map of ExpressRoute circuits to connect. Each circuit is an object with:
     - `id` - The ID of the ExpressRoute circuit (required).
@@ -979,10 +981,12 @@ map(object({
         next_hop_ip_address = optional(string)
       })), {})
       express_route = optional(object({
-        name      = optional(string)
-        parent_id = optional(string)
-        sku       = optional(string, null)
-        edge_zone = optional(string)
+        name                         = optional(string)
+        parent_id                    = optional(string)
+        sku                          = optional(string, null)
+        express_route_scale_unit_min = optional(number, 1)
+        express_route_scale_unit_max = optional(number, 1)
+        edge_zone                    = optional(string)
         express_route_circuits = optional(map(object({
           id = string
           connection = optional(object({

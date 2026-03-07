@@ -206,6 +206,13 @@ locals {
     # Express Route specific properties
     allowRemoteVnetTraffic = var.type == "ExpressRoute" ? var.express_route_remote_vnet_traffic_enabled : null
     allowVirtualWanTraffic = var.type == "ExpressRoute" ? var.express_route_virtual_wan_traffic_enabled : null
+    # Autoscale configuration for ErGwScale SKU
+    autoScaleConfiguration = var.sku == "ErGwScale" ? {
+      bounds = {
+        min = var.express_route_scale_unit_min
+        max = var.express_route_scale_unit_max
+      }
+    } : null
   }
   # Filter out null values from the properties
   virtual_network_gateway_properties_filtered = {
