@@ -38,8 +38,8 @@ module "fw_default_ips" {
   sku_tier                = each.value.sku_tier
   tags                    = each.value.tags == null ? var.tags : each.value.tags
   zones                   = each.value.zones
-  ddos_protection_mode    = each.values.ddos_protection_mode
-  ddos_protection_plan_id = each.values.ddos_protection_plan_id
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
 }
 
 module "fw_management_ips" {
@@ -59,8 +59,8 @@ module "fw_management_ips" {
   sku_tier                = each.value.sku_tier
   tags                    = each.value.tags == null ? var.tags : each.value.tags
   zones                   = each.value.zones
-  ddos_protection_mode    = each.values.ddos_protection_mode
-  ddos_protection_plan_id = each.values.ddos_protection_plan_id
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
 }
 
 module "fw_policies" {
