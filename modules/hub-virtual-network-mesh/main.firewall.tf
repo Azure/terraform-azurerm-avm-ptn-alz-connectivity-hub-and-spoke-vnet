@@ -30,6 +30,8 @@ module "fw_default_ips" {
   name                    = each.value.name
   resource_group_name     = each.value.resource_group_name
   allocation_method       = "Static"
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
   enable_telemetry        = var.enable_telemetry
   ip_version              = each.value.ip_version
@@ -38,8 +40,6 @@ module "fw_default_ips" {
   sku_tier                = each.value.sku_tier
   tags                    = each.value.tags == null ? var.tags : each.value.tags
   zones                   = each.value.zones
-  ddos_protection_mode    = each.value.ddos_protection_mode
-  ddos_protection_plan_id = each.value.ddos_protection_plan_id
 }
 
 module "fw_management_ips" {
@@ -51,6 +51,8 @@ module "fw_management_ips" {
   name                    = each.value.name
   resource_group_name     = each.value.resource_group_name
   allocation_method       = "Static"
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
   enable_telemetry        = var.enable_telemetry
   ip_version              = each.value.ip_version
@@ -59,8 +61,6 @@ module "fw_management_ips" {
   sku_tier                = each.value.sku_tier
   tags                    = each.value.tags == null ? var.tags : each.value.tags
   zones                   = each.value.zones
-  ddos_protection_mode    = each.value.ddos_protection_mode
-  ddos_protection_plan_id = each.value.ddos_protection_plan_id
 }
 
 module "fw_policies" {
