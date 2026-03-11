@@ -175,6 +175,7 @@ The following top level attributes are supported:
     - `virtual_network_gateway_vpn` - (Optional) Should the VPN gateway be created? Default `true`.
     - `private_dns_zones` - (Optional) Should private DNS zones be created? Default `true`.
     - `private_dns_resolver` - (Optional) Should the private DNS resolver be created? Default `true`.
+  - `is_primary` - (Optional) Marks this hub as the primary region. The primary region is used for shared resources like private DNS zones and DDoS protection plans. Only one hub should be marked as primary. If no hub is marked as primary, the first key in alphabetical order is used. Default `false`.
   - `default_hub_address_space` - (Optional) The default address space to use if not specified in hub\_virtual\_network. This defaults to `10.0.0.0/16` and increments to the next /16 for each region if not supplied.
   - `default_parent_id` - (Optional) The default parent resource group ID to use if not specified in hub\_virtual\_network or individual sections.
   - `location` - (Required) The Azure location where the hub network resources should be created.
@@ -732,6 +733,7 @@ map(object({
       private_dns_resolver                  = optional(bool, true)
     }), {})
 
+    is_primary                = optional(bool, false)
     default_hub_address_space = optional(string)
     default_parent_id         = optional(string)
     location                  = string

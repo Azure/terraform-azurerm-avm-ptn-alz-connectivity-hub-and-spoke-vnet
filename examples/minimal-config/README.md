@@ -68,7 +68,8 @@ module "test" {
   enable_telemetry = false
   hub_virtual_networks = {
     primary = {
-      location = local.resource_groups["hub_primary"].location
+      is_primary = true
+      location   = local.resource_groups["hub_primary"].location
       # default_hub_address_space = "10.0.0.0/16"
       default_parent_id = module.resource_groups["hub_primary"].resource_id
     }
