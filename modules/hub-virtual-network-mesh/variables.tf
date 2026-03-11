@@ -297,7 +297,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
-      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For Ip plan use Enabled
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
   - `ip_configurations` - (Optional) A map of the default IP configuration for the Azure Firewall. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
@@ -308,7 +308,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
-      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For Ip plan use Enabled
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
   - `management_ip_configuration` - (Optional) An object with the following fields. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
@@ -318,7 +318,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
-      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For Ip plan use Enabled
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
   - `firewall_policy` - (Optional) An object with the following fields. Cannot be used with `firewall_policy_id`. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the firewall policy. If not specified will use `afw-policy-{vnetname}`.
