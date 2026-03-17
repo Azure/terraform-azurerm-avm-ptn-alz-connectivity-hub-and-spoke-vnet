@@ -83,8 +83,8 @@ locals {
       zones                   = vnet.firewall.management_ip_configuration.public_ip_config.zones
       public_ip_prefix_id     = vnet.firewall.management_ip_configuration.public_ip_config.public_ip_prefix_id
       domain_name_label       = vnet.firewall.management_ip_configuration.public_ip_config.domain_name_label
-      ddos_protection_mode    = vnet.firewall.management_ip_configuration.ddos_protection_mode
-      ddos_protection_plan_id = vnet.firewall.management_ip_configuration.ddos_protection_plan_id
+      ddos_protection_mode    = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_mode
+      ddos_protection_plan_id = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_plan_id
     } if vnet.firewall != null && vnet.firewall.management_ip_enabled
   }
   fw_policies = {
