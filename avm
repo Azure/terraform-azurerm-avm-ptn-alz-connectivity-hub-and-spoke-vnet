@@ -64,10 +64,19 @@ fi
 
 # If we are in GitHub Copilot Coding Agent, we need to mount the SSL certificates from the host
 SSL_CERT_MOUNTS=""
+SSL_MAKE_VARS=""
 if [ -n "${COPILOT_AGENT_ACTION}" ]; then
   # Mount host's CA bundle to container's expected paths
   SSL_CERT_MOUNTS="${SSL_CERT_MOUNTS} -v /etc/ssl/certs/ca-certificates.crt:/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem:ro"
   SSL_CERT_MOUNTS="${SSL_CERT_MOUNTS} -v /etc/ssl/certs/ca-certificates.crt:/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt:ro"
+  # Override SSL env vars via make variables so all tools (curl, git, Go/tenv, Python, Node.js)
+  # use the mounted CA bundle. The container /etc/pki/tls/certs is root-only and inaccessible
+  # to the non-root user, so SSL env vars must be redirected to the accessible mounted path.
+  SSL_MAKE_VARS="CURL_CA_BUNDLE=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+  SSL_MAKE_VARS="${SSL_MAKE_VARS} GIT_SSL_CAINFO=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+  SSL_MAKE_VARS="${SSL_MAKE_VARS} SSL_CERT_FILE=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+  SSL_MAKE_VARS="${SSL_MAKE_VARS} REQUESTS_CA_BUNDLE=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+  SSL_MAKE_VARS="${SSL_MAKE_VARS} NODE_EXTRA_CA_CERTS=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
 fi
 
 # New: allow overriding TUI behavior with PORCH_FORCE_TUI and PORCH_NO_TUI environment variables.
@@ -143,6 +152,7 @@ if [ -z "${AVM_IN_CONTAINER}" ]; then
     AVM_MAKEFILE_REF="${AVM_MAKEFILE_REF}" \
     "${PORCH_BASE_URL_MAKE_ADD}" \
     AVM_PORCH_REF="${AVM_PORCH_REF}" \
+    ${SSL_MAKE_VARS} \
     "$1"
 else
   make TUI="${TUI}" AVM_MAKEFILE_REF="${AVM_MAKEFILE_REF}" ${PORCH_BASE_URL_MAKE_ADD} AVM_PORCH_REF="${AVM_PORCH_REF}" "$1"
