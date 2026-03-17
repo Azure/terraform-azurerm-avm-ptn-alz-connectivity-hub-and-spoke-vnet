@@ -26,18 +26,20 @@ module "fw_default_ips" {
   version  = "0.2.0"
   for_each = local.fw_default_ip_configuration_pip
 
-  location            = each.value.location
-  name                = each.value.name
-  resource_group_name = each.value.resource_group_name
-  allocation_method   = "Static"
-  domain_name_label   = each.value.domain_name_label
-  enable_telemetry    = var.enable_telemetry
-  ip_version          = each.value.ip_version
-  public_ip_prefix_id = each.value.public_ip_prefix_id
-  sku                 = "Standard"
-  sku_tier            = each.value.sku_tier
-  tags                = each.value.tags == null ? var.tags : each.value.tags
-  zones               = each.value.zones
+  location                = each.value.location
+  name                    = each.value.name
+  resource_group_name     = each.value.resource_group_name
+  allocation_method       = "Static"
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
+  domain_name_label       = each.value.domain_name_label
+  enable_telemetry        = var.enable_telemetry
+  ip_version              = each.value.ip_version
+  public_ip_prefix_id     = each.value.public_ip_prefix_id
+  sku                     = "Standard"
+  sku_tier                = each.value.sku_tier
+  tags                    = each.value.tags == null ? var.tags : each.value.tags
+  zones                   = each.value.zones
 }
 
 module "fw_management_ips" {
@@ -45,18 +47,20 @@ module "fw_management_ips" {
   version  = "0.2.0"
   for_each = local.fw_management_ip_configuration_pip
 
-  location            = each.value.location
-  name                = each.value.name
-  resource_group_name = each.value.resource_group_name
-  allocation_method   = "Static"
-  domain_name_label   = each.value.domain_name_label
-  enable_telemetry    = var.enable_telemetry
-  ip_version          = each.value.ip_version
-  public_ip_prefix_id = each.value.public_ip_prefix_id
-  sku                 = "Standard"
-  sku_tier            = each.value.sku_tier
-  tags                = each.value.tags == null ? var.tags : each.value.tags
-  zones               = each.value.zones
+  location                = each.value.location
+  name                    = each.value.name
+  resource_group_name     = each.value.resource_group_name
+  allocation_method       = "Static"
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
+  domain_name_label       = each.value.domain_name_label
+  enable_telemetry        = var.enable_telemetry
+  ip_version              = each.value.ip_version
+  public_ip_prefix_id     = each.value.public_ip_prefix_id
+  sku                     = "Standard"
+  sku_tier                = each.value.sku_tier
+  tags                    = each.value.tags == null ? var.tags : each.value.tags
+  zones                   = each.value.zones
 }
 
 module "fw_policies" {
