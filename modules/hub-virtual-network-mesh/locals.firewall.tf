@@ -57,30 +57,34 @@ locals {
   fw_default_ip_configuration_pip = { for public_ip in flatten([
     for vnet_key, vnet_value in local.firewall_merged_ip_configurations : [
       for ip_config_key, ip_config_value in vnet_value : {
-        composite_key       = ip_config_value.public_ip_key
-        location            = var.hub_virtual_networks[vnet_key].location
-        name                = coalesce(ip_config_value.public_ip_config.name, "pip-fw-${ip_config_value.public_ip_key}")
-        resource_group_name = ip_config_value.public_ip_resource_group_name
-        ip_version          = ip_config_value.public_ip_config.ip_version
-        sku_tier            = ip_config_value.public_ip_config.sku_tier
-        tags                = var.hub_virtual_networks[vnet_key].firewall.tags
-        zones               = ip_config_value.public_ip_config.zones
-        public_ip_prefix_id = ip_config_value.public_ip_config.public_ip_prefix_id
-        domain_name_label   = ip_config_value.public_ip_config.domain_name_label
+        composite_key           = ip_config_value.public_ip_key
+        location                = var.hub_virtual_networks[vnet_key].location
+        name                    = coalesce(ip_config_value.public_ip_config.name, "pip-fw-${ip_config_value.public_ip_key}")
+        resource_group_name     = ip_config_value.public_ip_resource_group_name
+        ip_version              = ip_config_value.public_ip_config.ip_version
+        sku_tier                = ip_config_value.public_ip_config.sku_tier
+        tags                    = var.hub_virtual_networks[vnet_key].firewall.tags
+        zones                   = ip_config_value.public_ip_config.zones
+        public_ip_prefix_id     = ip_config_value.public_ip_config.public_ip_prefix_id
+        domain_name_label       = ip_config_value.public_ip_config.domain_name_label
+        ddos_protection_mode    = ip_config_value.public_ip_config.ddos_protection_mode
+        ddos_protection_plan_id = ip_config_value.public_ip_config.ddos_protection_plan_id
       }
     ]
   ]) : public_ip.composite_key => public_ip }
   fw_management_ip_configuration_pip = {
     for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {
-      location            = vnet.location
-      name                = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.name, "pip-fw-mgmt-${vnet_name}")
-      resource_group_name = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.resource_group_name, local.resource_group_names[vnet_name])
-      ip_version          = vnet.firewall.management_ip_configuration.public_ip_config.ip_version
-      sku_tier            = vnet.firewall.management_ip_configuration.public_ip_config.sku_tier
-      tags                = vnet.firewall.tags
-      zones               = vnet.firewall.management_ip_configuration.public_ip_config.zones
-      public_ip_prefix_id = vnet.firewall.management_ip_configuration.public_ip_config.public_ip_prefix_id
-      domain_name_label   = vnet.firewall.management_ip_configuration.public_ip_config.domain_name_label
+      location                = vnet.location
+      name                    = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.name, "pip-fw-mgmt-${vnet_name}")
+      resource_group_name     = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.resource_group_name, local.resource_group_names[vnet_name])
+      ip_version              = vnet.firewall.management_ip_configuration.public_ip_config.ip_version
+      sku_tier                = vnet.firewall.management_ip_configuration.public_ip_config.sku_tier
+      tags                    = vnet.firewall.tags
+      zones                   = vnet.firewall.management_ip_configuration.public_ip_config.zones
+      public_ip_prefix_id     = vnet.firewall.management_ip_configuration.public_ip_config.public_ip_prefix_id
+      domain_name_label       = vnet.firewall.management_ip_configuration.public_ip_config.domain_name_label
+      ddos_protection_mode    = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_mode
+      ddos_protection_plan_id = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_plan_id
     } if vnet.firewall != null && vnet.firewall.management_ip_enabled
   }
   fw_policies = {
