@@ -9,8 +9,10 @@ locals {
       ip_configurations                 = local.virtual_network_gateways_express_route_ip_configurations[hub_network_key]
       sku                               = coalesce(hub_network_value.virtual_network_gateways.express_route.sku, length(local.availability_zones[hub_network_key]) == 0 ? "Standard" : "ErGw1AZ")
       virtual_network_gateway = merge({
-        location = hub_network_value.location
-        type     = "ExpressRoute"
+        location                     = hub_network_value.location
+        type                         = "ExpressRoute"
+        express_route_scale_unit_min = hub_network_value.virtual_network_gateways.express_route.express_route_scale_unit_min
+        express_route_scale_unit_max = hub_network_value.virtual_network_gateways.express_route.express_route_scale_unit_max
       }, hub_network_value.virtual_network_gateways.express_route)
     } if local.virtual_network_gateways_express_route_enabled[hub_network_key]
   }
