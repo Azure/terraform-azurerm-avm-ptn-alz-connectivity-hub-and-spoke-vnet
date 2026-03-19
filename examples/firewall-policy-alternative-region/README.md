@@ -81,6 +81,7 @@ module "test" {
   }
   hub_virtual_networks = {
     primary = {
+      is_primary = true
       enabled_resources = {
         firewall                              = true
         private_dns_resolver                  = false

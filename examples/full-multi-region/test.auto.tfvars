@@ -326,6 +326,7 @@ hub_and_spoke_networks_settings = {
 
 hub_virtual_networks = {
   primary = {
+    is_primary = true
     enabled_resources = {
       firewall                              = "$${primary_firewall_enabled}"
       firewall_policy                       = "$${primary_firewall_enabled}"
