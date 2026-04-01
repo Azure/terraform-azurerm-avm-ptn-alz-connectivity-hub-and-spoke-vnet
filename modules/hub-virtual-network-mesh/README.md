@@ -297,7 +297,6 @@ map(object({
         nat_gateway = optional(object({
           id                           = optional(string)
           assign_generated_nat_gateway = optional(bool, false)
-          nat_gateway_reference_key    = optional(string, null)
         }))
         network_security_group = optional(object({
           id = string
@@ -348,7 +347,6 @@ map(object({
       firewall_subnet_nat_gateway = optional(object({
         id                           = optional(string, null)
         assign_generated_nat_gateway = optional(bool, false)
-        nat_gateway_reference_key    = optional(string, null)
       }))
 
       default_ip_configuration = optional(object({
