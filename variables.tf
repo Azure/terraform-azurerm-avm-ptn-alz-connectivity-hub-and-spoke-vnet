@@ -245,9 +245,9 @@ variable "hub_virtual_networks" {
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
-      firewall_subnet_nat_gateway_configuration = optional(object({
-        enabled        = optional(bool, false)
-        nat_gateway_id = optional(string, null)
+      firewall_subnet_nat_gateway = optional(object({
+        id                           = optional(string, null)
+        assign_generated_nat_gateway = optional(bool, false)
       }))
 
       default_ip_configuration = optional(object({
