@@ -49,5 +49,6 @@ locals {
     ip_configurations                = local.firewall_ip_configurations[key]
     tags                             = coalesce(value.firewall.tags, var.tags, {})
     zones                            = coalesce(value.firewall.zones, local.availability_zones[key])
+    firewall_subnet_nat_gateway      = try(value.firewall.firewall_subnet_nat_gateway, null)
   }) : null }
 }
