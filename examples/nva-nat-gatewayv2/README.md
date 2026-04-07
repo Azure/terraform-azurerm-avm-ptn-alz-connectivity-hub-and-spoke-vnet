@@ -112,7 +112,7 @@ module "test" {
       default_parent_id         = module.resource_groups["hub_primary"].resource_id
 
       hub_virtual_network = {
-        address_space = "10.0.0.0/24"
+        address_space = ["10.0.0.0/24"]
         # Use the NVA IP address as the hub router for routing
         hub_router_ip_address = local.nva_private_ip
 
