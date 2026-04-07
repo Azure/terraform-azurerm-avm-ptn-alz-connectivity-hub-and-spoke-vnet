@@ -99,7 +99,7 @@ module "test" {
             is_default                 = true
             public_ip_creation_enabled = true
             public_ip_configuration = {
-              name              = "pip-natgw-fw-primary-${random_string.suffix.result}"
+              name              = "pip-natgw-fw-primary"
               sku               = "StandardV2"
               allocation_method = "Static"
             }
@@ -109,7 +109,7 @@ module "test" {
             is_default                 = false
             public_ip_creation_enabled = true
             public_ip_configuration = {
-              name              = "pip-natgw-fw-secondary-${random_string.suffix.result}"
+              name              = "pip-natgw-fw-secondary"
               sku               = "StandardV2"
               allocation_method = "Static"
             }
@@ -119,7 +119,7 @@ module "test" {
             is_default                 = false
             public_ip_creation_enabled = true
             public_ip_configuration = {
-              name              = "pip-natgw-fw-tertiary-${random_string.suffix.result}"
+              name              = "pip-natgw-fw-tertiary"
               sku               = "StandardV2"
               allocation_method = "Static"
             }

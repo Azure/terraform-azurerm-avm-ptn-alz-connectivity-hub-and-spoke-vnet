@@ -140,7 +140,7 @@ module "test" {
             is_default                 = true
             public_ip_creation_enabled = true
             public_ip_configuration = {
-              name              = "pip-natgw-nva-${random_string.suffix.result}"
+              name              = "pip-natgw-nva"
               sku               = "StandardV2"
               allocation_method = "Static"
             }
