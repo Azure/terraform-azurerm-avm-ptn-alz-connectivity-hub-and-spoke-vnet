@@ -33,7 +33,7 @@ locals {
   }
   # Define the NVA IP address - this would be the private IP of your NVA
   # In a real scenario, the NVA would be deployed in the trust subnet
-  nva_private_ip = "10.0.3.4"
+  nva_private_ip = "10.0.0.4"
   resource_groups = {
     hub_primary = {
       name     = "rg-hub-nva-${random_string.suffix.result}"
@@ -83,6 +83,7 @@ module "test" {
       default_parent_id         = module.resource_groups["hub_primary"].resource_id
 
       hub_virtual_network = {
+        address_space = "10.0.0.0/24"
         # Use the NVA IP address as the hub router for routing
         hub_router_ip_address = local.nva_private_ip
 
@@ -94,7 +95,7 @@ module "test" {
           # Trust subnet - where NVA's internal interface would connect
           trust = {
             name             = "snet-trust"
-            address_prefixes = ["10.0.3.0/24"]
+            address_prefixes = ["10.0.0.0/26"]
             nat_gateway = {
               assign_generated_nat_gateway = true
             }
@@ -108,7 +109,7 @@ module "test" {
           # Management subnet - for NVA management interface
           management = {
             name             = "snet-management"
-            address_prefixes = ["10.0.4.0/24"]
+            address_prefixes = ["10.0.0.64/26"]
             nat_gateway = {
               assign_generated_nat_gateway = true
             }
@@ -119,16 +120,6 @@ module "test" {
             default_outbound_access_enabled = false
           }
         }
-
-        # Add custom routes to the firewall route table for the NVA
-        route_table_entries_firewall = [
-          {
-            name                = "route-to-internet"
-            address_prefix      = "0.0.0.0/0"
-            next_hop_type       = "VirtualAppliance"
-            next_hop_ip_address = local.nva_private_ip
-          }
-        ]
       }
 
       # NAT Gateway Standard v2 configuration
