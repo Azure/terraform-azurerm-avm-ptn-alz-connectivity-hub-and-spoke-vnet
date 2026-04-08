@@ -510,7 +510,7 @@ hub_virtual_networks = {
     }
     nat_gateway = {
       name      = "$${secondary_nat_gateway_name}"
-      sku                     = "StandardV2"
+      sku                     = "Standard"
       idle_timeout_in_minutes = 10
       ip_configurations = {
         default = {
@@ -518,7 +518,7 @@ hub_virtual_networks = {
           public_ip_creation_enabled = true
           public_ip_configuration = {
             name = "$${secondary_nat_gateway_public_ip_name}"
-            sku               = "StandardV2"
+            sku               = "Standard"
             allocation_method = "Static"
           }
         }
