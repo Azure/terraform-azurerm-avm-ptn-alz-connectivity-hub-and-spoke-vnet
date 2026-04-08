@@ -473,6 +473,7 @@ hub_virtual_networks = {
       private_dns_zones                     = "$${secondary_private_dns_zones_enabled}"
       private_dns_resolver                  = "$${secondary_private_dns_resolver_enabled}"
       bastion                               = "$${secondary_bastion_enabled}"
+      nat_gateway                           = "$${secondary_nat_gateway_enabled}"
     }
     location          = "$${starter_location_02}"
     default_parent_id = "$${connectivity_hub_secondary_resource_group_id}"
