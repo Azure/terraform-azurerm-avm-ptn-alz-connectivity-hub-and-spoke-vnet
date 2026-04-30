@@ -1534,9 +1534,25 @@ Description: The bastion host resources associated with the virtual WAN, grouped
 
 Description: The public IP addresses of the bastion hosts associated with the virtual WAN, grouped by hub key.
 
+### <a name="output_bastion_host_public_ip_resource_ids"></a> [bastion\_host\_public\_ip\_resource\_ids](#output\_bastion\_host\_public\_ip\_resource\_ids)
+
+Description: The resource IDs of the public IP addresses of the bastion hosts associated with the virtual WAN, grouped by hub key.
+
 ### <a name="output_bastion_host_resource_ids"></a> [bastion\_host\_resource\_ids](#output\_bastion\_host\_resource\_ids)
 
 Description: The resource IDs of the bastion hosts associated with the virtual WAN, grouped by hub key.
+
+### <a name="output_ddos_protection_plan_resource_id"></a> [ddos\_protection\_plan\_resource\_id](#output\_ddos\_protection\_plan\_resource\_id)
+
+Description: The resource ID of the DDoS protection plan, if enabled.
+
+### <a name="output_dns_resolver_inbound_endpoint_ip_addresses"></a> [dns\_resolver\_inbound\_endpoint\_ip\_addresses](#output\_dns\_resolver\_inbound\_endpoint\_ip\_addresses)
+
+Description: The IP addresses of the inbound endpoints of the private DNS resolvers, grouped by hub key.
+
+### <a name="output_dns_resolver_resource_ids"></a> [dns\_resolver\_resource\_ids](#output\_dns\_resolver\_resource\_ids)
+
+Description: The resource IDs of the private DNS resolvers, grouped by hub key.
 
 ### <a name="output_dns_server_ip_addresses"></a> [dns\_server\_ip\_addresses](#output\_dns\_server\_ip\_addresses)
 
@@ -1574,6 +1590,10 @@ Description: Resource IDs of the NAT gateways.
 
 Description: NAT gateways for each hub virtual network.
 
+### <a name="output_private_dns_zone_auto_registration_resource_ids"></a> [private\_dns\_zone\_auto\_registration\_resource\_ids](#output\_private\_dns\_zone\_auto\_registration\_resource\_ids)
+
+Description: Resource IDs of the auto-registration private DNS zones, grouped by hub key.
+
 ### <a name="output_private_dns_zone_resource_ids"></a> [private\_dns\_zone\_resource\_ids](#output\_private\_dns\_zone\_resource\_ids)
 
 Description: Resource IDs of the private DNS zones
@@ -1603,6 +1623,30 @@ Description: Resource IDs of route tables associated with the gateway.
 ### <a name="output_route_tables_user_subnets"></a> [route\_tables\_user\_subnets](#output\_route\_tables\_user\_subnets)
 
 Description: Route tables associated with the user subnets.
+
+### <a name="output_virtual_network_gateway_express_route_circuit_connection_resource_ids"></a> [virtual\_network\_gateway\_express\_route\_circuit\_connection\_resource\_ids](#output\_virtual\_network\_gateway\_express\_route\_circuit\_connection\_resource\_ids)
+
+Description: Resource IDs of the ExpressRoute circuit connections created on the virtual network gateways, grouped by gateway key and then by ExpressRoute circuit connection key.
+
+### <a name="output_virtual_network_gateway_local_network_gateway_connection_resource_ids"></a> [virtual\_network\_gateway\_local\_network\_gateway\_connection\_resource\_ids](#output\_virtual\_network\_gateway\_local\_network\_gateway\_connection\_resource\_ids)
+
+Description: Resource IDs of the local network gateway connections created on the virtual network gateways, grouped by gateway key and then by local network gateway connection key.
+
+### <a name="output_virtual_network_gateway_local_network_gateway_resource_ids"></a> [virtual\_network\_gateway\_local\_network\_gateway\_resource\_ids](#output\_virtual\_network\_gateway\_local\_network\_gateway\_resource\_ids)
+
+Description: Resource IDs of the local network gateways created alongside the virtual network gateways, grouped by gateway key and then by local network gateway key.
+
+### <a name="output_virtual_network_gateway_public_ip_addresses"></a> [virtual\_network\_gateway\_public\_ip\_addresses](#output\_virtual\_network\_gateway\_public\_ip\_addresses)
+
+Description: The public IP addresses of the virtual network gateways, grouped by gateway key and then by IP configuration key.
+
+### <a name="output_virtual_network_gateway_public_ip_resource_ids"></a> [virtual\_network\_gateway\_public\_ip\_resource\_ids](#output\_virtual\_network\_gateway\_public\_ip\_resource\_ids)
+
+Description: The resource IDs of the public IP addresses of the virtual network gateways, grouped by gateway key and then by IP configuration key.
+
+### <a name="output_virtual_network_gateway_resource_ids"></a> [virtual\_network\_gateway\_resource\_ids](#output\_virtual\_network\_gateway\_resource\_ids)
+
+Description: Resource IDs of the virtual network gateways, grouped by gateway key (e.g. `<hub_key>-express-route` and `<hub_key>-vpn`).
 
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 
