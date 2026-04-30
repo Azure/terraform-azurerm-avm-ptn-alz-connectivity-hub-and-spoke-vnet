@@ -376,7 +376,7 @@ hub_virtual_networks = {
       name = "$${primary_firewall_policy_name}"
     }
     nat_gateway = {
-      name      = "$${primary_nat_gateway_name}"
+      name                    = "$${primary_nat_gateway_name}"
       sku                     = "StandardV2"
       idle_timeout_in_minutes = 10
       ip_configurations = {
@@ -384,7 +384,7 @@ hub_virtual_networks = {
           is_default                 = true
           public_ip_creation_enabled = true
           public_ip_configuration = {
-            name = "$${primary_nat_gateway_public_ip_name}"
+            name              = "$${primary_nat_gateway_public_ip_name}"
             sku               = "StandardV2"
             allocation_method = "Static"
           }
@@ -509,7 +509,7 @@ hub_virtual_networks = {
       name = "$${secondary_firewall_policy_name}"
     }
     nat_gateway = {
-      name      = "$${secondary_nat_gateway_name}"
+      name                    = "$${secondary_nat_gateway_name}"
       sku                     = "Standard"
       idle_timeout_in_minutes = 10
       ip_configurations = {
@@ -517,7 +517,7 @@ hub_virtual_networks = {
           is_default                 = true
           public_ip_creation_enabled = true
           public_ip_configuration = {
-            name = "$${secondary_nat_gateway_public_ip_name}"
+            name              = "$${secondary_nat_gateway_public_ip_name}"
             sku               = "Standard"
             allocation_method = "Static"
           }
