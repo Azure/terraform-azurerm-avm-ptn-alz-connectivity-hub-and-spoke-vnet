@@ -57,6 +57,7 @@ custom_replacements = {
     primary_private_dns_auto_registration_zone_enabled                   = true
     primary_private_dns_resolver_enabled                                 = true
     primary_bastion_enabled                                              = true
+    primary_nat_gateway_enabled                                          = true
 
     # Resource provisioning secondary connectivity
     secondary_firewall_enabled                                             = true
@@ -68,6 +69,7 @@ custom_replacements = {
     secondary_private_dns_auto_registration_zone_enabled                   = true
     secondary_private_dns_resolver_enabled                                 = true
     secondary_bastion_enabled                                              = true
+    secondary_nat_gateway_enabled                                          = true
 
     # Resource names primary connectivity
     primary_virtual_network_name                                 = "vnet-hub-$${starter_location_01}"
@@ -85,6 +87,8 @@ custom_replacements = {
     primary_private_dns_resolver_name                            = "pdr-hub-dns-$${starter_location_01}"
     primary_bastion_host_name                                    = "bas-hub-$${starter_location_01}"
     primary_bastion_host_public_ip_name                          = "pip-bastion-hub-$${starter_location_01}"
+    primary_nat_gateway_name                                     = "natgw-hub-$${starter_location_01}"
+    primary_nat_gateway_public_ip_name                           = "pip-natgw-hub-$${starter_location_01}-default"
 
     # Resource names secondary connectivity
     secondary_virtual_network_name                                 = "vnet-hub-$${starter_location_02}"
@@ -102,6 +106,8 @@ custom_replacements = {
     secondary_private_dns_resolver_name                            = "pdr-hub-dns-$${starter_location_02}"
     secondary_bastion_host_name                                    = "bas-hub-$${starter_location_02}"
     secondary_bastion_host_public_ip_name                          = "pip-bastion-hub-$${starter_location_02}"
+    secondary_nat_gateway_name                                     = "natgw-hub-$${starter_location_02}"
+    secondary_nat_gateway_public_ip_name                           = "pip-natgw-hub-$${starter_location_02}-default"
 
     # Private DNS Zones primary
     primary_auto_registration_zone_name = "$${starter_location_01}.azure.local"
@@ -334,6 +340,7 @@ hub_virtual_networks = {
       private_dns_zones                     = "$${primary_private_dns_zones_enabled}"
       private_dns_resolver                  = "$${primary_private_dns_resolver_enabled}"
       bastion                               = "$${primary_bastion_enabled}"
+      nat_gateway                           = "$${primary_nat_gateway_enabled}"
     }
     location          = "$${starter_location_01}"
     default_parent_id = "$${connectivity_hub_primary_resource_group_id}"
@@ -360,9 +367,29 @@ hub_virtual_networks = {
           name = "$${primary_firewall_management_public_ip_name}"
         }
       }
+      # Assign the generated NAT Gateway to the Azure Firewall subnet
+      firewall_subnet_nat_gateway = {
+        assign_generated_nat_gateway = true
+      }
     }
     firewall_policy = {
       name = "$${primary_firewall_policy_name}"
+    }
+    nat_gateway = {
+      name      = "$${primary_nat_gateway_name}"
+      sku                     = "StandardV2"
+      idle_timeout_in_minutes = 10
+      ip_configurations = {
+        default = {
+          is_default                 = true
+          public_ip_creation_enabled = true
+          public_ip_configuration = {
+            name = "$${primary_nat_gateway_public_ip_name}"
+            sku               = "StandardV2"
+            allocation_method = "Static"
+          }
+        }
+      }
     }
     virtual_network_gateways = {
       subnet_address_prefix                      = "$${primary_gateway_subnet_address_prefix}"
@@ -446,6 +473,7 @@ hub_virtual_networks = {
       private_dns_zones                     = "$${secondary_private_dns_zones_enabled}"
       private_dns_resolver                  = "$${secondary_private_dns_resolver_enabled}"
       bastion                               = "$${secondary_bastion_enabled}"
+      nat_gateway                           = "$${secondary_nat_gateway_enabled}"
     }
     location          = "$${starter_location_02}"
     default_parent_id = "$${connectivity_hub_secondary_resource_group_id}"
@@ -472,9 +500,29 @@ hub_virtual_networks = {
           name = "$${secondary_firewall_management_public_ip_name}"
         }
       }
+      # Assign the generated NAT Gateway to the Azure Firewall subnet
+      firewall_subnet_nat_gateway = {
+        assign_generated_nat_gateway = true
+      }
     }
     firewall_policy = {
       name = "$${secondary_firewall_policy_name}"
+    }
+    nat_gateway = {
+      name      = "$${secondary_nat_gateway_name}"
+      sku                     = "Standard"
+      idle_timeout_in_minutes = 10
+      ip_configurations = {
+        default = {
+          is_default                 = true
+          public_ip_creation_enabled = true
+          public_ip_configuration = {
+            name = "$${secondary_nat_gateway_public_ip_name}"
+            sku               = "Standard"
+            allocation_method = "Static"
+          }
+        }
+      }
     }
     virtual_network_gateways = {
       subnet_address_prefix                     = "$${secondary_gateway_subnet_address_prefix}"

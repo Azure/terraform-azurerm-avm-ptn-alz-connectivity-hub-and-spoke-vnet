@@ -242,6 +242,36 @@ map(object({
     hub_router_ip_address            = optional(string)
     tags                             = optional(map(string))
 
+    nat_gateway = optional(object({
+      name                    = optional(string)
+      parent_id               = optional(string)
+      location                = optional(string)
+      sku                     = optional(string, "StandardV2")
+      idle_timeout_in_minutes = optional(number, 4)
+      zones                   = optional(set(string))
+      tags                    = optional(map(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+      ip_configurations = optional(map(object({
+        public_ip_creation_enabled = optional(bool, true)
+        public_ip_configuration = optional(object({
+          name                           = optional(string)
+          allocation_method              = optional(string, "Static")
+          ddos_protection_mode           = optional(string, "VirtualNetworkInherited")
+          idle_timeout_in_minutes        = optional(number, 4)
+          ip_version                     = optional(string, "IPv4")
+          sku                            = optional(string, "StandardV2")
+          sku_tier                       = optional(string, "Regional")
+          zones                          = optional(set(string))
+          public_ip_prefix_id            = optional(string)
+          public_ip_existing_resource_id = optional(string)
+          domain_name_label              = optional(string)
+        }), {})
+      })), {})
+    }))
+
     route_table_entries_firewall = optional(set(object({
       name           = string
       address_prefix = string
@@ -265,7 +295,8 @@ map(object({
         name             = string
         address_prefixes = list(string)
         nat_gateway = optional(object({
-          id = string
+          id                           = optional(string)
+          assign_generated_nat_gateway = optional(bool, false)
         }))
         network_security_group = optional(object({
           id = string
@@ -275,6 +306,7 @@ map(object({
         route_table = optional(object({
           id                           = optional(string)
           assign_generated_route_table = optional(bool, true)
+          route_table_reference_key    = optional(string, "UserSubnets")
         }))
         service_endpoints_with_location = optional(list(object({
           service   = string
@@ -311,6 +343,11 @@ map(object({
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
+
+      firewall_subnet_nat_gateway = optional(object({
+        id                           = optional(string, null)
+        assign_generated_nat_gateway = optional(bool, false)
+      }))
 
       default_ip_configuration = optional(object({
         is_default = optional(bool, true)
@@ -499,6 +536,10 @@ Description: A curated output of the route tables created by this module.
 
 Description: The names of the hub virtual networks.
 
+### <a name="output_nat_gateways"></a> [nat\_gateways](#output\_nat\_gateways)
+
+Description: A curated output of the NAT gateways created by this module.
+
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: The resource IDs of the hub virtual networks.
@@ -564,6 +605,12 @@ Version: 0.15.0
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
 Version: 0.15.0
+
+### <a name="module_nat_gateway"></a> [nat\_gateway](#module\_nat\_gateway)
+
+Source: Azure/avm-res-network-natgateway/azurerm
+
+Version: 0.3.2
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

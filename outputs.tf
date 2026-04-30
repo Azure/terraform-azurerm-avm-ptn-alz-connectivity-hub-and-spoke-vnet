@@ -72,6 +72,16 @@ output "private_dns_zone_auto_registration_resource_ids" {
   description = "Resource IDs of the auto-registration private DNS zones, grouped by hub key."
   value       = { for key, value in module.private_dns_zone_auto_registration : key => value.resource_id }
 }
+    
+output "nat_gateway_resource_ids" {
+  description = "Resource IDs of the NAT gateways."
+  value       = { for key, value in module.hub_and_spoke_vnet.nat_gateways : key => value.resource_id }
+}
+
+output "nat_gateways" {
+  description = "NAT gateways for each hub virtual network."
+  value       = module.hub_and_spoke_vnet.nat_gateways
+}
 
 output "private_dns_zone_resource_ids" {
   description = "Resource IDs of the private DNS zones"

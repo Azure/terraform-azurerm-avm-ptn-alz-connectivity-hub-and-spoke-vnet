@@ -29,6 +29,36 @@ variable "hub_virtual_networks" {
     hub_router_ip_address            = optional(string)
     tags                             = optional(map(string))
 
+    nat_gateway = optional(object({
+      name                    = optional(string)
+      parent_id               = optional(string)
+      location                = optional(string)
+      sku                     = optional(string, "StandardV2")
+      idle_timeout_in_minutes = optional(number, 4)
+      zones                   = optional(set(string))
+      tags                    = optional(map(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+      ip_configurations = optional(map(object({
+        public_ip_creation_enabled = optional(bool, true)
+        public_ip_configuration = optional(object({
+          name                           = optional(string)
+          allocation_method              = optional(string, "Static")
+          ddos_protection_mode           = optional(string, "VirtualNetworkInherited")
+          idle_timeout_in_minutes        = optional(number, 4)
+          ip_version                     = optional(string, "IPv4")
+          sku                            = optional(string, "StandardV2")
+          sku_tier                       = optional(string, "Regional")
+          zones                          = optional(set(string))
+          public_ip_prefix_id            = optional(string)
+          public_ip_existing_resource_id = optional(string)
+          domain_name_label              = optional(string)
+        }), {})
+      })), {})
+    }))
+
     route_table_entries_firewall = optional(set(object({
       name           = string
       address_prefix = string
@@ -52,7 +82,8 @@ variable "hub_virtual_networks" {
         name             = string
         address_prefixes = list(string)
         nat_gateway = optional(object({
-          id = string
+          id                           = optional(string)
+          assign_generated_nat_gateway = optional(bool, false)
         }))
         network_security_group = optional(object({
           id = string
@@ -62,6 +93,7 @@ variable "hub_virtual_networks" {
         route_table = optional(object({
           id                           = optional(string)
           assign_generated_route_table = optional(bool, true)
+          route_table_reference_key    = optional(string, "UserSubnets")
         }))
         service_endpoints_with_location = optional(list(object({
           service   = string
@@ -98,6 +130,11 @@ variable "hub_virtual_networks" {
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
+
+      firewall_subnet_nat_gateway = optional(object({
+        id                           = optional(string, null)
+        assign_generated_nat_gateway = optional(bool, false)
+      }))
 
       default_ip_configuration = optional(object({
         is_default = optional(bool, true)
