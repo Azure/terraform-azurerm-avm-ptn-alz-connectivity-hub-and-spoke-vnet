@@ -46,6 +46,19 @@ output "name" {
   value       = { for key, value in module.hub_virtual_networks : key => value.name }
 }
 
+output "nat_gateways" {
+  description = "A curated output of the NAT gateways created by this module."
+  value = {
+    for key, value in module.nat_gateway : key => {
+      id                  = value.resource_id
+      name                = value.resource.name
+      resource_id         = value.resource_id
+      public_ip_addresses = value.public_ip_resource
+      public_ip_ids       = [for pip in value.public_ip_resource : pip.id]
+    }
+  }
+}
+
 output "resource_id" {
   description = "The resource IDs of the hub virtual networks."
   value       = { for key, value in module.hub_virtual_networks : key => value.resource_id }
