@@ -33,6 +33,10 @@ locals {
     name     = coalesce(value.firewall_policy.name, local.default_names[key].firewall_policy_name)
     location = coalesce(value.firewall_policy.location, value.location)
     dns      = value.firewall_policy.dns != null ? value.firewall_policy.dns : local.firewall_policy_dns_defaults[key]
+    lock = value.firewall_policy.lock == null ? null : {
+      kind = value.firewall_policy.lock.kind
+      name = coalesce(value.firewall_policy.lock.name, "lock-${key}-firewall-policy-${value.location}-${value.firewall_policy.lock.kind}")
+    }
   }) : null }
   firewall_policy_dns_defaults = { for key, value in var.hub_virtual_networks : key => local.private_dns_resolver_enabled[key] && local.private_dns_zones_enabled[key] && local.firewall_enabled[key] && !local.firewall_sku_is_basic[key] && value.private_dns_resolver.default_inbound_endpoint_enabled ? {
     proxy_enabled = true
@@ -50,5 +54,9 @@ locals {
     tags                             = coalesce(value.firewall.tags, var.tags, {})
     zones                            = coalesce(value.firewall.zones, local.availability_zones[key])
     firewall_subnet_nat_gateway      = try(value.firewall.firewall_subnet_nat_gateway, null)
+    lock = value.firewall.lock == null ? null : {
+      kind = value.firewall.lock.kind
+      name = coalesce(value.firewall.lock.name, "lock-${key}-firewall-${value.location}-${value.firewall.lock.kind}")
+    }
   }) : null }
 }

@@ -388,10 +388,6 @@ variable "hub_virtual_networks" {
       tunneling_enabled                      = optional(bool, false)
       zones                                  = optional(set(string), null)
       resource_group_name                    = optional(string)
-      lock = optional(object({
-        kind = string
-        name = optional(string)
-      }))
 
       bastion_public_ip = optional(object({
         name                    = optional(string)
@@ -1042,9 +1038,6 @@ The following top level attributes are supported:
   - `tunneling_enabled` - (Optional) Should tunneling be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
   - `zones` - (Optional) A set of availability zones for the Azure Bastion. Set to `[]` for no zones.
   - `resource_group_name` - (Optional) The name of the resource group where the Azure Bastion should be created. If not specified will use the parent resource group of the virtual network.
-  - `lock` - (Optional) An object for resource lock configuration applied to the Azure Bastion host resource with:
-    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
-    - `name` - (Optional) The name of the lock.
   - `bastion_public_ip` - (Optional) An object with the following fields:
     - `name` - (Optional) The name of the public IP for the Azure Bastion. If not specified will use `pip-bastion-{vnetname}`.
     - `allocation_method` - (Optional) The allocation method for the public IP. Possible values are `Static`, `Dynamic`. Default `Static`.

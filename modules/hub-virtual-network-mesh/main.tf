@@ -19,6 +19,7 @@ module "hub_virtual_networks" {
   retry                   = var.retry
   tags                    = each.value.tags == null ? var.tags : each.value.tags
   timeouts                = var.timeouts
+  lock                    = each.value.lock
 }
 
 module "hub_virtual_network_subnets" {
