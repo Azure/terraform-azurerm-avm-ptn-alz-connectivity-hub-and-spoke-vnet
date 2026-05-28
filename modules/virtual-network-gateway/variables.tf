@@ -255,25 +255,6 @@ DESCRIPTION
   }
 }
 
-variable "lock" {
-  type = object({
-    kind = string
-    name = optional(string, null)
-  })
-  default     = null
-  description = <<DESCRIPTION
-Controls the Resource Lock configuration for the Virtual Network Gateway. The following properties can be specified:
-
-- `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
-- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
-DESCRIPTION
-
-  validation {
-    condition     = var.lock == null ? true : contains(["CanNotDelete", "ReadOnly"], var.lock.kind)
-    error_message = "lock.kind must be either CanNotDelete or ReadOnly."
-  }
-}
-
 variable "local_network_gateways" {
   type = map(object({
     id                  = optional(string, null)
@@ -382,6 +363,25 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   validation {
     condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.id == null ? true : can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft\\.Network/localNetworkGateways/[^/]+$", v.id))])
     error_message = "id must be a valid Local Network Gateway resource ID (e.g. /subscriptions/.../resourceGroups/.../providers/Microsoft.Network/localNetworkGateways/...)."
+  }
+}
+
+variable "lock" {
+  type = object({
+    kind = string
+    name = optional(string, null)
+  })
+  default     = null
+  description = <<DESCRIPTION
+Controls the Resource Lock configuration for the Virtual Network Gateway. The following properties can be specified:
+
+- `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+DESCRIPTION
+
+  validation {
+    condition     = var.lock == null ? true : contains(["CanNotDelete", "ReadOnly"], var.lock.kind)
+    error_message = "lock.kind must be either CanNotDelete or ReadOnly."
   }
 }
 

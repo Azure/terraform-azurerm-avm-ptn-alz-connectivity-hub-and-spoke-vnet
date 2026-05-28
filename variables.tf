@@ -429,9 +429,9 @@ variable "hub_virtual_networks" {
         sku       = optional(string, null)
         edge_zone = optional(string)
         lock = optional(object({
-        kind = string
-        name = optional(string)
-      }))
+          kind = string
+          name = optional(string)
+        }))
         express_route_circuits = optional(map(object({
           id = string
           connection = optional(object({
