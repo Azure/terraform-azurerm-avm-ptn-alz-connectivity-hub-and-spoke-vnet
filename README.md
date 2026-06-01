@@ -183,7 +183,7 @@ The following top level attributes are supported:
     - `virtual_network_gateway_vpn` - (Optional) Should the VPN gateway be created? Default `true`.
     - `private_dns_zones` - (Optional) Should private DNS zones be created? Default `true`.
     - `private_dns_resolver` - (Optional) Should the private DNS resolver be created? Default `true`.
-    - `dns_resolver_policy` - (Optional) Should the DNS resolver policy (DNS Security Policy) be created? Default `false`.
+    - `dns_resolver_policy` - (Optional) Should the DNS resolver policy (DNS Security Policy) be created? Default `true`.
     - `nat_gateway` - (Optional) Should the NAT Gateway be created? Default `true`.
   - `default_hub_address_space` - (Optional) The default address space to use if not specified in hub\_virtual\_network. This defaults to `10.0.0.0/16` and increments to the next /16 for each region if not supplied.
   - `default_parent_id` - (Optional) The default parent resource group ID to use if not specified in hub\_virtual\_network or individual sections.
@@ -827,7 +827,7 @@ map(object({
       virtual_network_gateway_vpn           = optional(bool, true)
       private_dns_zones                     = optional(bool, true)
       private_dns_resolver                  = optional(bool, true)
-      dns_resolver_policy                   = optional(bool, false)
+      dns_resolver_policy                   = optional(bool, true)
       nat_gateway                           = optional(bool, false)
     }), {})
 
