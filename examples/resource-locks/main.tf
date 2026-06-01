@@ -95,7 +95,6 @@ module "test" {
       }
 
       nat_gateway = {
-        lock                    = local.lock
         sku                     = "StandardV2"
         idle_timeout_in_minutes = 10
         ip_configurations = {
