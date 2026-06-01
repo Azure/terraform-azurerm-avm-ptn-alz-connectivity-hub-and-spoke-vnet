@@ -14,6 +14,8 @@ Optionally, these virtual networks can be peered in a mesh topology.
 - A routing address space can be specified for each hub network, this module will then create route tables for the other hub networks and associate them with the subnets.
 - Azure Firewall can be deployed in each hub network. This module will configure routing for the AzureFirewallSubnet.
 
+> **Deprecation notice:** The `id` attribute on entries of the `virtual_networks` output is deprecated in favour of `resource_id` and will be removed in a future major version. Consumers should migrate to `module.<name>.virtual_networks[<key>].resource_id` (or the top-level `module.<name>.resource_id[<key>]` map).
+
 ## Example
 
 ```terraform
