@@ -71,7 +71,8 @@ output "virtual_networks" {
       name                        = vnet_mod.name
       parent_id                   = var.hub_virtual_networks[vnet_key].parent_id
       resource_group_name         = local.resource_group_names[vnet_key]
-      id                          = vnet_mod.resource_id
+      resource_id                 = vnet_mod.resource_id
+      id                          = vnet_mod.resource_id # Deprecated: use `resource_id` instead. This attribute will be removed in a future major version.
       virtual_network_resource_id = vnet_mod.resource.id
       location                    = var.hub_virtual_networks[vnet_key].location
       address_spaces              = var.hub_virtual_networks[vnet_key].address_space

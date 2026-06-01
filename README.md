@@ -58,6 +58,8 @@ Description: (Optional) An object defining default naming conventions for resour
 - `virtual_network_gateway_vpn_public_ip_name` - The naming convention for VPN gateway public IPs.
 - `virtual_network_gateway_route_table_name` - The naming convention for gateway route tables.
 - `private_dns_resolver_name` - The naming convention for private DNS resolvers.
+- `dns_resolver_policy_name` - The naming convention for DNS resolver policies.
+- `dns_resolver_domain_list_name` - The naming convention for DNS resolver domain lists.
 - `bastion_host_name` - The naming convention for Azure Bastion hosts.
 - `bastion_host_public_ip_name` - The naming convention for Azure Bastion public IPs.
 - `ddos_protection_plan_name` - The naming convention for DDoS Protection Plans.
@@ -86,6 +88,8 @@ object({
     virtual_network_gateway_vpn_public_ip_name                  = optional(string, "pip-vgw-hub-vpn-$${location}-$${sequence}")
     virtual_network_gateway_route_table_name                    = optional(string, "rt-hub-gateway-$${location}-$${sequence}")
     private_dns_resolver_name                                   = optional(string, "pdr-hub-$${location}-$${sequence}")
+    dns_resolver_policy_name                                    = optional(string, "dnspol-hub-$${location}-$${sequence}")
+    dns_resolver_domain_list_name                               = optional(string, "dnsdl-hub-$${location}-$${sequence}")
     bastion_host_name                                           = optional(string, "bas-hub-$${location}-$${sequence}")
     bastion_host_public_ip_name                                 = optional(string, "pip-bas-hub-$${location}-$${sequence}")
     ddos_protection_plan_name                                   = optional(string, "ddos-hub-$${location}-$${sequence}")
@@ -177,6 +181,7 @@ The following top level attributes are supported:
     - `virtual_network_gateway_vpn` - (Optional) Should the VPN gateway be created? Default `true`.
     - `private_dns_zones` - (Optional) Should private DNS zones be created? Default `true`.
     - `private_dns_resolver` - (Optional) Should the private DNS resolver be created? Default `true`.
+    - `dns_resolver_policy` - (Optional) Should the DNS resolver policy (DNS Security Policy) be created? Default `false`.
     - `nat_gateway` - (Optional) Should the NAT Gateway be created? Default `true`.
   - `default_hub_address_space` - (Optional) The default address space to use if not specified in hub\_virtual\_network. This defaults to `10.0.0.0/16` and increments to the next /16 for each region if not supplied.
   - `default_parent_id` - (Optional) The default parent resource group ID to use if not specified in hub\_virtual\_network or individual sections.
@@ -189,6 +194,7 @@ The following top level attributes are supported:
   - `nat_gateway` - (Optional) The NAT Gateway settings.
   - `private_dns_zones` - (Optional) The private DNS zone settings.
   - `private_dns_resolver` - (Optional) The private DNS resolver settings.
+  - `dns_resolver_policy` - (Optional) The DNS resolver policy (DNS Security Policy) settings.
 
 ## Hub Virtual Network
 
@@ -781,6 +787,32 @@ The following top level attributes are supported:
         - `metadata` - (Optional) A map of metadata.
   - `tags` - (Optional) A map of tags to apply to the DNS resolver.
 
+## DNS Resolver Policy (DNS Security Policy)
+
+- `dns_resolver_policy` - (Optional) An object configuring an Azure DNS Security Policy (`Microsoft.Network/dnsResolverPolicies`) for this hub. When set together with `enabled_resources.dns_resolver_policy = true` a policy is deployed, linked to virtual networks, and security rules referencing domain lists are created. The object has the following fields:
+  - `name` - (Optional) The name of the DNS resolver policy.
+  - `parent_id` - (Optional) The resource ID of the resource group where the policy and domain lists should be created. Defaults to the hub's `default_parent_id` (or the hub virtual network's `parent_id`).
+  - `link_to_hub_virtual_network` - (Optional) Should a virtual network link be automatically created from the policy to the hub virtual network? Default `true`.
+  - `additional_virtual_network_links` - (Optional) A map of additional virtual networks to link to the policy. Each entry has:
+    - `name` - (Optional) The name of the virtual network link.
+    - `virtual_network_id` - (Required) The resource ID of the virtual network to link.
+  - `domain_lists` - (Optional) A map of `Microsoft.Network/dnsResolverDomainLists` resources to create. Each entry has:
+    - `name` - (Optional) The name of the domain list.
+    - `domains` - (Required) The list of domains (FQDNs) in the domain list.
+    - `tags` - (Optional) A map of tags to apply to the domain list.
+  - `rules` - (Optional) A map of DNS security rules to create. Each entry has:
+    - `name` - (Optional) The name of the rule.
+    - `priority` - (Required) The priority of the rule. Lower values are evaluated first.
+    - `action` - (Optional) The action to take when the rule matches. One of `Alert`, `Allow`, `Block`. Default `Block`.
+    - `state` - (Optional) Whether the rule is `Enabled` or `Disabled`. Default `Enabled`.
+    - `domain_list_keys` - (Optional) A list of keys referencing entries in `domain_lists` for this hub. The matching domain list resource IDs are passed to the rule.
+    - `domain_list_resource_ids` - (Optional) A list of pre-existing domain list resource IDs to associate with the rule.
+    - `managed_domain_lists` - (Optional) A list of Azure-managed domain lists to associate with the rule. Currently only `AzureDnsThreatIntel` is supported.
+  - `lock` - (Optional) An object for resource lock configuration applied to the DNS resolver policy with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
+  - `tags` - (Optional) A map of tags to apply to the DNS resolver policy.
+
 Type:
 
 ```hcl
@@ -793,6 +825,7 @@ map(object({
       virtual_network_gateway_vpn           = optional(bool, true)
       private_dns_zones                     = optional(bool, true)
       private_dns_resolver                  = optional(bool, true)
+      dns_resolver_policy                   = optional(bool, false)
       nat_gateway                           = optional(bool, false)
     }), {})
 
@@ -1495,6 +1528,35 @@ map(object({
       })), {})
       tags = optional(map(string), null)
     }), {})
+
+    dns_resolver_policy = optional(object({
+      name                        = optional(string)
+      parent_id                   = optional(string)
+      link_to_hub_virtual_network = optional(bool, true)
+      additional_virtual_network_links = optional(map(object({
+        name               = optional(string)
+        virtual_network_id = string
+      })), {})
+      domain_lists = optional(map(object({
+        name    = optional(string)
+        domains = list(string)
+        tags    = optional(map(string), null)
+      })), {})
+      rules = optional(map(object({
+        name                     = optional(string)
+        priority                 = number
+        action                   = optional(string, "Block")
+        state                    = optional(string, "Enabled")
+        domain_list_keys         = optional(list(string), [])
+        domain_list_resource_ids = optional(list(string), [])
+        managed_domain_lists     = optional(list(string), [])
+      })), {})
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+      tags = optional(map(string), null)
+    }), null)
   }))
 ```
 
@@ -1598,6 +1660,22 @@ Description: The resource ID of the DDoS protection plan, if enabled.
 ### <a name="output_dns_resolver_inbound_endpoint_ip_addresses"></a> [dns\_resolver\_inbound\_endpoint\_ip\_addresses](#output\_dns\_resolver\_inbound\_endpoint\_ip\_addresses)
 
 Description: The IP addresses of the inbound endpoints of the private DNS resolvers, grouped by hub key.
+
+### <a name="output_dns_resolver_policy_domain_list_resource_ids"></a> [dns\_resolver\_policy\_domain\_list\_resource\_ids](#output\_dns\_resolver\_policy\_domain\_list\_resource\_ids)
+
+Description: The resource IDs of the DNS resolver domain lists, grouped by `<hub_key>/<domain_list_key>`.
+
+### <a name="output_dns_resolver_policy_resource_ids"></a> [dns\_resolver\_policy\_resource\_ids](#output\_dns\_resolver\_policy\_resource\_ids)
+
+Description: The resource IDs of the DNS resolver policies (DNS Security Policies), grouped by hub key.
+
+### <a name="output_dns_resolver_policy_security_rule_resource_ids"></a> [dns\_resolver\_policy\_security\_rule\_resource\_ids](#output\_dns\_resolver\_policy\_security\_rule\_resource\_ids)
+
+Description: The resource IDs of the DNS resolver security rules, grouped by `<hub_key>/<rule_key>`.
+
+### <a name="output_dns_resolver_policy_virtual_network_link_resource_ids"></a> [dns\_resolver\_policy\_virtual\_network\_link\_resource\_ids](#output\_dns\_resolver\_policy\_virtual\_network\_link\_resource\_ids)
+
+Description: The resource IDs of the DNS resolver policy virtual network links, grouped by `<hub_key>/<link_key>`.
 
 ### <a name="output_dns_resolver_resource_ids"></a> [dns\_resolver\_resource\_ids](#output\_dns\_resolver\_resource\_ids)
 
@@ -1732,6 +1810,12 @@ Version: 0.3.0
 Source: Azure/avm-res-network-dnsresolver/azurerm
 
 Version: 0.7.3
+
+### <a name="module_dns_resolver_policy"></a> [dns\_resolver\_policy](#module\_dns\_resolver\_policy)
+
+Source: ./modules/dns-resolver-policy
+
+Version:
 
 ### <a name="module_gateway_route_table"></a> [gateway\_route\_table](#module\_gateway\_route\_table)
 
