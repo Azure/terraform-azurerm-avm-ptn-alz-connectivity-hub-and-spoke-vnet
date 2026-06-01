@@ -94,7 +94,6 @@ module "test" {
       default_parent_id         = module.resource_groups["hub_primary"].resource_id
 
       hub_virtual_network = {
-        lock                         = local.lock
         address_space                = ["10.0.0.0/22"]
         route_table_firewall_enabled = true
       }
