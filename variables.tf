@@ -827,9 +827,10 @@ variable "hub_virtual_networks" {
     }), {})
 
     dns_resolver_policy = optional(object({
-      name                        = optional(string)
-      parent_id                   = optional(string)
-      link_to_hub_virtual_network = optional(bool, true)
+      name                               = optional(string)
+      parent_id                          = optional(string)
+      link_to_hub_virtual_network        = optional(bool, true)
+      virtual_network_link_name_template = optional(string, "$${hub_key}-$${location}-hub")
       additional_virtual_network_links = optional(map(object({
         name               = optional(string)
         virtual_network_id = string
@@ -1481,6 +1482,10 @@ The following top level attributes are supported:
   - `name` - (Optional) The name of the DNS resolver policy.
   - `parent_id` - (Optional) The resource ID of the resource group where the policy and domain lists should be created. Defaults to the hub's `default_parent_id` (or the hub virtual network's `parent_id`).
   - `link_to_hub_virtual_network` - (Optional) Should a virtual network link be automatically created from the policy to the hub virtual network? Default `true`.
+  - `virtual_network_link_name_template` - (Optional) A template for the name of the virtual network link that is automatically created from the policy to the hub virtual network when `link_to_hub_virtual_network` is `true`. Default `"$${hub_key}-$${location}-hub"`. The template supports the following placeholders:
+    - `$${hub_key}` - The map key of the hub virtual network from `var.hub_virtual_networks`.
+    - `$${vnet_name}` - The name of the hub virtual network.
+    - `$${location}` - The location of the hub virtual network.
   - `additional_virtual_network_links` - (Optional) A map of additional virtual networks to link to the policy. Each entry has:
     - `name` - (Optional) The name of the virtual network link.
     - `virtual_network_id` - (Required) The resource ID of the virtual network to link.

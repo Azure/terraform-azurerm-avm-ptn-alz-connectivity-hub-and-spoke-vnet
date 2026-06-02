@@ -26,7 +26,11 @@ locals {
     virtual_network_links = merge(
       value.dns_resolver_policy.link_to_hub_virtual_network ? {
         hub = {
-          name               = "${key}-hub"
+          name = templatestring(value.dns_resolver_policy.virtual_network_link_name_template, {
+            hub_key   = key
+            vnet_name = module.hub_and_spoke_vnet.virtual_networks[key].name
+            location  = value.location
+          })
           virtual_network_id = module.hub_and_spoke_vnet.resource_id[key]
         }
       } : {},
