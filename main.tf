@@ -92,7 +92,7 @@ module "dns_resolver" {
 
 module "private_dns_zones" {
   source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
-  version  = "0.23.1"
+  version  = "0.23.2"
   for_each = local.private_dns_zones
 
   location                                                   = each.value.location
