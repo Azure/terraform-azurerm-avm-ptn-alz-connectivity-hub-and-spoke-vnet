@@ -77,7 +77,7 @@ module "gateway_route_table_routes" {
 
 module "dns_resolver" {
   source   = "Azure/avm-res-network-dnsresolver/azurerm"
-  version  = "0.7.3"
+  version  = "0.8.0"
   for_each = local.private_dns_resolver
 
   location                    = each.value.location
