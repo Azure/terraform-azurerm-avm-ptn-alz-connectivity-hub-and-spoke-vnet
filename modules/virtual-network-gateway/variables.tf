@@ -228,7 +228,7 @@ Map of IP Configurations to create for the Virtual Network Gateway.
   - `allocation_method` - (Optional) The allocation method of the Public IP Address. Possible values are Static or Dynamic. Defaults to Dynamic.
   - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
   - `tags` - (Optional) A mapping of tags to assign to the resource.
-  - `zones` - (Optional) The list of availability zones for the Public IP Address.
+  - `zones` - (Optional) The list of availability zones for the Public IP Address. Set to `[]` for no zones.
   - `edge_zone` - (Optional) Specifies the Edge Zone within the Azure Region where this Public IP should exist. Changing this forces a new Public IP to be created.
   - `ddos_protection_mode` - (Optional) The DDoS protection mode of the Public IP Address. Possible values are Disabled, Enabled or VirtualNetworkInherited. Defaults to VirtualNetworkInherited.
   - `ddos_protection_plan_id` - (Optional) The ID of the DDoS protection plan for the Public IP Address.
@@ -257,6 +257,7 @@ DESCRIPTION
 
 variable "local_network_gateways" {
   type = map(object({
+    id                  = optional(string, null)
     name                = optional(string, null)
     resource_group_name = optional(string, null)
     address_space       = optional(list(string), null)
@@ -310,6 +311,7 @@ variable "local_network_gateways" {
   description = <<DESCRIPTION
 Map of Local Network Gateways and Virtual Network Gateway Connections to create for the Virtual Network Gateway.
 
+- `id` - (Optional) The resource ID of an existing Local Network Gateway to use instead of creating a new one. When specified, the other gateway properties (`name`, `address_space`, `gateway_fqdn`, `gateway_address`, `bgp_settings`, `tags`) are ignored.
 - `name` - (Optional) The name of the Local Network Gateway to create.
 - `address_space` - (Optional) The list of address spaces for the Local Network Gateway.
 - `gateway_fqdn` - (Optional) The gateway FQDN for the Local Network Gateway.
@@ -355,8 +357,12 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   nullable    = false
 
   validation {
-    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : (v.gateway_fqdn == null && v.gateway_address == null ? false : true) if v.id == null])
-    error_message = "At least one of gateway_fqdn or gateway_address must be specified for local_network_gateways."
+    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.id != null || v.gateway_fqdn != null || v.gateway_address != null])
+    error_message = "At least one of id, gateway_fqdn, or gateway_address must be specified for local_network_gateways."
+  }
+  validation {
+    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.id == null ? true : can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft\\.Network/localNetworkGateways/[^/]+$", v.id))])
+    error_message = "id must be a valid Local Network Gateway resource ID (e.g. /subscriptions/.../resourceGroups/.../providers/Microsoft.Network/localNetworkGateways/...)."
   }
 }
 
