@@ -33,7 +33,7 @@ locals {
       virtual_network_id                            = local.virtual_network_id[k]
       name                                          = local.firewall_subnet_name
       address_prefixes                              = [v.firewall.subnet_address_prefix]
-      nat_gateway                                   = null
+      nat_gateway                                   = try(v.firewall.firewall_subnet_nat_gateway.assign_generated_nat_gateway, false) ? { id = module.nat_gateway[k].resource_id } : (try(v.firewall.firewall_subnet_nat_gateway.id, null) == null ? null : { id = v.firewall.firewall_subnet_nat_gateway.id })
       network_security_group                        = null
       private_endpoint_network_policies             = null
       private_link_service_network_policies_enabled = null
@@ -53,15 +53,21 @@ locals {
         virtual_network_id                            = local.virtual_network_id[k]
         name                                          = subnet.name
         address_prefixes                              = subnet.address_prefixes
-        nat_gateway                                   = subnet.nat_gateway
+        nat_gateway                                   = try(subnet.nat_gateway.assign_generated_nat_gateway, false) ? { id = module.nat_gateway[k].resource_id } : (try(subnet.nat_gateway.id, null) == null ? null : { id = subnet.nat_gateway.id })
         network_security_group                        = subnet.network_security_group
         private_endpoint_network_policies             = subnet.private_endpoint_network_policies_enabled ? "Enabled" : "Disabled"
         private_link_service_network_policies_enabled = subnet.private_link_service_network_policies_enabled
         service_endpoints_with_location               = subnet.service_endpoints_with_location
         service_endpoint_policies                     = try(local.service_endpoint_policy_map[k][subnetKey], null)
         delegation                                    = subnet.delegations
-        route_table                                   = try(subnet.route_table.assign_generated_route_table, true) ? (local.create_route_tables_user_subnets[k] ? { id = module.hub_routing_user_subnets[k].resource_id } : null) : (try(subnet.route_table.id, null) == null ? null : { id = subnet.route_table.id })
-        default_outbound_access_enabled               = subnet.default_outbound_access_enabled
+        route_table = try(subnet.route_table.assign_generated_route_table, true) ? (
+          try(subnet.route_table.route_table_reference_key, "UserSubnets") == "Firewall" ? (
+            local.create_route_tables_firewall[k] ? { id = module.hub_routing_firewall[k].resource_id } : null
+            ) : (
+            local.create_route_tables_user_subnets[k] ? { id = module.hub_routing_user_subnets[k].resource_id } : null
+          )
+        ) : (try(subnet.route_table.id, null) == null ? null : { id = subnet.route_table.id })
+        default_outbound_access_enabled = subnet.default_outbound_access_enabled
       }]
     ]]) : subnet.composite_key => subnet
   }
