@@ -237,6 +237,22 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_express_route_scale_unit_max"></a> [express\_route\_scale\_unit\_max](#input\_express\_route\_scale\_unit\_max)
+
+Description: The maximum number of scale units for the ExpressRoute Gateway when using the ErGwScale SKU. Must be between 1 and 40.
+
+Type: `number`
+
+Default: `1`
+
+### <a name="input_express_route_scale_unit_min"></a> [express\_route\_scale\_unit\_min](#input\_express\_route\_scale\_unit\_min)
+
+Description: The minimum number of scale units for the ExpressRoute Gateway when using the ErGwScale SKU. Must be between 1 and 40.
+
+Type: `number`
+
+Default: `1`
+
 ### <a name="input_express_route_virtual_wan_traffic_enabled"></a> [express\_route\_virtual\_wan\_traffic\_enabled](#input\_express\_route\_virtual\_wan\_traffic\_enabled)
 
 Description: Enabled ExpressRoute traffic incoming from other connected VWANs
