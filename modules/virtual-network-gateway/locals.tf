@@ -35,7 +35,7 @@ locals {
           ip_configuration_name = ip_configuration.name
           apipa_addresses       = ip_configuration.apipa_addresses
         }
-        if ip_configuration.apipa_addresses != null
+        if try(length(ip_configuration.apipa_addresses), 0) > 0
       }
     }
     ip_configuration = {
