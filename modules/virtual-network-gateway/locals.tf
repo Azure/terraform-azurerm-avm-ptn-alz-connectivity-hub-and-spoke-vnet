@@ -99,16 +99,25 @@ locals {
       id = var.vpn_default_local_network_gateway_id
     } : null
     # BGP Settings
-    bgpSettings = var.type == "Vpn" && var.vpn_bgp_enabled == true ? {
-      asn        = local.azurerm_virtual_network_gateway.bgp_settings.asn
-      peerWeight = local.azurerm_virtual_network_gateway.bgp_settings.peer_weight
-      bgpPeeringAddresses = [
-        for key, peering_addr in local.azurerm_virtual_network_gateway.bgp_settings.peering_addresses : {
-          ipconfigurationId    = "${var.parent_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/ipConfigurations/${peering_addr.ip_configuration_name}"
-          customBgpIpAddresses = peering_addr.apipa_addresses
-        }
-      ]
-    } : null
+    # Only send bgpPeeringAddresses when custom (APIPA) BGP IP addresses are supplied.
+    # When they are omitted, Azure populates bgpPeeringAddresses with read-only/computed
+    # values (defaultBgpIpAddresses, tunnelIpAddresses, ipconfigurationId). Sending an empty
+    # array back would otherwise cause continuous drift and disruptive gateway modifications
+    # on every apply. Changes to this property are also ignored via the resource lifecycle.
+    bgpSettings = var.type == "Vpn" && var.vpn_bgp_enabled == true ? merge(
+      {
+        asn        = local.azurerm_virtual_network_gateway.bgp_settings.asn
+        peerWeight = local.azurerm_virtual_network_gateway.bgp_settings.peer_weight
+      },
+      length(local.azurerm_virtual_network_gateway.bgp_settings.peering_addresses) > 0 ? {
+        bgpPeeringAddresses = [
+          for key, peering_addr in local.azurerm_virtual_network_gateway.bgp_settings.peering_addresses : {
+            ipconfigurationId    = "${var.parent_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/ipConfigurations/${peering_addr.ip_configuration_name}"
+            customBgpIpAddresses = peering_addr.apipa_addresses
+          }
+        ]
+      } : {}
+    ) : null
     # Custom Routes
     customRoutes = var.type == "Vpn" && var.vpn_custom_route != null ? {
       addressPrefixes = var.vpn_custom_route.address_prefixes
