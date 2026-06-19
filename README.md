@@ -1852,7 +1852,7 @@ Version: 0.4.3
 
 Source: Azure/avm-ptn-network-private-link-private-dns-zones/azurerm
 
-Version: 0.23.1
+Version: 0.23.2
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 

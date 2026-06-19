@@ -542,6 +542,7 @@ hub_virtual_networks = {
       }
       vpn = {
         name = "$${secondary_virtual_network_gateway_vpn_name}"
+        sku  = "VpnGw1AZ"
         ip_configurations = {
           active_active_1 = {
             name = "vnetGatewayConfigactive_active_1"
