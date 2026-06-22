@@ -139,7 +139,7 @@ module "ddos_protection_plan" {
 
 module "bastion_public_ip" {
   source   = "Azure/avm-res-network-publicipaddress/azurerm"
-  version  = "0.2.0"
+  version  = "0.2.1"
   for_each = local.bastion_host_public_ips
 
   location                = each.value.location
