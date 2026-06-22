@@ -15,15 +15,19 @@ locals {
 # Firewall Routes
 locals {
   default_route_internet = {
-    for key, value in var.hub_virtual_networks : key => {
-      virtual_network_key    = key
-      key                    = key
-      name                   = local.firewall_internet_route_name
-      address_prefix         = "0.0.0.0/0"
-      next_hop_type          = "Internet"
-      next_hop_in_ip_address = null
-      resource_group_name    = local.resource_group_names[key]
-    } if local.create_route_tables_firewall[key]
+    for key, value in var.hub_virtual_networks : key =>
+      (
+        try(local.custom_default_route_firewall[key], null) != null ?
+        local.custom_default_route_firewall[key] :
+        {
+          virtual_network_key   = key
+          name                  = local.firewall_internet_route_name[key]
+          address_prefix        = "0.0.0.0/0"
+          next_hop_type         = "Internet"
+          next_hop_in_ip_address= null
+          resource_group_name   = local.resource_group_names[key]
+        }
+      ) if local.create_route_tables_firewall[key]
   }
   firewall_private_ip = {
     for vnet_name, fw in module.hub_firewalls : vnet_name => fw.resource.ip_configuration[0].private_ip_address
@@ -55,9 +59,24 @@ locals {
           next_hop_type          = route_table_entry.next_hop_type
           next_hop_in_ip_address = route_table_entry.next_hop_ip_address
           resource_group_name    = local.resource_group_names[k_src]
-        }
+        } if route_table_entry.address_prefix != "0.0.0.0/0"
       ]
     ]) : route.name => route
+  }
+  custom_default_route_firewall = {
+    for route in flatten([
+      for k_src, v_src in var.hub_virtual_networks : [
+        for route_table_entry in v_src.route_table_entries_firewall : {
+          virtual_network_key    = k_src
+          key                    = k_src
+          name                   = route_table_entry.name
+          address_prefix         = route_table_entry.address_prefix
+          next_hop_type          = route_table_entry.next_hop_type
+          next_hop_in_ip_address = route_table_entry.next_hop_ip_address
+          resource_group_name    = local.resource_group_names[k_src]
+        } if route_table_entry.address_prefix == "0.0.0.0/0"
+      ]
+    ]) : route.key => route
   }
 }
 
