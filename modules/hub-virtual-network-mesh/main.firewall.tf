@@ -18,6 +18,7 @@ module "hub_firewalls" {
   firewall_private_ip_ranges = each.value.private_ip_ranges
   firewall_zones             = each.value.zones
   ip_configurations          = local.firewall_ip_configurations[each.key]
+  lock                       = each.value.lock
   tags                       = each.value.tags == null ? var.tags : each.value.tags
 }
 
@@ -86,5 +87,6 @@ module "fw_policies" {
   firewall_policy_threat_intelligence_mode          = each.value.threat_intelligence_mode
   firewall_policy_timeouts                          = var.timeouts
   firewall_policy_tls_certificate                   = each.value.tls_certificate
+  lock                                              = each.value.lock
   tags                                              = each.value.tags == null ? var.tags : each.value.tags
 }

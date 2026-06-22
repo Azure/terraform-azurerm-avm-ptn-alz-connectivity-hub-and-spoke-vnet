@@ -366,6 +366,25 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   }
 }
 
+variable "lock" {
+  type = object({
+    kind = string
+    name = optional(string, null)
+  })
+  default     = null
+  description = <<DESCRIPTION
+Controls the Resource Lock configuration for the Virtual Network Gateway. The following properties can be specified:
+
+- `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+DESCRIPTION
+
+  validation {
+    condition     = var.lock == null ? true : contains(["CanNotDelete", "ReadOnly"], var.lock.kind)
+    error_message = "lock.kind must be either CanNotDelete or ReadOnly."
+  }
+}
+
 variable "retry" {
   type = object({
     error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
