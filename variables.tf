@@ -276,6 +276,7 @@ variable "hub_virtual_networks" {
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       }), {})
 
@@ -292,6 +293,7 @@ variable "hub_virtual_networks" {
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       })), {})
 
@@ -307,6 +309,7 @@ variable "hub_virtual_networks" {
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       }), {})
     }), {})
