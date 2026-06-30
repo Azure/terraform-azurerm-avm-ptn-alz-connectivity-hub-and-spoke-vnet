@@ -41,6 +41,7 @@ module "fw_default_ips" {
   sku_tier                = each.value.sku_tier
   tags                    = each.value.tags == null ? var.tags : each.value.tags
   zones                   = each.value.zones
+  ip_tags                 = each.value.ip_tags
 }
 
 module "fw_management_ips" {
@@ -62,6 +63,7 @@ module "fw_management_ips" {
   sku_tier                = each.value.sku_tier
   tags                    = each.value.tags == null ? var.tags : each.value.tags
   zones                   = each.value.zones
+  ip_tags                 = each.value.ip_tags
 }
 
 module "fw_policies" {
