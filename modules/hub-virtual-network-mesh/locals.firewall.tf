@@ -52,6 +52,7 @@ locals {
         name = coalesce(vnet.firewall.management_ip_configuration.name, "defaultMgmt")
       }
       zones = vnet.firewall.zones
+      lock  = try(vnet.firewall.lock, null)
     } if vnet.firewall != null
   }
   fw_default_ip_configuration_pip = { for public_ip in flatten([
@@ -106,6 +107,7 @@ locals {
       threat_intelligence_mode          = vnet.firewall.firewall_policy.threat_intelligence_mode
       tls_certificate                   = vnet.firewall.firewall_policy.tls_certificate
       tags                              = vnet.firewall.tags
+      lock                              = try(vnet.firewall.firewall_policy.lock, null)
     } if vnet.firewall != null && vnet.firewall.firewall_policy != null && vnet.firewall.firewall_policy_id == null
   }
 }

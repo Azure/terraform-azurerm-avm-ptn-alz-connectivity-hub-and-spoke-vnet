@@ -21,6 +21,10 @@ locals {
     virtual_network_link_name_template                         = value.private_dns_zones.virtual_network_link_name_template
     virtual_network_link_resolution_policy_default             = value.private_dns_zones.virtual_network_link_resolution_policy_default
     tags                                                       = coalesce(value.private_dns_zones.tags, var.tags, {})
+    lock = value.private_dns_zones.lock == null ? null : {
+      kind = value.private_dns_zones.lock.kind
+      name = coalesce(value.private_dns_zones.lock.name, "lock-${key}-private-dns-zones-${value.private_dns_zones.lock.kind}")
+    }
   } if local.private_dns_zones_enabled[key] }
   private_dns_zones_auto_registration = { for key, value in var.hub_virtual_networks : key => {
     location    = value.location

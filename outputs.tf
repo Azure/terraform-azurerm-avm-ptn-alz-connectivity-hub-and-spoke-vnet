@@ -28,6 +28,26 @@ output "dns_resolver_inbound_endpoint_ip_addresses" {
   value       = { for key, value in module.dns_resolver : key => value.inbound_endpoint_ips }
 }
 
+output "dns_resolver_policy_domain_list_resource_ids" {
+  description = "The resource IDs of the DNS resolver domain lists, grouped by `<hub_key>/<domain_list_key>`."
+  value       = merge([for hub_key, m in module.dns_resolver_policy : { for dl_key, id in m.domain_list_resource_ids : "${hub_key}/${dl_key}" => id }]...)
+}
+
+output "dns_resolver_policy_resource_ids" {
+  description = "The resource IDs of the DNS resolver policies (DNS Security Policies), grouped by hub key."
+  value       = { for key, value in module.dns_resolver_policy : key => value.resource_id }
+}
+
+output "dns_resolver_policy_security_rule_resource_ids" {
+  description = "The resource IDs of the DNS resolver security rules, grouped by `<hub_key>/<rule_key>`."
+  value       = merge([for hub_key, m in module.dns_resolver_policy : { for rule_key, id in m.security_rule_resource_ids : "${hub_key}/${rule_key}" => id }]...)
+}
+
+output "dns_resolver_policy_virtual_network_link_resource_ids" {
+  description = "The resource IDs of the DNS resolver policy virtual network links, grouped by `<hub_key>/<link_key>`."
+  value       = merge([for hub_key, m in module.dns_resolver_policy : { for link_key, id in m.virtual_network_link_resource_ids : "${hub_key}/${link_key}" => id }]...)
+}
+
 output "dns_resolver_resource_ids" {
   description = "The resource IDs of the private DNS resolvers, grouped by hub key."
   value       = { for key, value in module.dns_resolver : key => value.resource_id }

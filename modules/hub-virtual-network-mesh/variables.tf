@@ -28,6 +28,10 @@ variable "hub_virtual_networks" {
     routing_address_space            = optional(list(string), [])
     hub_router_ip_address            = optional(string)
     tags                             = optional(map(string))
+    lock = optional(object({
+      kind = string
+      name = optional(string)
+    }))
 
     nat_gateway = optional(object({
       name                    = optional(string)
@@ -130,6 +134,10 @@ variable "hub_virtual_networks" {
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
 
       firewall_subnet_nat_gateway = optional(object({
         id                           = optional(string, null)
@@ -187,6 +195,10 @@ variable "hub_virtual_networks" {
         sku                               = optional(string, "Standard")
         auto_learn_private_ranges_enabled = optional(bool)
         base_policy_id                    = optional(string)
+        lock = optional(object({
+          kind = string
+          name = optional(string)
+        }))
         dns = optional(object({
           proxy_enabled = optional(bool, false)
           servers       = optional(list(string))

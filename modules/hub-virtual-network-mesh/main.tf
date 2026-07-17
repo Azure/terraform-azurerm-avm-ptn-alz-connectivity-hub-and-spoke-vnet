@@ -15,6 +15,7 @@ module "hub_virtual_networks" {
   }
   enable_telemetry        = var.enable_telemetry
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
+  lock                    = each.value.lock
   name                    = each.value.name
   retry                   = var.retry
   tags                    = each.value.tags == null ? var.tags : each.value.tags

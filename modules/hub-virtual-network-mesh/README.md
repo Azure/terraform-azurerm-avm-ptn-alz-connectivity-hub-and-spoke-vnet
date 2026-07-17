@@ -14,6 +14,8 @@ Optionally, these virtual networks can be peered in a mesh topology.
 - A routing address space can be specified for each hub network, this module will then create route tables for the other hub networks and associate them with the subnets.
 - Azure Firewall can be deployed in each hub network. This module will configure routing for the AzureFirewallSubnet.
 
+> **Deprecation notice:** The `id` attribute on entries of the `virtual_networks` output is deprecated in favour of `resource_id` and will be removed in a future major version. Consumers should migrate to `module.<name>.virtual_networks[<key>].resource_id` (or the top-level `module.<name>.resource_id[<key>]` map).
+
 ## Example
 
 ```terraform
@@ -241,6 +243,10 @@ map(object({
     routing_address_space            = optional(list(string), [])
     hub_router_ip_address            = optional(string)
     tags                             = optional(map(string))
+    lock = optional(object({
+      kind = string
+      name = optional(string)
+    }))
 
     nat_gateway = optional(object({
       name                    = optional(string)
@@ -343,6 +349,10 @@ map(object({
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
 
       firewall_subnet_nat_gateway = optional(object({
         id                           = optional(string, null)
@@ -400,6 +410,10 @@ map(object({
         sku                               = optional(string, "Standard")
         auto_learn_private_ranges_enabled = optional(bool)
         base_policy_id                    = optional(string)
+        lock = optional(object({
+          kind = string
+          name = optional(string)
+        }))
         dns = optional(object({
           proxy_enabled = optional(bool, false)
           servers       = optional(list(string))
