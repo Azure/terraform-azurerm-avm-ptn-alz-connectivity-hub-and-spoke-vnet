@@ -70,6 +70,7 @@ locals {
         domain_name_label       = ip_config_value.public_ip_config.domain_name_label
         ddos_protection_mode    = ip_config_value.public_ip_config.ddos_protection_mode
         ddos_protection_plan_id = ip_config_value.public_ip_config.ddos_protection_plan_id
+        ip_tags                 = ip_config_value.public_ip_config.ip_tags
       }
     ]
   ]) : public_ip.composite_key => public_ip }
@@ -86,6 +87,7 @@ locals {
       domain_name_label       = vnet.firewall.management_ip_configuration.public_ip_config.domain_name_label
       ddos_protection_mode    = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_mode
       ddos_protection_plan_id = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_plan_id
+      ip_tags                 = vnet.firewall.management_ip_configuration.public_ip_config.ip_tags
     } if vnet.firewall != null && vnet.firewall.management_ip_enabled
   }
   fw_policies = {
