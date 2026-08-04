@@ -288,6 +288,7 @@ The following top level attributes are supported:
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
       - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled. Possible values are Disabled, Enabled, VirtualNetworkInherited
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `ip_configurations` - (Optional) A map of the default IP configuration for the Azure Firewall. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
     - `is_default` - (Optional) Indicates this is the default IP configuration, which will be linked to the Firewall subnet. If not specified will be `false`. At least one and only one IP configuration must have this set to `true`.
@@ -301,6 +302,7 @@ The following top level attributes are supported:
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
       - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled. Possible values are Disabled, Enabled, VirtualNetworkInherited
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `management_ip_configuration` - (Optional) An object with the following fields. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
     - `public_ip_config` - (Optional) An object with the following fields:
@@ -313,6 +315,7 @@ The following top level attributes are supported:
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
       - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled. Possible values are Disabled, Enabled, VirtualNetworkInherited
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
 
 ## Azure Firewall Policy
 
@@ -985,6 +988,7 @@ map(object({
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       }), {})
 
@@ -1001,6 +1005,7 @@ map(object({
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       })), {})
 
@@ -1016,6 +1021,7 @@ map(object({
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       }), {})
     }), {})
@@ -1858,7 +1864,7 @@ Version: 0.23.2
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: 0.5.2
+Version: 0.12.0
 
 ### <a name="module_virtual_network_gateway"></a> [virtual\_network\_gateway](#module\_virtual\_network\_gateway)
 
