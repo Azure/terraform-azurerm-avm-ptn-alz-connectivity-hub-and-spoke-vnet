@@ -387,6 +387,7 @@ variable "hub_virtual_networks" {
       ip_connect_enabled                     = optional(bool, false)
       kerberos_enabled                       = optional(bool, false)
       scale_units                            = optional(number, 2)
+      session_recording_enabled              = optional(bool, false)
       shareable_link_enabled                 = optional(bool, false)
       sku                                    = optional(string, "Standard")
       tags                                   = optional(map(string), null)
@@ -1069,6 +1070,7 @@ The following top level attributes are supported:
   - `ip_connect_enabled` - (Optional) Should IP connect be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
   - `kerberos_enabled` - (Optional) Should Kerberos authentication be enabled for the Azure Bastion? Default `false`.
   - `scale_units` - (Optional) The number of scale units for the Azure Bastion. Valid values are between 2 and 50. Default `2`.
+  - `session_recording_enabled` - (Optional) Should session recording be enabled for the Azure Bastion? Requires `Premium` SKU. Default `false`.
   - `shareable_link_enabled` - (Optional) Should shareable links be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
   - `sku` - (Optional) The SKU of the Azure Bastion. Possible values are `Basic`, `Standard`. Default `Standard`.
   - `tags` - (Optional) A map of tags to apply to the Azure Bastion.
