@@ -82,3 +82,11 @@ output "virtual_networks" {
     }
   }
 }
+
+output "firewall_public_ip_configurations" {
+  description = "Resolved public IP settings for the firewall default and management IP configurations."
+  value = {
+    default    = local.fw_default_ip_configuration_pip
+    management = local.fw_management_ip_configuration_pip
+  }
+}

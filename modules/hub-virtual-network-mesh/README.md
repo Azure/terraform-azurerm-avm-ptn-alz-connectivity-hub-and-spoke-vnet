@@ -540,6 +540,10 @@ The following outputs are exported:
 
 Description: A curated output of the firewall policies created by this module.
 
+### <a name="output_firewall_public_ip_configurations"></a> [firewall\_public\_ip\_configurations](#output\_firewall\_public\_ip\_configurations)
+
+Description: Resolved public IP settings for the firewall default and management IP configurations.
+
 ### <a name="output_firewalls"></a> [firewalls](#output\_firewalls)
 
 Description: A curated output of the firewalls created by this module.
