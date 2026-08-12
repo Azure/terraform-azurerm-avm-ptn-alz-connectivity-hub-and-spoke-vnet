@@ -58,7 +58,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.116, < 5.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.116, < 5.1)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -570,19 +570,19 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-publicipaddress/azurerm
 
-Version: 0.2.0
+Version: 0.2.1
 
 ### <a name="module_fw_management_ips"></a> [fw\_management\_ips](#module\_fw\_management\_ips)
 
 Source: Azure/avm-res-network-publicipaddress/azurerm
 
-Version: 0.2.0
+Version: 0.2.1
 
 ### <a name="module_fw_policies"></a> [fw\_policies](#module\_fw\_policies)
 
 Source: Azure/avm-res-network-firewallpolicy/azurerm
 
-Version: 0.3.3
+Version: 0.3.4
 
 ### <a name="module_hub_firewalls"></a> [hub\_firewalls](#module\_hub\_firewalls)
 
@@ -594,31 +594,31 @@ Version: 0.4.0
 
 Source: Azure/avm-res-network-routetable/azurerm
 
-Version: 0.3.1
+Version: 0.5.0
 
 ### <a name="module_hub_routing_user_subnets"></a> [hub\_routing\_user\_subnets](#module\_hub\_routing\_user\_subnets)
 
 Source: Azure/avm-res-network-routetable/azurerm
 
-Version: 0.3.1
+Version: 0.5.0
 
 ### <a name="module_hub_virtual_network_peering"></a> [hub\_virtual\_network\_peering](#module\_hub\_virtual\_network\_peering)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.15.0
+Version: 0.20.0
 
 ### <a name="module_hub_virtual_network_subnets"></a> [hub\_virtual\_network\_subnets](#module\_hub\_virtual\_network\_subnets)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
 
-Version: 0.15.0
+Version: 0.20.0
 
 ### <a name="module_hub_virtual_networks"></a> [hub\_virtual\_networks](#module\_hub\_virtual\_networks)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.15.0
+Version: 0.20.0
 
 ### <a name="module_nat_gateway"></a> [nat\_gateway](#module\_nat\_gateway)
 
