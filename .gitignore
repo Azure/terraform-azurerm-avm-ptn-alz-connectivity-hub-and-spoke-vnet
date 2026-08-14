@@ -50,4 +50,4 @@ avm.tflint_module.merged.hcl
 examples/*/policy
 !test.auto.tfvars
 *.mptfbackup
-.avm
+.avm/managed-files.json
