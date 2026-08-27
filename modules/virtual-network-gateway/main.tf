@@ -76,6 +76,13 @@ resource "azapi_resource" "vgw" {
   }
 
   lifecycle {
+    ignore_changes = [
+      # Azure populates bgpPeeringAddresses with read-only/computed values
+      # (defaultBgpIpAddresses, tunnelIpAddresses, ipconfigurationId). Ignoring changes to
+      # this property prevents continuous drift and disruptive gateway modifications, which
+      # tear down and re-establish BGP sessions, on every apply.
+      body.properties.bgpSettings.bgpPeeringAddresses,
+    ]
     precondition {
       condition     = var.vpn_active_active_enabled == true && var.type == "Vpn" ? length(local.azurerm_virtual_network_gateway.ip_configuration) > 1 : true
       error_message = "An active-active gateway requires at least two IP configurations."
