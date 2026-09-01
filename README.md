@@ -17,7 +17,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.1)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -1804,13 +1804,13 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-bastionhost/azurerm
 
-Version: 0.6.0
+Version: 0.9.0
 
 ### <a name="module_bastion_public_ip"></a> [bastion\_public\_ip](#module\_bastion\_public\_ip)
 
 Source: Azure/avm-res-network-publicipaddress/azurerm
 
-Version: 0.2.0
+Version: 0.2.1
 
 ### <a name="module_ddos_protection_plan"></a> [ddos\_protection\_plan](#module\_ddos\_protection\_plan)
 
@@ -1822,7 +1822,7 @@ Version: 0.3.0
 
 Source: Azure/avm-res-network-dnsresolver/azurerm
 
-Version: 0.7.3
+Version: 0.8.0
 
 ### <a name="module_dns_resolver_policy"></a> [dns\_resolver\_policy](#module\_dns\_resolver\_policy)
 
@@ -1852,7 +1852,7 @@ Version:
 
 Source: Azure/avm-res-network-privatednszone/azurerm
 
-Version: 0.4.3
+Version: 0.5.0
 
 ### <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones)
 
@@ -1876,13 +1876,13 @@ Version:
 
 Source: Azure/avm-utl-network-ip-addresses/azurerm
 
-Version: 0.1.0
+Version: 0.1.1
 
 ### <a name="module_virtual_network_subnet_ip_prefixes"></a> [virtual\_network\_subnet\_ip\_prefixes](#module\_virtual\_network\_subnet\_ip\_prefixes)
 
 Source: Azure/avm-utl-network-ip-addresses/azurerm
 
-Version: 0.1.0
+Version: 0.1.1
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
