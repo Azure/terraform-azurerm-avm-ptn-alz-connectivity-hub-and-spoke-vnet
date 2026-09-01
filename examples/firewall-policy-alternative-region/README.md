@@ -11,7 +11,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.21"
+      version = "~> 5.3"
     }
     random = {
       source  = "hashicorp/random"
@@ -48,7 +48,7 @@ locals {
 
 module "resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
-  version  = "0.2.0"
+  version  = "0.4.0"
   for_each = local.resource_groups
 
   location         = each.value.location
@@ -59,7 +59,7 @@ module "resource_groups" {
 
 module "base_firewall_policy" {
   source  = "Azure/avm-res-network-firewallpolicy/azurerm"
-  version = "0.3.3"
+  version = "0.3.4"
 
   location            = "uksouth"
   name                = "fwp-global-base-uksouth-001"
@@ -109,7 +109,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.12)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.21)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.3)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.7)
 
@@ -144,13 +144,13 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-firewallpolicy/azurerm
 
-Version: 0.3.3
+Version: 0.3.4
 
 ### <a name="module_resource_groups"></a> [resource\_groups](#module\_resource\_groups)
 
 Source: Azure/avm-res-resources-resourcegroup/azurerm
 
-Version: 0.2.0
+Version: 0.4.0
 
 ### <a name="module_test"></a> [test](#module\_test)
 
