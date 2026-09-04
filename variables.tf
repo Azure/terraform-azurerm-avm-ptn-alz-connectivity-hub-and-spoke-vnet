@@ -1605,23 +1605,9 @@ DESCRIPTION
   validation {
     condition = alltrue([
       for hub_key, hub in var.hub_virtual_networks :
-      hub.bastion.private_only_enabled ? hub.bastion.sku == "Premium" : true
+      anytrue([hub.bastion.private_only_enabled, hub.bastion.session_recording_enabled]) ? hub.bastion.sku == "Premium" : true
     ])
-    error_message = "hub_virtual_networks[*].bastion.private_only_enabled requires bastion.sku to be Premium."
-  }
-  validation {
-    condition = alltrue([
-      for hub_key, hub in var.hub_virtual_networks :
-      hub.bastion.session_recording_enabled ? hub.bastion.sku == "Premium" : true
-    ])
-    error_message = "hub_virtual_networks[*].bastion.session_recording_enabled requires bastion.sku to be Premium."
-  }
-  validation {
-    condition = alltrue([
-      for hub_key, hub in var.hub_virtual_networks :
-      !(hub.bastion.session_recording_enabled && hub.bastion.tunneling_enabled)
-    ])
-    error_message = "hub_virtual_networks[*].bastion.session_recording_enabled cannot be combined with bastion.tunneling_enabled."
+    error_message = "hub_virtual_networks[*].bastion.private_only_enabled and session_recording_enabled require bastion.sku to be Premium."
   }
   validation {
     condition = alltrue([
@@ -1639,17 +1625,24 @@ DESCRIPTION
   validation {
     condition = alltrue([
       for hub_key, hub in var.hub_virtual_networks :
+      !(hub.bastion.session_recording_enabled && hub.bastion.tunneling_enabled)
+    ])
+    error_message = "hub_virtual_networks[*].bastion.session_recording_enabled cannot be combined with bastion.tunneling_enabled."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
       hub.bastion.private_only_enabled ? alltrue([
-        for attribute in [
-          hub.bastion.bastion_public_ip.name,
-          hub.bastion.bastion_public_ip.domain_name_label,
-          hub.bastion.bastion_public_ip.public_ip_prefix_id,
-          hub.bastion.bastion_public_ip.reverse_fqdn,
-          hub.bastion.bastion_public_ip.edge_zone,
-          hub.bastion.bastion_public_ip.ddos_protection_plan_id,
-          hub.bastion.bastion_public_ip.resource_group_name,
-        ] : attribute == null
-      ]) && hub.bastion.bastion_public_ip.zones == null && hub.bastion.bastion_public_ip.tags == null : true
+        hub.bastion.bastion_public_ip.name == null,
+        hub.bastion.bastion_public_ip.zones == null,
+        hub.bastion.bastion_public_ip.tags == null,
+        hub.bastion.bastion_public_ip.domain_name_label == null,
+        hub.bastion.bastion_public_ip.public_ip_prefix_id == null,
+        hub.bastion.bastion_public_ip.reverse_fqdn == null,
+        hub.bastion.bastion_public_ip.edge_zone == null,
+        hub.bastion.bastion_public_ip.ddos_protection_plan_id == null,
+        hub.bastion.bastion_public_ip.resource_group_name == null,
+      ]) : true
     ])
     error_message = "hub_virtual_networks[*].bastion.bastion_public_ip must not be configured when bastion.private_only_enabled is true, because no public IP is created."
   }
