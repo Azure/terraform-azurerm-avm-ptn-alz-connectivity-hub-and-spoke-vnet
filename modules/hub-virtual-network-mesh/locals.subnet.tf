@@ -1,5 +1,16 @@
 locals {
-  firewall_internet_route_name    = "internet"
+  firewall_internet_route_name = {
+    for k, v in var.hub_virtual_networks : k => (
+      length([
+        for r in v.route_table_entries_firewall : r.name
+        if r.address_prefix == "0.0.0.0/0"
+      ]) > 0 ?
+      [
+        for r in v.route_table_entries_firewall : r.name
+        if r.address_prefix == "0.0.0.0/0"
+      ][0] : "internet"
+    )
+  }
   firewall_management_subnet_name = "AzureFirewallManagementSubnet"
   firewall_management_subnets = {
     for k, v in var.hub_virtual_networks : "${k}-${local.firewall_management_subnet_name}" => {
@@ -23,7 +34,7 @@ locals {
   firewall_route_table_ids = {
     # NOTE: For the destroy, you cannot delete the default route before removing the route table from the AzureFirewallSubnet.
     # Therefore we are building an implicit dependency on the default route here.
-    for vnet_name, route in azurerm_route.firewall_default : vnet_name => replace(route.id, "/routes/${local.firewall_internet_route_name}", "")
+    for vnet_name, route in azurerm_route.firewall_default : vnet_name => replace(route.id, "/routes/${local.firewall_internet_route_name[vnet_name]}", "")
   }
   firewall_subnet_name = "AzureFirewallSubnet"
   firewall_subnets = {
