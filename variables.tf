@@ -385,16 +385,19 @@ variable "hub_virtual_networks" {
       subnet_address_prefix                  = optional(string)
       subnet_default_outbound_access_enabled = optional(bool, false)
       name                                   = optional(string)
-      copy_paste_enabled                     = optional(bool, false)
+      copy_paste_enabled                     = optional(bool, true)
       file_copy_enabled                      = optional(bool, false)
       ip_connect_enabled                     = optional(bool, false)
       kerberos_enabled                       = optional(bool, false)
+      private_only_enabled                   = optional(bool, false)
       scale_units                            = optional(number, 2)
+      session_recording_enabled              = optional(bool, false)
       shareable_link_enabled                 = optional(bool, false)
       sku                                    = optional(string, "Standard")
       tags                                   = optional(map(string), null)
       tunneling_enabled                      = optional(bool, false)
       zones                                  = optional(set(string), null)
+      parent_id                              = optional(string)
       resource_group_name                    = optional(string)
 
       bastion_public_ip = optional(object({
@@ -1070,17 +1073,20 @@ The following top level attributes are supported:
   - `subnet_address_prefix` - (Optional) The IPv4 address prefix to use for the Azure Bastion subnet in CIDR format. Must be named `AzureBastionSubnet` and be a part of the virtual network's address space.
   - `subnet_default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the Azure Bastion subnet? Default `false`.
   - `name` - (Optional) The name of the Azure Bastion resource.
-  - `copy_paste_enabled` - (Optional) Should copy-paste be enabled for the Azure Bastion? Default `false`.
-  - `file_copy_enabled` - (Optional) Should file copy be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
-  - `ip_connect_enabled` - (Optional) Should IP connect be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
+  - `copy_paste_enabled` - (Optional) Should copy-paste be enabled for the Azure Bastion? Setting this to `false` requires the `Standard` or `Premium` SKU. Default `true`.
+  - `file_copy_enabled` - (Optional) Should file copy be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
+  - `ip_connect_enabled` - (Optional) Should IP connect be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
   - `kerberos_enabled` - (Optional) Should Kerberos authentication be enabled for the Azure Bastion? Default `false`.
+  - `private_only_enabled` - (Optional) Should the Azure Bastion be deployed without a public IP address? Requires the `Premium` SKU. When `true`, no public IP is created for this hub and the `bastion_public_ip` settings must not be supplied. Default `false`.
   - `scale_units` - (Optional) The number of scale units for the Azure Bastion. Valid values are between 2 and 50. Default `2`.
-  - `shareable_link_enabled` - (Optional) Should shareable links be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
-  - `sku` - (Optional) The SKU of the Azure Bastion. Possible values are `Basic`, `Standard`. Default `Standard`.
+  - `session_recording_enabled` - (Optional) Should session recording be enabled for the Azure Bastion? Requires the `Premium` SKU and is not compatible with `tunneling_enabled`. Default `false`.
+  - `shareable_link_enabled` - (Optional) Should shareable links be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
+  - `sku` - (Optional) The SKU of the Azure Bastion. Possible values are `Basic`, `Standard`, `Premium`. Default `Standard`.
   - `tags` - (Optional) A map of tags to apply to the Azure Bastion.
-  - `tunneling_enabled` - (Optional) Should tunneling be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
+  - `tunneling_enabled` - (Optional) Should tunneling be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
   - `zones` - (Optional) A set of availability zones for the Azure Bastion. Set to `[]` for no zones.
-  - `resource_group_name` - (Optional) The name of the resource group where the Azure Bastion should be created. If not specified will use the parent resource group of the virtual network.
+  - `parent_id` - (Optional) The resource ID of the resource group where the Azure Bastion should be created. Defaults to the hub's `default_parent_id` (or the hub virtual network's `parent_id`).
+  - `resource_group_name` - (Optional) The name of the resource group used as the default for the Azure Bastion public IP. If not specified will use the parent resource group of the virtual network.
   - `bastion_public_ip` - (Optional) An object with the following fields:
     - `name` - (Optional) The name of the public IP for the Azure Bastion. If not specified will use `pip-bastion-{vnetname}`.
     - `allocation_method` - (Optional) The allocation method for the public IP. Possible values are `Static`, `Dynamic`. Default `Static`.
@@ -1588,6 +1594,57 @@ DESCRIPTION
       ])
     ])
     error_message = "When route_table_reference_key is 'Firewall', hub_virtual_network.route_table_firewall_enabled must be true."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      contains(["Basic", "Standard", "Premium"], hub.bastion.sku)
+    ])
+    error_message = "hub_virtual_networks[*].bastion.sku must be one of Basic, Standard or Premium. The Developer SKU is not supported by this module because an ip_configuration is always supplied."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      anytrue([hub.bastion.private_only_enabled, hub.bastion.session_recording_enabled]) ? hub.bastion.sku == "Premium" : true
+    ])
+    error_message = "hub_virtual_networks[*].bastion.private_only_enabled and session_recording_enabled require bastion.sku to be Premium."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      anytrue([
+        !hub.bastion.copy_paste_enabled,
+        hub.bastion.file_copy_enabled,
+        hub.bastion.ip_connect_enabled,
+        hub.bastion.shareable_link_enabled,
+        hub.bastion.tunneling_enabled,
+      ]) ? hub.bastion.sku != "Basic" : true
+    ])
+    error_message = "hub_virtual_networks[*].bastion.file_copy_enabled, ip_connect_enabled, shareable_link_enabled and tunneling_enabled require bastion.sku to be Standard or Premium, as does disabling copy_paste_enabled."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      !(hub.bastion.session_recording_enabled && hub.bastion.tunneling_enabled)
+    ])
+    error_message = "hub_virtual_networks[*].bastion.session_recording_enabled cannot be combined with bastion.tunneling_enabled."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.bastion.private_only_enabled ? alltrue([
+        hub.bastion.bastion_public_ip.name == null,
+        hub.bastion.bastion_public_ip.zones == null,
+        hub.bastion.bastion_public_ip.tags == null,
+        hub.bastion.bastion_public_ip.domain_name_label == null,
+        hub.bastion.bastion_public_ip.public_ip_prefix_id == null,
+        hub.bastion.bastion_public_ip.reverse_fqdn == null,
+        hub.bastion.bastion_public_ip.edge_zone == null,
+        hub.bastion.bastion_public_ip.ddos_protection_plan_id == null,
+        hub.bastion.bastion_public_ip.resource_group_name == null,
+      ]) : true
+    ])
+    error_message = "hub_virtual_networks[*].bastion.bastion_public_ip must not be configured when bastion.private_only_enabled is true, because no public IP is created."
   }
 }
 
