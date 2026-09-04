@@ -52,6 +52,7 @@ locals {
         name = coalesce(vnet.firewall.management_ip_configuration.name, "defaultMgmt")
       }
       zones = vnet.firewall.zones
+      lock  = try(vnet.firewall.lock, null)
     } if vnet.firewall != null
   }
   fw_default_ip_configuration_pip = { for public_ip in flatten([
@@ -69,6 +70,7 @@ locals {
         domain_name_label       = ip_config_value.public_ip_config.domain_name_label
         ddos_protection_mode    = ip_config_value.public_ip_config.ddos_protection_mode
         ddos_protection_plan_id = ip_config_value.public_ip_config.ddos_protection_plan_id
+        ip_tags                 = ip_config_value.public_ip_config.ip_tags
       }
     ]
   ]) : public_ip.composite_key => public_ip }
@@ -85,6 +87,7 @@ locals {
       domain_name_label       = vnet.firewall.management_ip_configuration.public_ip_config.domain_name_label
       ddos_protection_mode    = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_mode
       ddos_protection_plan_id = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_plan_id
+      ip_tags                 = vnet.firewall.management_ip_configuration.public_ip_config.ip_tags
     } if vnet.firewall != null && vnet.firewall.management_ip_enabled
   }
   fw_policies = {
@@ -106,6 +109,7 @@ locals {
       threat_intelligence_mode          = vnet.firewall.firewall_policy.threat_intelligence_mode
       tls_certificate                   = vnet.firewall.firewall_policy.tls_certificate
       tags                              = vnet.firewall.tags
+      lock                              = try(vnet.firewall.firewall_policy.lock, null)
     } if vnet.firewall != null && vnet.firewall.firewall_policy != null && vnet.firewall.firewall_policy_id == null
   }
 }

@@ -28,6 +28,10 @@ variable "hub_virtual_networks" {
     routing_address_space            = optional(list(string), [])
     hub_router_ip_address            = optional(string)
     tags                             = optional(map(string))
+    lock = optional(object({
+      kind = string
+      name = optional(string)
+    }))
 
     nat_gateway = optional(object({
       name                    = optional(string)
@@ -130,6 +134,10 @@ variable "hub_virtual_networks" {
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
 
       firewall_subnet_nat_gateway = optional(object({
         id                           = optional(string, null)
@@ -149,6 +157,7 @@ variable "hub_virtual_networks" {
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }))
       }))
       ip_configurations = optional(map(object({
@@ -164,6 +173,7 @@ variable "hub_virtual_networks" {
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }))
       })), {})
       management_ip_configuration = optional(object({
@@ -178,6 +188,7 @@ variable "hub_virtual_networks" {
           domain_name_label       = optional(string)
           ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
           ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }))
       }))
       firewall_policy = optional(object({
@@ -187,6 +198,10 @@ variable "hub_virtual_networks" {
         sku                               = optional(string, "Standard")
         auto_learn_private_ranges_enabled = optional(bool)
         base_policy_id                    = optional(string)
+        lock = optional(object({
+          kind = string
+          name = optional(string)
+        }))
         dns = optional(object({
           proxy_enabled = optional(bool, false)
           servers       = optional(list(string))
@@ -336,6 +351,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
       - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `ip_configurations` - (Optional) A map of the default IP configuration for the Azure Firewall. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
     - `is_default` - (Optional) Indicates this is the default IP configuration, which will be linked to the Firewall subnet. If not specified will be `false`. At least one and only one IP configuration must have this set to `true`.
@@ -347,6 +363,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
       - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `management_ip_configuration` - (Optional) An object with the following fields. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
     - `public_ip_config` - (Optional) An object with the following fields:
@@ -357,6 +374,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
       - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
       - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `firewall_policy` - (Optional) An object with the following fields. Cannot be used with `firewall_policy_id`. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the firewall policy. If not specified will use `afw-policy-{vnetname}`.
     - `sku` - (Optional) The SKU to use for the firewall policy. Possible values include `Standard`, `Premium`.

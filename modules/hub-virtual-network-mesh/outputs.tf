@@ -71,7 +71,8 @@ output "virtual_networks" {
       name                        = vnet_mod.name
       parent_id                   = var.hub_virtual_networks[vnet_key].parent_id
       resource_group_name         = local.resource_group_names[vnet_key]
-      id                          = vnet_mod.resource_id
+      resource_id                 = vnet_mod.resource_id
+      id                          = vnet_mod.resource_id # Deprecated: use `resource_id` instead. This attribute will be removed in a future major version.
       virtual_network_resource_id = vnet_mod.resource.id
       location                    = var.hub_virtual_networks[vnet_key].location
       address_spaces              = var.hub_virtual_networks[vnet_key].address_space
@@ -79,5 +80,13 @@ output "virtual_networks" {
       subnet_ids                  = { for subnet_key, subnet_value in local.subnets : subnet_key => module.hub_virtual_network_subnets[subnet_key].resource_id if subnet_value.virtual_network_key == vnet_key }
       hub_router_ip_address       = try(module.hub_firewalls[vnet_key].resource.ip_configuration[0].private_ip_address, var.hub_virtual_networks[vnet_key].hub_router_ip_address)
     }
+  }
+}
+
+output "firewall_public_ip_configurations" {
+  description = "Resolved public IP settings for the firewall default and management IP configurations."
+  value = {
+    default    = local.fw_default_ip_configuration_pip
+    management = local.fw_management_ip_configuration_pip
   }
 }

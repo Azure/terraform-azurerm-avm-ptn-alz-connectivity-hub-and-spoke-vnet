@@ -124,6 +124,15 @@ moved {
   to   = azapi_resource.vgw
 }
 
+resource "azurerm_management_lock" "vgw" {
+  count = var.lock != null ? 1 : 0
+
+  lock_level = var.lock.kind
+  name       = coalesce(var.lock.name, "lock-${var.lock.kind}")
+  scope      = azapi_resource.vgw.id
+  notes      = var.lock.kind == "CanNotDelete" ? "Cannot delete the resource or its child resources." : "Cannot delete or modify the resource or its child resources."
+}
+
 resource "azurerm_local_network_gateway" "vgw" {
   for_each = local.azurerm_local_network_gateway
 

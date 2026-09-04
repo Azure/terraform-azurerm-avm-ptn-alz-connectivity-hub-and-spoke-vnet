@@ -8,6 +8,10 @@ locals {
       tags                              = coalesce(hub_network_value.virtual_network_gateways.express_route.tags, var.tags, {})
       ip_configurations                 = local.virtual_network_gateways_express_route_ip_configurations[hub_network_key]
       sku                               = coalesce(hub_network_value.virtual_network_gateways.express_route.sku, length(local.availability_zones[hub_network_key]) == 0 ? "Standard" : "ErGw1AZ")
+      lock = hub_network_value.virtual_network_gateways.express_route.lock == null ? null : {
+        kind = hub_network_value.virtual_network_gateways.express_route.lock.kind
+        name = coalesce(hub_network_value.virtual_network_gateways.express_route.lock.name, "lock-${hub_network_key}-express-route-gateway-${hub_network_value.virtual_network_gateways.express_route.lock.kind}")
+      }
       virtual_network_gateway = merge({
         location = hub_network_value.location
         type     = "ExpressRoute"
@@ -39,6 +43,10 @@ locals {
       tags                              = coalesce(hub_network_value.virtual_network_gateways.vpn.tags, var.tags, {})
       ip_configurations                 = local.virtual_network_gateways_vpn_ip_configurations[hub_network_key]
       sku                               = hub_network_value.virtual_network_gateways.vpn.sku
+      lock = hub_network_value.virtual_network_gateways.vpn.lock == null ? null : {
+        kind = hub_network_value.virtual_network_gateways.vpn.lock.kind
+        name = coalesce(hub_network_value.virtual_network_gateways.vpn.lock.name, "lock-${hub_network_key}-vpn-gateway-${hub_network_value.virtual_network_gateways.vpn.lock.kind}")
+      }
       virtual_network_gateway = merge({
         location = hub_network_value.location
         type     = "Vpn"
