@@ -24,7 +24,7 @@ module "hub_firewalls" {
 
 module "fw_default_ips" {
   source   = "Azure/avm-res-network-publicipaddress/azurerm"
-  version  = "0.2.0"
+  version  = "0.2.1"
   for_each = local.fw_default_ip_configuration_pip
 
   location                = each.value.location
@@ -34,8 +34,8 @@ module "fw_default_ips" {
   ddos_protection_mode    = each.value.ddos_protection_mode
   ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
-  ip_tags                 = each.value.ip_tags
   enable_telemetry        = var.enable_telemetry
+  ip_tags                 = each.value.ip_tags
   ip_version              = each.value.ip_version
   public_ip_prefix_id     = each.value.public_ip_prefix_id
   sku                     = "Standard"
@@ -46,7 +46,7 @@ module "fw_default_ips" {
 
 module "fw_management_ips" {
   source   = "Azure/avm-res-network-publicipaddress/azurerm"
-  version  = "0.2.0"
+  version  = "0.2.1"
   for_each = local.fw_management_ip_configuration_pip
 
   location                = each.value.location
@@ -56,8 +56,8 @@ module "fw_management_ips" {
   ddos_protection_mode    = each.value.ddos_protection_mode
   ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
-  ip_tags                 = each.value.ip_tags
   enable_telemetry        = var.enable_telemetry
+  ip_tags                 = each.value.ip_tags
   ip_version              = each.value.ip_version
   public_ip_prefix_id     = each.value.public_ip_prefix_id
   sku                     = "Standard"
@@ -68,7 +68,7 @@ module "fw_management_ips" {
 
 module "fw_policies" {
   source   = "Azure/avm-res-network-firewallpolicy/azurerm"
-  version  = "0.3.3"
+  version  = "0.3.4"
   for_each = local.fw_policies
 
   location                                          = each.value.location
