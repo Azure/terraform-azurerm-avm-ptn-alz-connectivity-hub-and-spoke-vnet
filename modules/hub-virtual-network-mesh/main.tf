@@ -28,19 +28,19 @@ module "hub_virtual_network_subnets" {
   for_each = local.subnets
 
   parent_id                                     = each.value.virtual_network_id
+  name                                          = each.value.name
+  retry                                         = var.retry
+  timeouts                                      = var.timeouts
   address_prefixes                              = each.value.address_prefixes
   default_outbound_access_enabled               = each.value.default_outbound_access_enabled
   delegation                                    = each.value.delegation
-  name                                          = each.value.name
   nat_gateway                                   = each.value.nat_gateway
   network_security_group                        = each.value.network_security_group
   private_endpoint_network_policies             = each.value.private_endpoint_network_policies
   private_link_service_network_policies_enabled = each.value.private_link_service_network_policies_enabled
-  retry                                         = var.retry
   route_table                                   = each.value.route_table
   service_endpoint_policies                     = each.value.service_endpoint_policies
   service_endpoints_with_location               = each.value.service_endpoints_with_location
-  timeouts                                      = var.timeouts
 }
 
 module "hub_virtual_network_peering" {
@@ -49,13 +49,13 @@ module "hub_virtual_network_peering" {
   for_each = local.peerings
 
   parent_id                    = each.value.parent_id
+  name                         = each.value.name
+  retry                        = var.retry
+  timeouts                     = var.timeouts
   allow_forwarded_traffic      = each.value.allow_forwarded_traffic
   allow_gateway_transit        = each.value.allow_gateway_transit
   allow_virtual_network_access = each.value.allow_virtual_network_access
   create_reverse_peering       = false
-  name                         = each.value.name
   remote_virtual_network_id    = each.value.remote_virtual_network_id
-  retry                        = var.retry
-  timeouts                     = var.timeouts
   use_remote_gateways          = each.value.use_remote_gateways
 }
