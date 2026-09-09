@@ -32,12 +32,12 @@ module "config" {
 
   custom_replacements             = var.custom_replacements
   inputs                          = local.config_templating_inputs
-  root_parent_management_group_id = ""
   starter_locations               = var.starter_locations
   subscription_id_connectivity    = data.azurerm_client_config.current.subscription_id
   subscription_id_identity        = data.azurerm_client_config.current.subscription_id
   subscription_id_management      = data.azurerm_client_config.current.subscription_id
   subscription_id_security        = data.azurerm_client_config.current.subscription_id
+  root_parent_management_group_id = ""
 }
 
 module "resource_groups" {

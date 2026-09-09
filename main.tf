@@ -69,11 +69,11 @@ module "gateway_route_table_routes" {
   version  = "0.5.0"
   for_each = local.gateway_route_table_routes_flattened
 
-  name                = each.value.name
   address_prefix      = each.value.address_prefix
-  next_hop_ip_address = each.value.next_hop_ip_address
+  name                = each.value.name
   next_hop_type       = each.value.next_hop_type
   parent_id           = module.gateway_route_table[each.value.hub_network_key].resource_id
+  next_hop_ip_address = each.value.next_hop_ip_address
 }
 
 module "dns_resolver" {

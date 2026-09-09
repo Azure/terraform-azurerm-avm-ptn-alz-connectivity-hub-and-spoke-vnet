@@ -4,15 +4,11 @@ resource "azapi_resource" "this" {
   parent_id                 = var.parent_id
   type                      = var.resource_types.dns_resolver_policy
   body                      = {}
-  create_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers              = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   replace_triggers_refs     = []
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
   tags                      = var.tags
-  update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
     create = var.timeouts.create
@@ -34,15 +30,11 @@ resource "azapi_resource" "domain_list" {
       domains = each.value.domains
     }
   }
-  create_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers              = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   replace_triggers_refs     = []
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
   tags                      = coalesce(each.value.tags, var.tags)
-  update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
     create = var.timeouts.create
@@ -72,9 +64,6 @@ resource "azapi_resource" "security_rule" {
       priority             = each.value.priority
     }
   }
-  create_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers   = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   # priority is immutable on this preview API and re-keying replaces the rule, so no body paths need to force replacement.
   replace_triggers_refs  = []
   response_export_values = []
@@ -83,7 +72,6 @@ resource "azapi_resource" "security_rule" {
   # `properties.managedDomainLists` field; ARM still validates the body at apply time.
   schema_validation_enabled = false
   tags                      = var.tags
-  update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
     create = var.timeouts.create
@@ -106,15 +94,11 @@ resource "azapi_resource" "virtual_network_link" {
       }
     }
   }
-  create_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers              = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   replace_triggers_refs     = ["properties.virtualNetwork.id"]
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
   tags                      = var.tags
-  update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
     create = var.timeouts.create
@@ -136,14 +120,10 @@ resource "azapi_resource" "lock" {
       notes = var.lock.kind == "CanNotDelete" ? "Cannot delete the resource or its child resources." : "Cannot delete or modify the resource or its child resources."
     }
   }
-  create_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers              = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   replace_triggers_refs     = ["properties.level"]
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
-  update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
     create = var.timeouts.create
