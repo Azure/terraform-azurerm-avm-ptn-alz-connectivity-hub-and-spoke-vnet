@@ -167,22 +167,24 @@ module "bastion_public_ip" {
 
 module "bastion_host" {
   source   = "Azure/avm-res-network-bastionhost/azurerm"
-  version  = "0.6.0"
+  version  = "0.9.0"
   for_each = local.bastion_hosts
 
-  location               = each.value.location
-  name                   = each.value.name
-  resource_group_name    = each.value.resource_group_name
-  copy_paste_enabled     = each.value.bastion_settings.copy_paste_enabled
-  enable_telemetry       = var.enable_telemetry
-  file_copy_enabled      = each.value.bastion_settings.file_copy_enabled
-  ip_configuration       = each.value.ip_configuration
-  ip_connect_enabled     = each.value.bastion_settings.ip_connect_enabled
-  kerberos_enabled       = each.value.bastion_settings.kerberos_enabled
-  scale_units            = each.value.bastion_settings.scale_units
-  shareable_link_enabled = each.value.bastion_settings.shareable_link_enabled
-  sku                    = each.value.bastion_settings.sku
-  tags                   = each.value.tags
-  tunneling_enabled      = each.value.bastion_settings.tunneling_enabled
-  zones                  = each.value.zones
+  location                  = each.value.location
+  name                      = each.value.name
+  parent_id                 = each.value.parent_id
+  copy_paste_enabled        = each.value.bastion_settings.copy_paste_enabled
+  enable_telemetry          = var.enable_telemetry
+  file_copy_enabled         = each.value.bastion_settings.file_copy_enabled
+  ip_configuration          = each.value.ip_configuration
+  ip_connect_enabled        = each.value.bastion_settings.ip_connect_enabled
+  kerberos_enabled          = each.value.bastion_settings.kerberos_enabled
+  private_only_enabled      = each.value.bastion_settings.private_only_enabled
+  scale_units               = each.value.bastion_settings.scale_units
+  session_recording_enabled = each.value.bastion_settings.session_recording_enabled
+  shareable_link_enabled    = each.value.bastion_settings.shareable_link_enabled
+  sku                       = each.value.bastion_settings.sku
+  tags                      = each.value.tags
+  tunneling_enabled         = each.value.bastion_settings.tunneling_enabled
+  zones                     = each.value.zones
 }
