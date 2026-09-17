@@ -37,6 +37,7 @@ module "config" {
   subscription_id_identity        = data.azurerm_client_config.current.subscription_id
   subscription_id_management      = data.azurerm_client_config.current.subscription_id
   subscription_id_security        = data.azurerm_client_config.current.subscription_id
+  enable_telemetry                = false
   root_parent_management_group_id = ""
 }
 
@@ -64,7 +65,7 @@ locals {
 module "test" {
   source = "../../"
 
-  enable_telemetry                = var.enable_telemetry
+  enable_telemetry                = false
   hub_and_spoke_networks_settings = local.hub_and_spoke_networks_settings
   hub_virtual_networks            = local.hub_virtual_networks
   tags                            = module.config.outputs.tags
