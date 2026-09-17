@@ -34,6 +34,7 @@ module "fw_default_ips" {
   ddos_protection_mode    = each.value.ddos_protection_mode
   ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
+  ip_tags                 = each.value.ip_tags
   enable_telemetry        = var.enable_telemetry
   ip_tags                 = each.value.ip_tags
   ip_version              = each.value.ip_version
@@ -56,6 +57,7 @@ module "fw_management_ips" {
   ddos_protection_mode    = each.value.ddos_protection_mode
   ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
+  ip_tags                 = each.value.ip_tags
   enable_telemetry        = var.enable_telemetry
   ip_tags                 = each.value.ip_tags
   ip_version              = each.value.ip_version
