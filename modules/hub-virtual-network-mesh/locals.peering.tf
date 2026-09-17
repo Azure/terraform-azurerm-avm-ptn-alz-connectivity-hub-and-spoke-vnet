@@ -1,6 +1,6 @@
 locals {
-  peerings = { for peering in flatten([for key_from, value_from in var.hub_virtual_networks : [
-    for key_to, value_to in var.hub_virtual_networks : {
+  peerings = { for peering in flatten([for key_from, value_from in local.hub_virtual_networks_by_key : [
+    for key_to, value_to in local.hub_virtual_networks_by_key : {
       name                         = try(value_from.peering_names[key_to], "${local.virtual_network_name[key_from]}-${local.virtual_network_name[key_to]}")
       composite_key                = "${key_from}-${key_to}"
       parent_id                    = local.virtual_network_id[key_from]
@@ -9,7 +9,7 @@ locals {
       allow_forwarded_traffic      = true
       allow_gateway_transit        = true
       use_remote_gateways          = false
-    } if key_from != key_to && value_from.mesh_peering_enabled]
+    } if key_from != key_to && nonsensitive(value_from.mesh_peering_enabled)]
     ]) : peering.composite_key => peering
   }
 }

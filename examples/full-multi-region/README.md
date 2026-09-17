@@ -4,6 +4,10 @@
 
 Uses the standard tfvars file for the multi-region with azure firewall scenario.
 
+Gateway shared keys use the existing input fields. The example preserves their template substitutions, including transformed hub and connection keys, while keeping unknown shared keys out of the whole-configuration JSON conversion.
+
+`config_outputs` retains its complete configuration and existing object shape, including the templated shared keys. It is now sensitive, so normal CLI output is redacted and downstream outputs that expose it must also be sensitive. This does not encrypt state, saved plans, or JSON output; protect those artifacts as secrets.
+
 ```hcl
 terraform {
   required_version = "~> 1.12"
@@ -26,7 +30,7 @@ locals {
   config_templating_inputs = {
     connectivity_resource_groups    = var.connectivity_resource_groups
     hub_and_spoke_networks_settings = var.hub_and_spoke_networks_settings
-    hub_virtual_networks            = var.hub_virtual_networks
+    hub_virtual_networks            = local.hub_virtual_networks_template
     management_group_settings       = var.management_group_settings
     management_resource_settings    = var.management_resource_settings
     tags                            = var.tags
@@ -61,7 +65,7 @@ module "resource_groups" {
 # Build an implicit dependency on the resource groups
 locals {
   hub_and_spoke_networks_settings = merge(module.config.outputs.hub_and_spoke_networks_settings, local.resource_groups)
-  hub_virtual_networks            = (merge({ vnets = module.config.outputs.hub_virtual_networks }, local.resource_groups)).vnets
+  hub_virtual_networks            = (merge({ vnets = local.templated_config.hub_virtual_networks }, local.resource_groups)).vnets
   resource_groups = {
     resource_groups = module.resource_groups
   }

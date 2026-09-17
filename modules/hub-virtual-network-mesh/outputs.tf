@@ -3,7 +3,7 @@ output "firewall_policies" {
   value = {
     for vnet_name, fw_policy in module.fw_policies : vnet_name => {
       id   = fw_policy.resource_id
-      name = fw_policy.resource.name
+      name = nonsensitive(fw_policy.resource.name)
     }
   }
 }
@@ -21,7 +21,7 @@ output "firewalls" {
   value = {
     for vnet_name, fw in module.hub_firewalls : vnet_name => {
       id                           = fw.resource_id
-      name                         = fw.resource.name
+      name                         = nonsensitive(fw.resource.name)
       private_ip_address           = try(fw.resource.ip_configuration[0].private_ip_address, null)
       public_ip_addresses          = try([for k, pip in module.fw_default_ips : pip.public_ip_address if startswith(k, "${vnet_name}-") || k == vnet_name], [])
       management_public_ip_address = try(module.fw_management_ips[vnet_name].public_ip_address, null)
@@ -33,7 +33,7 @@ output "hub_route_tables_firewall" {
   description = "A curated output of the route tables created by this module."
   value = {
     for vnet_name, rt in module.hub_routing_firewall : vnet_name => {
-      name = rt.name
+      name = nonsensitive(rt.name)
       id   = rt.resource_id
     }
   }
@@ -43,7 +43,7 @@ output "hub_route_tables_user_subnets" {
   description = "A curated output of the route tables created by this module."
   value = {
     for vnet_name, rt in module.hub_routing_user_subnets : vnet_name => {
-      name = rt.resource.name
+      name = nonsensitive(rt.resource.name)
       id   = rt.resource_id
     }
   }
@@ -51,7 +51,7 @@ output "hub_route_tables_user_subnets" {
 
 output "name" {
   description = "The names of the hub virtual networks."
-  value       = { for key, value in module.hub_virtual_networks : key => value.name }
+  value       = { for key, value in module.hub_virtual_networks : key => nonsensitive(value.name) }
 }
 
 output "nat_gateways" {
@@ -59,7 +59,7 @@ output "nat_gateways" {
   value = {
     for key, value in module.nat_gateway : key => {
       id                  = value.resource_id
-      name                = value.resource.name
+      name                = nonsensitive(value.resource.name)
       resource_id         = value.resource_id
       public_ip_addresses = value.public_ip_resource
       public_ip_ids       = [for pip in value.public_ip_resource : pip.id]
@@ -76,7 +76,7 @@ output "virtual_networks" {
   description = "A curated output of the virtual networks created by this module."
   value = {
     for vnet_key, vnet_mod in module.hub_virtual_networks : vnet_key => {
-      name                        = vnet_mod.name
+      name                        = nonsensitive(vnet_mod.name)
       parent_id                   = var.hub_virtual_networks[vnet_key].parent_id
       resource_group_name         = local.resource_group_names[vnet_key]
       resource_id                 = vnet_mod.resource_id

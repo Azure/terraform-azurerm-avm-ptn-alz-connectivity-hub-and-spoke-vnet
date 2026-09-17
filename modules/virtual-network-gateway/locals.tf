@@ -1,6 +1,15 @@
 locals {
-  azurerm_express_route_circuit_peering           = nonsensitive(sensitive(local.express_route_circuit_peerings))
-  azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
+  connection_index = toset(concat(
+    [for circuit_key in nonsensitive(keys(var.express_route_circuits)) : "erc-${circuit_key}" if nonsensitive(var.express_route_circuits[circuit_key].connection != null)],
+    [for gateway_key in nonsensitive(keys(var.local_network_gateways)) : "lgw-${gateway_key}" if nonsensitive(var.local_network_gateways[gateway_key].connection != null)]
+  ))
+  peering_index = toset([
+    for circuit_key in nonsensitive(keys(var.express_route_circuits)) : circuit_key if nonsensitive(var.express_route_circuits[circuit_key].peering != null)
+  ])
+  local_network_gateway_index = toset([
+    for gateway_key in nonsensitive(keys(var.local_network_gateways)) : gateway_key if nonsensitive(var.local_network_gateways[gateway_key].id == null)
+  ])
+  azurerm_express_route_circuit_peering = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
     for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway
     if local_network_gateway.id == null
@@ -47,11 +56,7 @@ locals {
       }
     }
   }
-  azurerm_virtual_network_gateway_connection = nonsensitive(sensitive(merge(
-    local.local_network_gateway_virtual_network_gateway_connections,
-    local.express_route_circuit_virtual_network_gateway_connections
-  )))
-  azurerm_virtual_network_gateway_connection_sensitive = merge(
+  azurerm_virtual_network_gateway_connection = merge(
     local.local_network_gateway_virtual_network_gateway_connections,
     local.express_route_circuit_virtual_network_gateway_connections
   )
