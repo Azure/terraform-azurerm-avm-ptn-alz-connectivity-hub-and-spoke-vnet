@@ -7,5 +7,8 @@
     "yeddlapurishivasai",
     "akshayrohilla"
   ],
-  "telemetryIdPrefix": "46d3xtrf.ptn.f2d325d"
+  "telemetryIdPrefix": "46d3xtrf.ptn.f2d325d",
+  "alternativeNames": [
+    "Azure Landing Zones - Hub and Spoke"
+  ]
 }
