@@ -169,7 +169,7 @@ Description: Flag to enable/disable telemetry
 
 Type: `bool`
 
-Default: `false`
+Default: `true`
 
 ### <a name="input_hub_and_spoke_networks_settings"></a> [hub\_and\_spoke\_networks\_settings](#input\_hub\_and\_spoke\_networks\_settings)
 
