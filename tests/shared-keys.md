@@ -20,7 +20,7 @@ The existing workflow's fork-PR restriction is unchanged: it only invokes the re
 | [services_shared_keys.tftest.hcl](unit/services_shared_keys.tftest.hcl) | 4 | Ordinary and leaf-sensitive controls with Firewall, Firewall Policy, DNS Resolver and Resolver Policy enabled; business domain values retain sensitivity. |
 | [dns_sensitivity.tftest.hcl](unit/dns_sensitivity.tftest.hcl) | 6 | Custom/null/empty default links, nested links and overrides, public identities and nonempty resolution-policy mark retention. |
 | [nat_sensitivity.tftest.hcl](unit/nat_sensitivity.tftest.hcl) | 5 | Leaf-sensitive shared keys, created/existing IPv4/IPv6 IPs, original null/default behavior, public identities and business-tag mark retention. |
-| [example_shared_keys.tftest.hcl](unit/example_shared_keys.tftest.hcl) | 1 | The reported #337 path: the actual example's four transformed secret paths, dynamic keys and complete configuration output protection. |
+| [example_shared_keys.tftest.hcl](unit/example_shared_keys.tftest.hcl) | 1 | The reported #337 path: the actual example's four transformed secret paths, dynamic keys and complete configuration output protection; the example runs as root, so its undeclared `test_outputs` fails the plan on any leaked mark. |
 | [unknown_shared_keys.tftest.hcl](unit/unknown_shared_keys.tftest.hcl) | 1 | Two hubs, computed unknown keys, both direct-root and actual-example entry points, with route/Bastion/NAT/DNS enabled; every module output is re-exported without `sensitive`, as the accelerator does. |
 | [shared_key_consumer.tftest.hcl](unit/shared_key_consumer.tftest.hcl) | 8 | Direct, adapter and whole-configuration templating inputs; known/unknown, rotated, null/empty and disabled scenarios; all four original input paths, sensitive marks and cross-run public identity comparisons. The whole-configuration run also enables the service graph with a caller `custom_iterator` DNS zone. |
 | [template_shared_keys.tftest.hcl](unit/template_shared_keys.tftest.hcl) | 3 | Original-template golden comparison: escaping, string/boolean values, dynamic and duplicate keys, null and omitted containers. |
@@ -46,7 +46,7 @@ The [module documentation](../README.md#gateway-shared-keys) defines which input
 
 ## Boundaries
 
-Instance keys and enablement remain public, plan-time structure. Secret values come from the original fields; whole secret-bearing payloads and module outputs must not be declassified. The actual example's complete `config_outputs` intentionally remains sensitive; ordinary public output declarations remain unchanged.
+Instance keys and enablement remain public, plan-time structure. Secret values come from the original fields; whole secret-bearing payloads and module outputs must not be declassified. The actual example's complete `config_outputs` is the only output declared sensitive. Its whole-module `test_outputs` stays undeclared, like the accelerator's `hub_and_spoke_vnet_full_output`, because the root output rule is what detects nested marks; `issensitive()` only checks the top level. Every other output declaration remains unchanged.
 
 The DNS/NAT payload-mark tests override dependency outputs to inspect retained business-value marks. They do not claim that existing public outputs can return confidential business values.
 

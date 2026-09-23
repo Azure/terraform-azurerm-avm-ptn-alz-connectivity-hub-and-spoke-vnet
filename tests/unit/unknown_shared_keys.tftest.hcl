@@ -40,7 +40,7 @@ run "unknown_direct_and_template" {
 
   assert {
     condition = alltrue([
-      for result in [module.direct, nonsensitive(module.example.test_outputs)] : (
+      for result in [module.direct, module.example.test_outputs] : (
         keys(result.virtual_network_gateway_resource_ids) == ["primary-hub-express-route", "primary-hub-vpn", "secondary-hub-express-route", "secondary-hub-vpn"] &&
         keys(result.route_tables_gateway_resource_ids) == local.hub_keys &&
         keys(result.bastion_host_resource_ids) == local.hub_keys &&
@@ -53,7 +53,7 @@ run "unknown_direct_and_template" {
 
   assert {
     condition = alltrue([
-      for result in [module.direct, nonsensitive(module.example.test_outputs)] : alltrue([
+      for result in [module.direct, module.example.test_outputs] : alltrue([
         for hub_key in local.hub_keys : (
           keys(result.nat_gateways[hub_key].public_ip_addresses) == ["primary"] &&
           result.private_link_private_dns_zones_maps[hub_key].fixture.virtual_network_links.custom.name == "custom-link"
@@ -64,7 +64,7 @@ run "unknown_direct_and_template" {
   }
 
   assert {
-    condition     = issensitive(module.example.config_outputs) && issensitive(module.example.test_outputs) && !issensitive(keys(module.direct.virtual_network_gateway_resource_ids))
-    error_message = "Secret-bearing aggregate outputs must stay protected while public instance keys stay usable."
+    condition     = issensitive(module.example.config_outputs) && !issensitive(keys(module.direct.virtual_network_gateway_resource_ids))
+    error_message = "The secret-bearing complete configuration output must stay protected while public instance keys stay usable."
   }
 }

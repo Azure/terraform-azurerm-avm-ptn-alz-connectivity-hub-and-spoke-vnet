@@ -5,6 +5,6 @@ output "direct_module" {
 }
 
 output "example_module" {
-  value       = nonsensitive(module.example.test_outputs)
+  value       = module.example.test_outputs
   description = "Every module output reached through the example adapter."
 }
