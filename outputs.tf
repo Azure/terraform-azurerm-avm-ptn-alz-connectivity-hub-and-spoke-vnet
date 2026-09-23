@@ -25,11 +25,7 @@ output "ddos_protection_plan_resource_id" {
 
 output "dns_resolver_inbound_endpoint_ip_addresses" {
   description = "The IP addresses of the inbound endpoints of the private DNS resolvers, grouped by hub key."
-  value = {
-    for key, value in module.dns_resolver : key => {
-      for endpoint_key in nonsensitive(keys(value.inbound_endpoint_ips)) : endpoint_key => nonsensitive(value.inbound_endpoint_ips[endpoint_key])
-    }
-  }
+  value       = { for key, value in module.dns_resolver : key => value.inbound_endpoint_ips }
 }
 
 output "dns_resolver_policy_domain_list_resource_ids" {
@@ -59,7 +55,7 @@ output "dns_resolver_resource_ids" {
 
 output "dns_server_ip_addresses" {
   description = "DNS server IP addresses for each hub virtual network."
-  value       = { for key, value in local.hub_virtual_networks : key => nonsensitive(value.hub_router_ip_address != null ? value.hub_router_ip_address : (local.firewall_enabled[key] ? module.hub_and_spoke_vnet.firewalls[key].private_ip_address : null)) }
+  value       = { for key, value in local.hub_virtual_networks : key => value.hub_router_ip_address != null ? value.hub_router_ip_address : (local.firewall_enabled[key] ? module.hub_and_spoke_vnet.firewalls[key].private_ip_address : null) }
 }
 
 output "firewall_policies" {

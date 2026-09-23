@@ -13,5 +13,6 @@ output "linting" {
 }
 
 output "test_outputs" {
-  value = module.test
+  sensitive = true
+  value     = module.test
 }

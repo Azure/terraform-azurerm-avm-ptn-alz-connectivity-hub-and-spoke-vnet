@@ -3,7 +3,7 @@ output "local_network_gateways" {
   value = {
     for k, v in azurerm_local_network_gateway.vgw : k => {
       id   = v.id
-      name = nonsensitive(v.name)
+      name = v.name
     }
   }
 }
@@ -14,7 +14,7 @@ output "public_ip_addresses" {
     for k, v in azurerm_public_ip.vgw : k => {
       id         = v.id
       ip_address = try(v.ip_address, null)
-      name       = nonsensitive(v.name)
+      name       = v.name
     }
   }
 }
@@ -46,7 +46,7 @@ output "virtual_network_gateway" {
   value = {
     bgp_settings = try(azapi_resource.vgw.output.properties.bgpSettings, null)
     id           = azapi_resource.vgw.id
-    name         = nonsensitive(azapi_resource.vgw.name)
+    name         = azapi_resource.vgw.name
   }
 }
 
@@ -56,13 +56,13 @@ output "virtual_network_gateway_connections" {
     erc = {
       for k, v in azurerm_virtual_network_gateway_connection.vgw : trimprefix(k, "erc-") => {
         id   = v.id
-        name = nonsensitive(v.name)
+        name = v.name
       } if substr(k, 0, 4) == "erc-"
     }
     lgw = {
       for k, v in azurerm_virtual_network_gateway_connection.vgw : trimprefix(k, "lgw-") => {
         id   = v.id
-        name = nonsensitive(v.name)
+        name = v.name
       } if substr(k, 0, 4) == "lgw-"
     }
   }

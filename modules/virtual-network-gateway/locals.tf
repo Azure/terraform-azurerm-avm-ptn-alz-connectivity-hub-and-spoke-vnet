@@ -1,8 +1,14 @@
 locals {
   connection_index = toset(concat(
-    [for circuit_key in nonsensitive(keys(var.express_route_circuits)) : "erc-${circuit_key}" if nonsensitive(var.express_route_circuits[circuit_key].connection != null)],
-    [for gateway_key in nonsensitive(keys(var.local_network_gateways)) : "lgw-${gateway_key}" if nonsensitive(var.local_network_gateways[gateway_key].connection != null)]
+    [for circuit_key in local.express_route_connection_keys : "erc-${circuit_key}"],
+    [for gateway_key in local.local_network_gateway_connection_keys : "lgw-${gateway_key}"]
   ))
+  express_route_connection_keys = [
+    for circuit_key in nonsensitive(keys(var.express_route_circuits)) : circuit_key if nonsensitive(var.express_route_circuits[circuit_key].connection != null)
+  ]
+  local_network_gateway_connection_keys = [
+    for gateway_key in nonsensitive(keys(var.local_network_gateways)) : gateway_key if nonsensitive(var.local_network_gateways[gateway_key].connection != null)
+  ]
   peering_index = toset([
     for circuit_key in nonsensitive(keys(var.express_route_circuits)) : circuit_key if nonsensitive(var.express_route_circuits[circuit_key].peering != null)
   ])
@@ -11,8 +17,7 @@ locals {
   ])
   azurerm_express_route_circuit_peering = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
-    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway
-    if local_network_gateway.id == null
+    for gateway_key in local.local_network_gateway_index : gateway_key => var.local_network_gateways[gateway_key]
   }
   azurerm_public_ip = var.hosted_on_behalf_of_public_ip_enabled ? {} : {
     for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
@@ -33,7 +38,7 @@ locals {
       reverse_fqdn            = ip_configuration.public_ip.reverse_fqdn
       sku_tier                = ip_configuration.public_ip.sku_tier
     }
-    if ip_configuration.public_ip.creation_enabled == true
+    if nonsensitive(ip_configuration.public_ip.creation_enabled == true)
   }
   azurerm_virtual_network_gateway = {
     bgp_settings = {
@@ -282,34 +287,31 @@ locals {
 
 locals {
   express_route_circuit_virtual_network_gateway_connections = {
-    for express_route_circuit_key, express_route_circuit in var.express_route_circuits : "erc-${express_route_circuit_key}" => merge(
-      express_route_circuit.connection,
+    for circuit_key in local.express_route_connection_keys : "erc-${circuit_key}" => merge(
+      var.express_route_circuits[circuit_key].connection,
       {
         type                     = "ExpressRoute"
-        express_route_circuit_id = express_route_circuit.id
+        express_route_circuit_id = var.express_route_circuits[circuit_key].id
       }
     )
-    if express_route_circuit.connection != null
   }
   local_network_gateway_virtual_network_gateway_connections = {
-    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : "lgw-${local_network_gateway_key}" => merge(
-      local_network_gateway.connection,
+    for gateway_key in local.local_network_gateway_connection_keys : "lgw-${gateway_key}" => merge(
+      var.local_network_gateways[gateway_key].connection,
       {
-        local_network_gateway_id = local_network_gateway.id
+        local_network_gateway_id = var.local_network_gateways[gateway_key].id
       }
     )
-    if local_network_gateway.connection != null
   }
 }
 
 locals {
   express_route_circuit_peerings = {
-    for express_route_circuit_key, express_route_circuit in var.express_route_circuits : express_route_circuit_key => merge(
-      express_route_circuit.peering,
+    for circuit_key in local.peering_index : circuit_key => merge(
+      var.express_route_circuits[circuit_key].peering,
       {
-        express_route_circuit_name = basename(express_route_circuit.id)
+        express_route_circuit_name = basename(var.express_route_circuits[circuit_key].id)
       }
     )
-    if express_route_circuit.peering != null
   }
 }
