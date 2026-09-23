@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "ALZ Connectivity Hub and Spoke",
+  "moduleDescription": "The ALZ Platform Landing Zone Connectivity with Hub and Spoke Virtual Networks Pattern Module",
+  "canonicalType": "alz-connectivity-hub-and-spoke-vnet",
+  "owners": [
+    "yeddlapurishivasai",
+    "akshayrohilla"
+  ],
+  "telemetryIdPrefix": "46d3xtrf.ptn.f2d325d",
+  "alternativeNames": [
+    "Azure Landing Zones - Hub and Spoke"
+  ]
+}

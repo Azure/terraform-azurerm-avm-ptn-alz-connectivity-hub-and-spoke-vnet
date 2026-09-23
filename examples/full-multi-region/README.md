@@ -48,6 +48,7 @@ module "config" {
   subscription_id_identity        = data.azurerm_client_config.current.subscription_id
   subscription_id_management      = data.azurerm_client_config.current.subscription_id
   subscription_id_security        = data.azurerm_client_config.current.subscription_id
+  enable_telemetry                = var.enable_telemetry
   root_parent_management_group_id = ""
 }
 
@@ -58,7 +59,7 @@ module "resource_groups" {
 
   location         = each.value.location
   name             = each.value.name
-  enable_telemetry = false
+  enable_telemetry = var.enable_telemetry
   tags             = module.config.outputs.tags
 }
 
@@ -172,7 +173,7 @@ Description: Flag to enable/disable telemetry
 
 Type: `bool`
 
-Default: `false`
+Default: `true`
 
 ### <a name="input_hub_and_spoke_networks_settings"></a> [hub\_and\_spoke\_networks\_settings](#input\_hub\_and\_spoke\_networks\_settings)
 
