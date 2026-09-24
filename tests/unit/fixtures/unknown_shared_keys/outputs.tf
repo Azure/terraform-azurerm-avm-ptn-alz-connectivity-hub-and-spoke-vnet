@@ -4,7 +4,7 @@ output "direct_module" {
   description = "Every output of the direct module call."
 }
 
-output "example_module" {
-  value       = module.example.test_outputs
-  description = "Every module output reached through the example adapter."
+output "adapted_module" {
+  value       = module.adapted
+  description = "Every module output reached through the production adapter."
 }

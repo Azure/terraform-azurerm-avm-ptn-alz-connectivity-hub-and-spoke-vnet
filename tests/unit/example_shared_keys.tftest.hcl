@@ -8,7 +8,9 @@ mock_provider "azurerm" {
     }
   }
 }
-mock_provider "azapi" {}
+mock_provider "azapi" {
+  source = "./tests/unit/mocks"
+}
 mock_provider "random" {}
 mock_provider "modtm" {}
 

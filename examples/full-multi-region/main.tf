@@ -2,9 +2,21 @@ terraform {
   required_version = "~> 1.12"
 
   required_providers {
+    # azapi and modtm are used only by the called modules; declaring them lets
+    # tests/unit/example_shared_keys.tftest.hcl replace them with mock providers.
+    # tflint-ignore: terraform_unused_required_providers
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
+    }
+    # tflint-ignore: terraform_unused_required_providers
+    modtm = {
+      source  = "Azure/modtm"
+      version = "~> 0.3"
     }
   }
 }

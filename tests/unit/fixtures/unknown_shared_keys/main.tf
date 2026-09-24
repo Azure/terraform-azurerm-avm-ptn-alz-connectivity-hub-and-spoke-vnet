@@ -87,11 +87,17 @@ module "direct" {
   tags                 = {}
 }
 
-module "example" {
-  source = "../../../../examples/full-multi-region"
+module "template" {
+  source = "../shared_keys/template"
+
+  hub_virtual_networks = local.hub_virtual_networks
+}
+
+# The example's adapter and module call; the example itself cannot be a child here because mocks do not replace its own azurerm provider block.
+module "adapted" {
+  source = "../../../../"
 
   enable_telemetry     = false
-  hub_virtual_networks = local.hub_virtual_networks
-  starter_locations    = ["westeurope"]
+  hub_virtual_networks = nonsensitive(module.template.configuration)
   tags                 = {}
 }
