@@ -41,7 +41,7 @@ module "hub_routing_user_subnets" {
   location                      = each.value.location
   name                          = coalesce(var.hub_virtual_networks[each.key].route_table_name_user_subnets, "rt-user-subnets-${each.key}")
   resource_group_name           = local.resource_group_names[each.key]
-  bgp_route_propagation_enabled = var.hub_virtual_networks[each.key].hub_route_table_bgp_propagation_enabled
+  bgp_route_propagation_enabled = var.hub_virtual_networks[each.key].route_table_user_subnets_bgp_propagation_enabled
   enable_telemetry              = var.enable_telemetry
   tags                          = each.value.tags == null ? var.tags : each.value.tags
 }

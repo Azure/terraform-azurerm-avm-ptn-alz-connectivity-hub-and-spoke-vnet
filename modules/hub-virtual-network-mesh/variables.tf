@@ -11,24 +11,24 @@ DESCRIPTION
 
 variable "hub_virtual_networks" {
   type = map(object({
-    name                                    = string
-    address_space                           = list(string)
-    location                                = string
-    parent_id                               = string
-    route_table_firewall_enabled            = optional(bool, true)
-    route_table_user_subnets_enabled        = optional(bool, true)
-    hub_route_table_bgp_propagation_enabled = optional(bool, true)
-    route_table_name_firewall               = optional(string)
-    route_table_name_user_subnets           = optional(string)
-    bgp_community                           = optional(string)
-    ddos_protection_plan_id                 = optional(string)
-    dns_servers                             = optional(list(string))
-    flow_timeout_in_minutes                 = optional(number, 4)
-    mesh_peering_enabled                    = optional(bool, true)
-    peering_names                           = optional(map(string))
-    routing_address_space                   = optional(list(string), [])
-    hub_router_ip_address                   = optional(string)
-    tags                                    = optional(map(string))
+    name                                             = string
+    address_space                                    = list(string)
+    location                                         = string
+    parent_id                                        = string
+    route_table_firewall_enabled                     = optional(bool, true)
+    route_table_user_subnets_enabled                 = optional(bool, true)
+    route_table_user_subnets_bgp_propagation_enabled = optional(bool, true)
+    route_table_name_firewall                        = optional(string)
+    route_table_name_user_subnets                    = optional(string)
+    bgp_community                                    = optional(string)
+    ddos_protection_plan_id                          = optional(string)
+    dns_servers                                      = optional(list(string))
+    flow_timeout_in_minutes                          = optional(number, 4)
+    mesh_peering_enabled                             = optional(bool, true)
+    peering_names                                    = optional(map(string))
+    routing_address_space                            = optional(list(string), [])
+    hub_router_ip_address                            = optional(string)
+    tags                                             = optional(map(string))
     lock = optional(object({
       kind = string
       name = optional(string)
@@ -281,6 +281,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
 - `peering_names` - A map of the names of the peering connections to create between this virtual network and other hub networks. The key is the key of the peered hub network, and the value is the name of the peering connection.
 - `route_table_name_firewall` - The name of the route table to create for the firewall routes. Default `route-{vnetname}`.
 - `route_table_name_user_subnets` - The name of the route table to create for the user subnet routes. Default `route-{vnetname}`.
+- `route_table_user_subnets_bgp_propagation_enabled` - (Optional) Should BGP route propagation be enabled on the user subnet route table? Default `true`.
 - `routing_address_space` - A list of IPv4 address spaces in CIDR format that are used for routing to this hub, e.g. `["192.168.0.0","172.16.0.0/12"]`.
 - `hub_router_ip_address` - If not using Azure Firewall, this is the IP address of the hub router. This is used to create route table entries for other hub networks.
 - `tags` - A map of tags to apply to the virtual network.
