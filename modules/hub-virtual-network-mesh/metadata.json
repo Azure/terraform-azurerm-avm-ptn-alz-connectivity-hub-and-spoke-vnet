@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "Hub Virtual Network Mesh",
+  "moduleDescription": "Creates multi-region hub virtual networks and subnets with optional mesh peering, routing, and Azure Firewall.",
+  "canonicalType": "alz-connectivity-hub-and-spoke-vnet/hub-virtual-network-mesh",
+  "telemetryIdPrefix": "46d3xtrf.ptn.3c59364"
+}

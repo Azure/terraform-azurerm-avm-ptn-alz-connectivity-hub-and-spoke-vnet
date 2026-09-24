@@ -4,7 +4,6 @@ resource "azapi_resource" "this" {
   parent_id                 = var.parent_id
   type                      = var.resource_types.dns_resolver_policy
   body                      = {}
-  replace_triggers_refs     = []
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
@@ -30,11 +29,12 @@ resource "azapi_resource" "domain_list" {
       domains = each.value.domains
     }
   }
-  replace_triggers_refs     = []
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
-  tags                      = coalesce(each.value.tags, var.tags)
+  # Per-domain-list tag overrides are a documented feature (var.domain_lists[*].tags); keep the coalesce fallback to var.tags.
+  # tflint-ignore: avm_azapi_resource_tags_required
+  tags = coalesce(each.value.tags, var.tags)
 
   timeouts {
     create = var.timeouts.create
@@ -65,7 +65,6 @@ resource "azapi_resource" "security_rule" {
     }
   }
   # priority is immutable on this preview API and re-keying replaces the rule, so no body paths need to force replacement.
-  replace_triggers_refs  = []
   response_export_values = []
   retry                  = var.retry
   # The bundled azapi 2.x schema for 2023-07-01-preview does not yet recognise the
