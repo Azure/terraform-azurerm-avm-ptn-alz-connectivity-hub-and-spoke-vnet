@@ -126,6 +126,7 @@ variable "hub_virtual_networks" {
       nat_gateway                           = optional(bool, false)
     }), {})
 
+    is_primary                = optional(bool, false)
     default_hub_address_space = optional(string)
     default_parent_id         = optional(string)
     location                  = string
@@ -875,6 +876,7 @@ The following top level attributes are supported:
     - `private_dns_resolver` - (Optional) Should the private DNS resolver be created? Default `true`.
     - `dns_resolver_policy` - (Optional) Should the DNS resolver policy (DNS Security Policy) be created? Default `true`.
     - `nat_gateway` - (Optional) Should the NAT Gateway be created? Default `true`.
+  - `is_primary` - (Optional) Marks this hub as the primary region. The primary region is used for shared resources like private DNS zones and DDoS protection plans. Only one hub should be marked as primary. If no hub is marked as primary, the first key in alphabetical order is used. Default `false`.
   - `default_hub_address_space` - (Optional) The default address space to use if not specified in hub_virtual_network. This defaults to `10.0.0.0/16` and increments to the next /16 for each region if not supplied.
   - `default_parent_id` - (Optional) The default parent resource group ID to use if not specified in hub_virtual_network or individual sections.
   - `location` - (Required) The Azure location where the hub network resources should be created.
@@ -1514,6 +1516,10 @@ The following top level attributes are supported:
 
 DESCRIPTION
 
+  validation {
+    condition     = length([for key, value in var.hub_virtual_networks : key if value.is_primary]) <= 1
+    error_message = "Only one hub virtual network can be marked as primary (is_primary = true)."
+  }
   validation {
     condition = alltrue([
       for hub_key, hub in var.hub_virtual_networks :
