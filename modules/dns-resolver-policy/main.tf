@@ -4,7 +4,6 @@ resource "azapi_resource" "this" {
   parent_id                 = var.parent_id
   type                      = var.resource_types.dns_resolver_policy
   body                      = {}
-  replace_triggers_refs     = []
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
@@ -30,11 +29,12 @@ resource "azapi_resource" "domain_list" {
       domains = each.value.domains
     }
   }
-  replace_triggers_refs     = []
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
-  tags                      = coalesce(each.value.tags, var.tags)
+  # Per-list tags replace var.tags as TFFR9 overrides do; tflint-ruleset-avm 1.1.0 (#161) accepts this, the pinned 1.0.0 does not.
+  # tflint-ignore: avm_azapi_resource_tags_required
+  tags = coalesce(each.value.tags, var.tags)
 
   timeouts {
     create = var.timeouts.create
@@ -64,8 +64,7 @@ resource "azapi_resource" "security_rule" {
       priority             = each.value.priority
     }
   }
-  # priority is immutable on this preview API and re-keying replaces the rule, so no body paths need to force replacement.
-  replace_triggers_refs  = []
+  # No replace_triggers_refs: priority is immutable on this preview API and re-keying replaces the rule.
   response_export_values = []
   retry                  = var.retry
   # The bundled azapi 2.x schema for 2023-07-01-preview does not yet recognise the
