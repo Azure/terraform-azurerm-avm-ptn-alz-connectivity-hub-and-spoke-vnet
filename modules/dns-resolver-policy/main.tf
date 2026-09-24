@@ -64,7 +64,7 @@ resource "azapi_resource" "security_rule" {
       priority             = each.value.priority
     }
   }
-  # priority is immutable on this preview API and re-keying replaces the rule, so no body paths need to force replacement.
+  # No replace_triggers_refs: priority is immutable on this preview API and re-keying replaces the rule.
   response_export_values = []
   retry                  = var.retry
   # The bundled azapi 2.x schema for 2023-07-01-preview does not yet recognise the

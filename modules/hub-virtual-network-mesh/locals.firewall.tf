@@ -12,12 +12,12 @@ locals {
       subnet_id            = ip_config_value.is_default ? module.hub_virtual_network_subnets[ip_config_value.subnet_key].resource_id : null
     } }
   }
-  firewall_merged_ip_configurations = { for vnet_key, vnet_value in var.hub_virtual_networks : vnet_key =>
-    length(vnet_value.firewall.ip_configurations) > 0 ?
-    { for ip_config_key, ip_config_value in vnet_value.firewall.ip_configurations : ip_config_key => {
+  firewall_merged_ip_configurations = { for vnet_key, vnet_value in local.hub_virtual_networks_by_key : vnet_key =>
+    nonsensitive(length(vnet_value.firewall.ip_configurations) > 0) ?
+    { for ip_config_key, ip_config_value in { for configuration_key in nonsensitive(keys(vnet_value.firewall.ip_configurations)) : configuration_key => vnet_value.firewall.ip_configurations[configuration_key] } : ip_config_key => {
       public_ip_key                 = ip_config_key == "default" ? vnet_key : "${vnet_key}-${ip_config_key}"
       subnet_key                    = "${vnet_key}-${local.firewall_subnet_name}"
-      is_default                    = ip_config_value.is_default || (alltrue([for ip_config in values(vnet_value.firewall.ip_configurations) : !ip_config.is_default]) && (length(vnet_value.firewall.ip_configurations) == 1 || ip_config_key == "default"))
+      is_default                    = nonsensitive(ip_config_value.is_default || (alltrue([for ip_config in values(vnet_value.firewall.ip_configurations) : !ip_config.is_default]) && (length(vnet_value.firewall.ip_configurations) == 1 || ip_config_key == "default")))
       name                          = ip_config_value.name == null ? ip_config_key : ip_config_value.name
       public_ip_resource_group_name = coalesce(ip_config_value.public_ip_config.resource_group_name, local.resource_group_names[vnet_key])
       public_ip_config              = ip_config_value.public_ip_config
@@ -32,12 +32,12 @@ locals {
         public_ip_config              = vnet_value.firewall.default_ip_configuration.public_ip_config
       }
     }
-  if vnet_value.firewall != null }
+  if nonsensitive(vnet_value.firewall != null) }
 }
 
 locals {
   firewalls = {
-    for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {
+    for vnet_name, vnet in local.hub_virtual_networks_by_key : vnet_name => {
       name                  = coalesce(vnet.firewall.name, "fw-${vnet_name}")
       sku_name              = vnet.firewall.sku_name
       sku_tier              = vnet.firewall.sku_tier
@@ -52,7 +52,7 @@ locals {
       }
       zones = vnet.firewall.zones
       lock  = try(vnet.firewall.lock, null)
-    } if vnet.firewall != null
+    } if nonsensitive(vnet.firewall != null)
   }
   fw_default_ip_configuration_pip = { for public_ip in flatten([
     for vnet_key, vnet_value in local.firewall_merged_ip_configurations : [
@@ -74,7 +74,7 @@ locals {
     ]
   ]) : public_ip.composite_key => public_ip }
   fw_management_ip_configuration_pip = {
-    for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {
+    for vnet_name, vnet in local.hub_virtual_networks_by_key : vnet_name => {
       location                = vnet.location
       name                    = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.name, "pip-fw-mgmt-${vnet_name}")
       resource_group_name     = coalesce(vnet.firewall.management_ip_configuration.public_ip_config.resource_group_name, local.resource_group_names[vnet_name])
@@ -87,10 +87,10 @@ locals {
       ddos_protection_mode    = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_mode
       ddos_protection_plan_id = vnet.firewall.management_ip_configuration.public_ip_config.ddos_protection_plan_id
       ip_tags                 = vnet.firewall.management_ip_configuration.public_ip_config.ip_tags
-    } if vnet.firewall != null && vnet.firewall.management_ip_enabled
+    } if nonsensitive(vnet.firewall != null && vnet.firewall.management_ip_enabled)
   }
   fw_policies = {
-    for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {
+    for vnet_name, vnet in local.hub_virtual_networks_by_key : vnet_name => {
       name                              = coalesce(vnet.firewall.firewall_policy.name, "fwp-${vnet_name}")
       location                          = coalesce(vnet.firewall.firewall_policy.location, vnet.location)
       resource_group_name               = coalesce(vnet.firewall.firewall_policy.resource_group_name, local.resource_group_names[vnet_name])
@@ -109,6 +109,6 @@ locals {
       tls_certificate                   = vnet.firewall.firewall_policy.tls_certificate
       tags                              = vnet.firewall.tags
       lock                              = try(vnet.firewall.firewall_policy.lock, null)
-    } if vnet.firewall != null && vnet.firewall.firewall_policy != null && vnet.firewall.firewall_policy_id == null
+    } if nonsensitive(vnet.firewall != null && vnet.firewall.firewall_policy != null && vnet.firewall.firewall_policy_id == null)
   }
 }

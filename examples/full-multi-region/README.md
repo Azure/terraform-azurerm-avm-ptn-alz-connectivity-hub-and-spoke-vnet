@@ -4,14 +4,30 @@
 
 Uses the standard tfvars file for the multi-region with azure firewall scenario.
 
+Gateway shared keys use the existing input fields. The example preserves their template substitutions, including transformed hub and connection keys, while keeping every value of the four `shared_key` paths, known or unknown, out of the whole-configuration JSON conversion. If you add another secret-bearing field, such as `authorization_key`, as a sensitive value, isolate it in the same way.
+
+`config_outputs` retains its complete configuration and existing object shape, including the templated shared keys. It is now sensitive, so normal CLI output is redacted and downstream outputs that expose it must also be sensitive. This does not encrypt state, saved plans, or JSON output; protect those artifacts as secrets.
+
 ```hcl
 terraform {
   required_version = "~> 1.12"
 
   required_providers {
+    # azapi and modtm are used only by the called modules; declaring them lets
+    # tests/unit/example_shared_keys.tftest.hcl replace them with mock providers.
+    # tflint-ignore: terraform_unused_required_providers
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
+    }
+    # tflint-ignore: terraform_unused_required_providers
+    modtm = {
+      source  = "Azure/modtm"
+      version = "~> 0.3"
     }
   }
 }
@@ -26,7 +42,7 @@ locals {
   config_templating_inputs = {
     connectivity_resource_groups    = var.connectivity_resource_groups
     hub_and_spoke_networks_settings = var.hub_and_spoke_networks_settings
-    hub_virtual_networks            = var.hub_virtual_networks
+    hub_virtual_networks            = local.hub_virtual_networks_template
     management_group_settings       = var.management_group_settings
     management_resource_settings    = var.management_resource_settings
     tags                            = var.tags
@@ -62,7 +78,7 @@ module "resource_groups" {
 # Build an implicit dependency on the resource groups
 locals {
   hub_and_spoke_networks_settings = merge(module.config.outputs.hub_and_spoke_networks_settings, local.resource_groups)
-  hub_virtual_networks            = (merge({ vnets = module.config.outputs.hub_virtual_networks }, local.resource_groups)).vnets
+  hub_virtual_networks            = (merge({ vnets = local.templated_config.hub_virtual_networks }, local.resource_groups)).vnets
   resource_groups = {
     resource_groups = module.resource_groups
   }
@@ -86,7 +102,11 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.12)
 
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
+
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.21)
+
+- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
 ## Resources
 

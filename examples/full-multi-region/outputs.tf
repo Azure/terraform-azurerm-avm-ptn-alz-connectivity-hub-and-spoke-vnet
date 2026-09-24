@@ -1,5 +1,9 @@
 output "config_outputs" {
-  value = module.config
+  sensitive = true
+  value = {
+    custom_replacements = module.config.custom_replacements
+    outputs             = local.templated_config
+  }
 }
 
 output "linting" {

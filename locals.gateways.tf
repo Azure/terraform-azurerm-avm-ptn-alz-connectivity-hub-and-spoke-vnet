@@ -1,4 +1,14 @@
 locals {
+  gateway_instance_index = merge(
+    {
+      for hub_key in local.hub_network_keys : "${hub_key}-express-route" => { hub_key = hub_key, gateway_type = "express_route" }
+      if nonsensitive(var.hub_virtual_networks[hub_key].enabled_resources.virtual_network_gateway_express_route)
+    },
+    {
+      for hub_key in local.hub_network_keys : "${hub_key}-vpn" => { hub_key = hub_key, gateway_type = "vpn" }
+      if nonsensitive(var.hub_virtual_networks[hub_key].enabled_resources.virtual_network_gateway_vpn)
+    }
+  )
   virtual_network_gateways = merge(local.virtual_network_gateways_express_route, local.virtual_network_gateways_vpn)
   virtual_network_gateways_express_route = {
     for hub_network_key, hub_network_value in var.hub_virtual_networks : "${hub_network_key}-express-route" => {

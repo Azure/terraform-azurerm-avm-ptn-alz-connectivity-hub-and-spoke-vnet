@@ -30,7 +30,7 @@ resource "azurerm_subnet_route_table_association" "vgw" {
 }
 
 resource "azurerm_public_ip" "vgw" {
-  for_each = local.azurerm_public_ip
+  for_each = { for public_ip_key in nonsensitive(keys(local.azurerm_public_ip)) : public_ip_key => local.azurerm_public_ip[public_ip_key] }
 
   allocation_method       = each.value.allocation_method
   location                = var.location
@@ -131,79 +131,79 @@ resource "azurerm_management_lock" "vgw" {
 }
 
 resource "azurerm_local_network_gateway" "vgw" {
-  for_each = local.azurerm_local_network_gateway
+  for_each = local.local_network_gateway_index
 
   location            = var.location
-  name                = coalesce(each.value.name, "lgw-${var.name}-${each.key}")
-  resource_group_name = coalesce(each.value.resource_group_name, local.resource_group_name)
-  address_space       = each.value.address_space
-  gateway_address     = each.value.gateway_address
-  gateway_fqdn        = each.value.gateway_fqdn
-  tags                = merge(var.tags, each.value.tags)
+  name                = coalesce(local.azurerm_local_network_gateway[each.key].name, "lgw-${var.name}-${each.key}")
+  resource_group_name = coalesce(local.azurerm_local_network_gateway[each.key].resource_group_name, local.resource_group_name)
+  address_space       = local.azurerm_local_network_gateway[each.key].address_space
+  gateway_address     = local.azurerm_local_network_gateway[each.key].gateway_address
+  gateway_fqdn        = local.azurerm_local_network_gateway[each.key].gateway_fqdn
+  tags                = merge(var.tags, local.azurerm_local_network_gateway[each.key].tags)
 
   dynamic "bgp_settings" {
-    for_each = each.value.bgp_settings == null ? [] : ["BgpSettings"]
+    for_each = local.azurerm_local_network_gateway[each.key].bgp_settings == null ? [] : ["BgpSettings"]
 
     content {
-      asn                 = each.value.bgp_settings.asn
-      bgp_peering_address = each.value.bgp_settings.bgp_peering_address
-      peer_weight         = each.value.bgp_settings.peer_weight
+      asn                 = local.azurerm_local_network_gateway[each.key].bgp_settings.asn
+      bgp_peering_address = local.azurerm_local_network_gateway[each.key].bgp_settings.bgp_peering_address
+      peer_weight         = local.azurerm_local_network_gateway[each.key].bgp_settings.peer_weight
     }
   }
 }
 
 resource "azurerm_virtual_network_gateway_connection" "vgw" {
-  for_each = local.azurerm_virtual_network_gateway_connection
+  for_each = local.connection_index
 
   location                           = var.location
-  name                               = coalesce(each.value.name, "con-${var.name}-${each.key}")
-  resource_group_name                = coalesce(each.value.resource_group_name, local.resource_group_name)
-  type                               = each.value.type
+  name                               = coalesce(local.azurerm_virtual_network_gateway_connection[each.key].name, "con-${var.name}-${each.key}")
+  resource_group_name                = coalesce(local.azurerm_virtual_network_gateway_connection[each.key].resource_group_name, local.resource_group_name)
+  type                               = local.azurerm_virtual_network_gateway_connection[each.key].type
   virtual_network_gateway_id         = azapi_resource.vgw.id
-  authorization_key                  = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].authorization_key, null)
-  connection_mode                    = try(each.value.connection_mode, null)
-  connection_protocol                = try(each.value.connection_protocol, null)
-  dpd_timeout_seconds                = try(each.value.dpd_timeout_seconds, null)
-  egress_nat_rule_ids                = try(each.value.egress_nat_rule_ids, null)
-  enable_bgp                         = try(each.value.enable_bgp, null)
-  express_route_circuit_id           = try(each.value.express_route_circuit_id, null)
-  express_route_gateway_bypass       = try(each.value.express_route_gateway_bypass, null)
-  ingress_nat_rule_ids               = try(each.value.ingress_nat_rule_ids, null)
-  local_azure_ip_address_enabled     = try(each.value.local_azure_ip_address_enabled, null)
-  local_network_gateway_id           = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, each.value.local_network_gateway_id, null)
-  peer_virtual_network_gateway_id    = try(each.value.peer_virtual_network_gateway_id, null)
-  private_link_fast_path_enabled     = try(each.value.private_link_fast_path_enabled, null)
-  routing_weight                     = each.value.routing_weight
-  shared_key                         = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].shared_key, null)
-  tags                               = merge(var.tags, each.value.tags)
-  use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
+  authorization_key                  = try(local.azurerm_virtual_network_gateway_connection[each.key].authorization_key, null)
+  connection_mode                    = try(local.azurerm_virtual_network_gateway_connection[each.key].connection_mode, null)
+  connection_protocol                = try(local.azurerm_virtual_network_gateway_connection[each.key].connection_protocol, null)
+  dpd_timeout_seconds                = try(local.azurerm_virtual_network_gateway_connection[each.key].dpd_timeout_seconds, null)
+  egress_nat_rule_ids                = try(local.azurerm_virtual_network_gateway_connection[each.key].egress_nat_rule_ids, null)
+  enable_bgp                         = try(local.azurerm_virtual_network_gateway_connection[each.key].enable_bgp, null)
+  express_route_circuit_id           = try(local.azurerm_virtual_network_gateway_connection[each.key].express_route_circuit_id, null)
+  express_route_gateway_bypass       = try(local.azurerm_virtual_network_gateway_connection[each.key].express_route_gateway_bypass, null)
+  ingress_nat_rule_ids               = try(local.azurerm_virtual_network_gateway_connection[each.key].ingress_nat_rule_ids, null)
+  local_azure_ip_address_enabled     = try(local.azurerm_virtual_network_gateway_connection[each.key].local_azure_ip_address_enabled, null)
+  local_network_gateway_id           = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, local.azurerm_virtual_network_gateway_connection[each.key].local_network_gateway_id, null)
+  peer_virtual_network_gateway_id    = try(local.azurerm_virtual_network_gateway_connection[each.key].peer_virtual_network_gateway_id, null)
+  private_link_fast_path_enabled     = try(local.azurerm_virtual_network_gateway_connection[each.key].private_link_fast_path_enabled, null)
+  routing_weight                     = local.azurerm_virtual_network_gateway_connection[each.key].routing_weight
+  shared_key                         = sensitive(try(local.azurerm_virtual_network_gateway_connection[each.key].shared_key, null))
+  tags                               = merge(var.tags, local.azurerm_virtual_network_gateway_connection[each.key].tags)
+  use_policy_based_traffic_selectors = try(local.azurerm_virtual_network_gateway_connection[each.key].use_policy_based_traffic_selectors, null)
 
   dynamic "custom_bgp_addresses" {
-    for_each = try(each.value.custom_bgp_addresses, null) == null ? [] : ["CustomBgpAddresses"]
+    for_each = try(local.azurerm_virtual_network_gateway_connection[each.key].custom_bgp_addresses, null) == null ? [] : ["CustomBgpAddresses"]
 
     content {
-      primary   = each.value.custom_bgp_addresses.primary
-      secondary = each.value.custom_bgp_addresses.secondary
+      primary   = local.azurerm_virtual_network_gateway_connection[each.key].custom_bgp_addresses.primary
+      secondary = local.azurerm_virtual_network_gateway_connection[each.key].custom_bgp_addresses.secondary
     }
   }
 
   dynamic "ipsec_policy" {
-    for_each = try(each.value.ipsec_policy, null) == null ? [] : ["IPSecPolicy"]
+    for_each = try(local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy, null) == null ? [] : ["IPSecPolicy"]
 
     content {
-      dh_group         = each.value.ipsec_policy.dh_group
-      ike_encryption   = each.value.ipsec_policy.ike_encryption
-      ike_integrity    = each.value.ipsec_policy.ike_integrity
-      ipsec_encryption = each.value.ipsec_policy.ipsec_encryption
-      ipsec_integrity  = each.value.ipsec_policy.ipsec_integrity
-      pfs_group        = each.value.ipsec_policy.pfs_group
-      sa_datasize      = each.value.ipsec_policy.sa_datasize
-      sa_lifetime      = each.value.ipsec_policy.sa_lifetime
+      dh_group         = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.dh_group
+      ike_encryption   = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.ike_encryption
+      ike_integrity    = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.ike_integrity
+      ipsec_encryption = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.ipsec_encryption
+      ipsec_integrity  = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.ipsec_integrity
+      pfs_group        = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.pfs_group
+      sa_datasize      = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.sa_datasize
+      sa_lifetime      = local.azurerm_virtual_network_gateway_connection[each.key].ipsec_policy.sa_lifetime
     }
   }
 
   dynamic "traffic_selector_policy" {
-    for_each = try(each.value.traffic_selector_policy, null) == null ? [] : each.value.traffic_selector_policy
+    for_each = try(local.azurerm_virtual_network_gateway_connection[each.key].traffic_selector_policy, null) == null ? [] : local.azurerm_virtual_network_gateway_connection[each.key].traffic_selector_policy
 
     content {
       local_address_cidrs  = traffic_selector_policy.value.local_address_prefixes
@@ -213,27 +213,27 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
 }
 
 resource "azurerm_express_route_circuit_peering" "vgw" {
-  for_each = local.azurerm_express_route_circuit_peering
+  for_each = local.peering_index
 
-  express_route_circuit_name    = each.value.express_route_circuit_name
-  peering_type                  = each.value.peering_type
-  resource_group_name           = coalesce(each.value.resource_group_name, local.resource_group_name)
-  vlan_id                       = each.value.vlan_id
-  ipv4_enabled                  = each.value.ipv4_enabled
-  peer_asn                      = each.value.peer_asn
-  primary_peer_address_prefix   = each.value.primary_peer_address_prefix
-  route_filter_id               = each.value.route_filter_id
-  secondary_peer_address_prefix = each.value.secondary_peer_address_prefix
-  shared_key                    = local.azurerm_express_route_circuit_peering_sensitive[each.key].shared_key
+  express_route_circuit_name    = local.azurerm_express_route_circuit_peering[each.key].express_route_circuit_name
+  peering_type                  = local.azurerm_express_route_circuit_peering[each.key].peering_type
+  resource_group_name           = coalesce(local.azurerm_express_route_circuit_peering[each.key].resource_group_name, local.resource_group_name)
+  vlan_id                       = local.azurerm_express_route_circuit_peering[each.key].vlan_id
+  ipv4_enabled                  = local.azurerm_express_route_circuit_peering[each.key].ipv4_enabled
+  peer_asn                      = local.azurerm_express_route_circuit_peering[each.key].peer_asn
+  primary_peer_address_prefix   = local.azurerm_express_route_circuit_peering[each.key].primary_peer_address_prefix
+  route_filter_id               = local.azurerm_express_route_circuit_peering[each.key].route_filter_id
+  secondary_peer_address_prefix = local.azurerm_express_route_circuit_peering[each.key].secondary_peer_address_prefix
+  shared_key                    = sensitive(local.azurerm_express_route_circuit_peering[each.key].shared_key)
 
   dynamic "microsoft_peering_config" {
-    for_each = each.value.microsoft_peering_config == null ? [] : ["MicrosoftPeeringConfig"]
+    for_each = local.azurerm_express_route_circuit_peering[each.key].microsoft_peering_config == null ? [] : ["MicrosoftPeeringConfig"]
 
     content {
-      advertised_public_prefixes = each.value.microsoft_peering_config.advertised_public_prefixes
-      advertised_communities     = each.value.microsoft_peering_config.advertised_communities
-      customer_asn               = each.value.microsoft_peering_config.customer_asn
-      routing_registry_name      = each.value.microsoft_peering_config.routing_registry_name
+      advertised_public_prefixes = local.azurerm_express_route_circuit_peering[each.key].microsoft_peering_config.advertised_public_prefixes
+      advertised_communities     = local.azurerm_express_route_circuit_peering[each.key].microsoft_peering_config.advertised_communities
+      customer_asn               = local.azurerm_express_route_circuit_peering[each.key].microsoft_peering_config.customer_asn
+      routing_registry_name      = local.azurerm_express_route_circuit_peering[each.key].microsoft_peering_config.routing_registry_name
     }
   }
 }
