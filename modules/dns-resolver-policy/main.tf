@@ -32,7 +32,7 @@ resource "azapi_resource" "domain_list" {
   response_export_values    = []
   retry                     = var.retry
   schema_validation_enabled = true
-  # Per-list tags replace var.tags as TFFR9 overrides do; tflint-ruleset-avm 1.1.0 (#161) accepts this, the pinned 1.0.0 does not.
+  # Per-domain-list tag overrides are a documented feature (var.domain_lists[*].tags); keep the coalesce fallback to var.tags.
   # tflint-ignore: avm_azapi_resource_tags_required
   tags = coalesce(each.value.tags, var.tags)
 
