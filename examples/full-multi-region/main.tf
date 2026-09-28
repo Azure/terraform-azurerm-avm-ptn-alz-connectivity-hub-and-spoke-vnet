@@ -43,7 +43,7 @@ module "config" {
 
 module "resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
-  version  = "0.2.0"
+  version  = "0.4.0"
   for_each = module.config.outputs.connectivity_resource_groups
 
   location         = each.value.location
