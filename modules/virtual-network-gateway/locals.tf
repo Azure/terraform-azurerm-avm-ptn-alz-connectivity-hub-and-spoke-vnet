@@ -162,8 +162,10 @@ locals {
       # Revoked Certificates
       vpnClientRevokedCertificates = [
         for revoked_cert in var.vpn_point_to_site.revoked_certificates : {
-          name       = revoked_cert.name
-          thumbprint = revoked_cert.thumbprint
+          name = revoked_cert.name
+          properties = {
+            thumbprint = revoked_cert.thumbprint
+          }
         }
       ]
 
