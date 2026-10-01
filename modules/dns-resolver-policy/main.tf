@@ -47,6 +47,7 @@ resource "azapi_resource" "domain_list" {
 resource "azapi_resource" "security_rule" {
   for_each = var.security_rules
 
+  location  = var.location
   name      = coalesce(each.value.name, each.key)
   parent_id = azapi_resource.this.id
   type      = var.resource_types.dns_resolver_policy_security_rule

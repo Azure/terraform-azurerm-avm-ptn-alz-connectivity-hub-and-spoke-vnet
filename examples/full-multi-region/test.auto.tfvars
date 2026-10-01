@@ -344,6 +344,7 @@ hub_virtual_networks = {
     }
     location          = "$${starter_location_01}"
     default_parent_id = "$${connectivity_hub_primary_resource_group_id}"
+    is_primary        = true
     hub_virtual_network = {
       name                          = "$${primary_virtual_network_name}"
       address_space                 = ["$${primary_hub_virtual_network_address_space}"]
