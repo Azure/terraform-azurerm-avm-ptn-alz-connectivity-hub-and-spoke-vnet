@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "Virtual Network Gateway",
+  "moduleDescription": "Deploys an Azure VPN or ExpressRoute virtual network gateway with optional gateway subnet route tables, local network gateways, circuit peerings, and gateway connections.",
+  "canonicalType": "alz-connectivity-hub-and-spoke-vnet/virtual-network-gateway",
+  "telemetryIdPrefix": "46d3xtrf.ptn.745164a"
+}

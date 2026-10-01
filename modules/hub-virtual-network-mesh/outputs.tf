@@ -8,6 +8,14 @@ output "firewall_policies" {
   }
 }
 
+output "firewall_public_ip_configurations" {
+  description = "Resolved public IP settings for the firewall default and management IP configurations."
+  value = {
+    default    = local.fw_default_ip_configuration_pip
+    management = local.fw_management_ip_configuration_pip
+  }
+}
+
 output "firewalls" {
   description = "A curated output of the firewalls created by this module."
   value = {
@@ -80,13 +88,5 @@ output "virtual_networks" {
       subnet_ids                  = { for subnet_key, subnet_value in local.subnets : subnet_key => module.hub_virtual_network_subnets[subnet_key].resource_id if subnet_value.virtual_network_key == vnet_key }
       hub_router_ip_address       = try(module.hub_firewalls[vnet_key].resource.ip_configuration[0].private_ip_address, var.hub_virtual_networks[vnet_key].hub_router_ip_address)
     }
-  }
-}
-
-output "firewall_public_ip_configurations" {
-  description = "Resolved public IP settings for the firewall default and management IP configurations."
-  value = {
-    default    = local.fw_default_ip_configuration_pip
-    management = local.fw_management_ip_configuration_pip
   }
 }

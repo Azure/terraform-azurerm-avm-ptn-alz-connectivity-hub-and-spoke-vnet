@@ -126,27 +126,29 @@ variable "hub_virtual_networks" {
       nat_gateway                           = optional(bool, false)
     }), {})
 
+    is_primary                = optional(bool, false)
     default_hub_address_space = optional(string)
     default_parent_id         = optional(string)
     location                  = string
 
     hub_virtual_network = optional(object({
-      name                             = optional(string)
-      address_space                    = optional(list(string))
-      parent_id                        = optional(string)
-      route_table_firewall_enabled     = optional(bool, true)
-      route_table_user_subnets_enabled = optional(bool, true)
-      route_table_name_firewall        = optional(string)
-      route_table_name_user_subnets    = optional(string)
-      bgp_community                    = optional(string)
-      ddos_protection_plan_id          = optional(string)
-      dns_servers                      = optional(list(string))
-      flow_timeout_in_minutes          = optional(number, 4)
-      mesh_peering_enabled             = optional(bool, true)
-      peering_names                    = optional(map(string))
-      routing_address_space            = optional(list(string), [])
-      hub_router_ip_address            = optional(string)
-      tags                             = optional(map(string))
+      name                                             = optional(string)
+      address_space                                    = optional(list(string))
+      parent_id                                        = optional(string)
+      route_table_firewall_enabled                     = optional(bool, true)
+      route_table_user_subnets_enabled                 = optional(bool, true)
+      route_table_user_subnets_bgp_propagation_enabled = optional(bool, true)
+      route_table_name_firewall                        = optional(string)
+      route_table_name_user_subnets                    = optional(string)
+      bgp_community                                    = optional(string)
+      ddos_protection_plan_id                          = optional(string)
+      dns_servers                                      = optional(list(string))
+      flow_timeout_in_minutes                          = optional(number, 4)
+      mesh_peering_enabled                             = optional(bool, true)
+      peering_names                                    = optional(map(string))
+      routing_address_space                            = optional(list(string), [])
+      hub_router_ip_address                            = optional(string)
+      tags                                             = optional(map(string))
       lock = optional(object({
         kind = string
         name = optional(string)
@@ -875,6 +877,7 @@ The following top level attributes are supported:
     - `private_dns_resolver` - (Optional) Should the private DNS resolver be created? Default `true`.
     - `dns_resolver_policy` - (Optional) Should the DNS resolver policy (DNS Security Policy) be created? Default `true`.
     - `nat_gateway` - (Optional) Should the NAT Gateway be created? Default `true`.
+  - `is_primary` - (Optional) Marks this hub as the primary region. The primary region is used for shared resources like private DNS zones and DDoS protection plans. Only one hub should be marked as primary. If no hub is marked as primary, the first key in alphabetical order is used. Default `false`.
   - `default_hub_address_space` - (Optional) The default address space to use if not specified in hub_virtual_network. This defaults to `10.0.0.0/16` and increments to the next /16 for each region if not supplied.
   - `default_parent_id` - (Optional) The default parent resource group ID to use if not specified in hub_virtual_network or individual sections.
   - `location` - (Required) The Azure location where the hub network resources should be created.
@@ -896,6 +899,7 @@ The following top level attributes are supported:
   - `parent_id` - (Optional) The ID of the parent resource group where the virtual network should be created.
   - `route_table_firewall_enabled` - (Optional) Should the firewall route table be created? Default `true`.
   - `route_table_user_subnets_enabled` - (Optional) Should the user subnets route table be created? Default `true`.
+  - `route_table_user_subnets_bgp_propagation_enabled` - (Optional) Should BGP route propagation be enabled on the user subnet route table? Default `true`.
   - `bgp_community` - The BGP community associated with the virtual network.
   - `ddos_protection_plan_id` - The ID of the DDoS protection plan associated with the virtual network.
   - `dns_servers` - A list of DNS servers IP addresses for the virtual network.
@@ -1515,6 +1519,10 @@ The following top level attributes are supported:
 DESCRIPTION
 
   validation {
+    condition     = length([for key, value in var.hub_virtual_networks : key if value.is_primary]) <= 1
+    error_message = "Only one hub virtual network can be marked as primary (is_primary = true)."
+  }
+  validation {
     condition = alltrue([
       for hub_key, hub in var.hub_virtual_networks :
       hub.nat_gateway == null ? true : alltrue([
@@ -1593,7 +1601,7 @@ DESCRIPTION
 
 variable "retry" {
   type = object({
-    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
+    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"])
     interval_seconds     = optional(number, 10)
     max_interval_seconds = optional(number, 180)
   })
@@ -1601,7 +1609,7 @@ variable "retry" {
   description = <<DESCRIPTION
 (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
 
-- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"]`.
 - `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
 - `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 DESCRIPTION

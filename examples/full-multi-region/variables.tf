@@ -43,7 +43,7 @@ variable "custom_replacements" {
 
 variable "enable_telemetry" {
   type        = bool
-  default     = false
+  default     = true
   description = "Flag to enable/disable telemetry"
 }
 

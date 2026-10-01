@@ -55,7 +55,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.12)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
@@ -439,7 +439,7 @@ Default: `null`
 
 Description: (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
 
-- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"]`.
 - `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
 - `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 
@@ -447,7 +447,7 @@ Type:
 
 ```hcl
 object({
-    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
+    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"])
     interval_seconds     = optional(number, 10)
     max_interval_seconds = optional(number, 180)
   })

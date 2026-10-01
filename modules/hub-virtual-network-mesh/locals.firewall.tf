@@ -35,7 +35,6 @@ locals {
   if vnet_value.firewall != null }
 }
 
-
 locals {
   firewalls = {
     for vnet_name, vnet in var.hub_virtual_networks : vnet_name => {

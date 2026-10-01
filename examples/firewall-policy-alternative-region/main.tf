@@ -46,7 +46,7 @@ module "resource_groups" {
 
   location         = each.value.location
   name             = each.value.name
-  enable_telemetry = false
+  enable_telemetry = var.enable_telemetry
   tags             = local.common_tags
 }
 
@@ -57,7 +57,7 @@ module "base_firewall_policy" {
   location            = "uksouth"
   name                = "fwp-global-base-uksouth-001"
   resource_group_name = module.resource_groups["hub_primary"].name
-  enable_telemetry    = false
+  enable_telemetry    = var.enable_telemetry
   firewall_policy_sku = "Standard"
   tags                = local.common_tags
 }
@@ -66,7 +66,7 @@ module "base_firewall_policy" {
 module "test" {
   source = "../../"
 
-  enable_telemetry = false
+  enable_telemetry = var.enable_telemetry
   hub_and_spoke_networks_settings = {
     enabled_resources = {
       ddos_protection_plan = false

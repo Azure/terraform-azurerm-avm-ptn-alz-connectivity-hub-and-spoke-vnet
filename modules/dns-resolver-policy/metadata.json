@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "DNS Resolver Policy",
+  "moduleDescription": "Deploys an Azure DNS Security Policy with domain lists, DNS security rules, and virtual network links.",
+  "canonicalType": "alz-connectivity-hub-and-spoke-vnet/dns-resolver-policy",
+  "telemetryIdPrefix": "46d3xtrf.ptn.8e32d14"
+}
