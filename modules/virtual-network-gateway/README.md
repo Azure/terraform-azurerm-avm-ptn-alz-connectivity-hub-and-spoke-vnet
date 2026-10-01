@@ -439,7 +439,7 @@ Default: `null`
 
 Description: (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
 
-- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"]`.
 - `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
 - `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 
@@ -447,7 +447,7 @@ Type:
 
 ```hcl
 object({
-    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
+    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"])
     interval_seconds     = optional(number, 10)
     max_interval_seconds = optional(number, 180)
   })
