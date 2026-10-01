@@ -16,18 +16,18 @@ locals {
 locals {
   default_route_internet = {
     for key, value in var.hub_virtual_networks : key =>
-      (
-        try(local.custom_default_route_firewall[key], null) != null ?
-        local.custom_default_route_firewall[key] :
-        {
-          virtual_network_key   = key
-          name                  = local.firewall_internet_route_name[key]
-          address_prefix        = "0.0.0.0/0"
-          next_hop_type         = "Internet"
-          next_hop_in_ip_address= null
-          resource_group_name   = local.resource_group_names[key]
-        }
-      ) if local.create_route_tables_firewall[key]
+    (
+      try(local.custom_default_route_firewall[key], null) != null ?
+      local.custom_default_route_firewall[key] :
+      {
+        virtual_network_key    = key
+        name                   = local.firewall_internet_route_name[key]
+        address_prefix         = "0.0.0.0/0"
+        next_hop_type          = "Internet"
+        next_hop_in_ip_address = null
+        resource_group_name    = local.resource_group_names[key]
+      }
+    ) if local.create_route_tables_firewall[key]
   }
   firewall_private_ip = {
     for vnet_name, fw in module.hub_firewalls : vnet_name => fw.resource.ip_configuration[0].private_ip_address
