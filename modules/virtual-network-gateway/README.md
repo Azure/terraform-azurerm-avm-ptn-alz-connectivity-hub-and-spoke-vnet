@@ -55,7 +55,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.12)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
@@ -70,6 +70,7 @@ The following resources are used by this module:
 - [azapi_resource.vgw](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_express_route_circuit_peering.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/express_route_circuit_peering) (resource)
 - [azurerm_local_network_gateway.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/local_network_gateway) (resource)
+- [azurerm_management_lock.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
 - [azurerm_monitor_diagnostic_setting.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) (resource)
 - [azurerm_public_ip.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_route_table.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table) (resource)
@@ -331,6 +332,7 @@ Default: `{}`
 
 Description: Map of Local Network Gateways and Virtual Network Gateway Connections to create for the Virtual Network Gateway.
 
+- `id` - (Optional) The resource ID of an existing Local Network Gateway to use instead of creating a new one. When specified, the other gateway properties (`name`, `address_space`, `gateway_fqdn`, `gateway_address`, `bgp_settings`, `tags`) are ignored.
 - `name` - (Optional) The name of the Local Network Gateway to create.
 - `address_space` - (Optional) The list of address spaces for the Local Network Gateway.
 - `gateway_fqdn` - (Optional) The gateway FQDN for the Local Network Gateway.
@@ -377,6 +379,7 @@ Type:
 
 ```hcl
 map(object({
+    id                  = optional(string, null)
     name                = optional(string, null)
     resource_group_name = optional(string, null)
     address_space       = optional(list(string), null)
@@ -430,11 +433,29 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_lock"></a> [lock](#input\_lock)
+
+Description: Controls the Resource Lock configuration for the Virtual Network Gateway. The following properties can be specified:
+
+- `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+
+Type:
+
+```hcl
+object({
+    kind = string
+    name = optional(string, null)
+  })
+```
+
+Default: `null`
+
 ### <a name="input_retry"></a> [retry](#input\_retry)
 
 Description: (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
 
-- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"]`.
 - `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
 - `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 
@@ -442,7 +463,7 @@ Type:
 
 ```hcl
 object({
-    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
+    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"])
     interval_seconds     = optional(number, 10)
     max_interval_seconds = optional(number, 180)
   })

@@ -50,7 +50,7 @@ module "resource_groups" {
 
   location         = each.value.location
   name             = each.value.name
-  enable_telemetry = false
+  enable_telemetry = var.enable_telemetry
   tags             = local.common_tags
 }
 
@@ -58,12 +58,18 @@ module "resource_groups" {
 module "test" {
   source = "../../"
 
-  enable_telemetry = false
+  enable_telemetry = var.enable_telemetry
+  hub_and_spoke_networks_settings = {
+    enabled_resources = {
+      ddos_protection_plan = false
+    }
+  }
   hub_virtual_networks = {
     primary = {
       enabled_resources = {
         virtual_network_gateway_express_route = false
         virtual_network_gateway_vpn           = false
+        private_dns_resolver                  = false
       }
       location = local.resource_groups["hub_primary"].location
       # default_hub_address_space = "10.0.0.0/16"
@@ -79,6 +85,7 @@ module "test" {
       enabled_resources = {
         virtual_network_gateway_express_route = false
         virtual_network_gateway_vpn           = false
+        private_dns_resolver                  = false
       }
       location = local.resource_groups["hub_secondary"].location
       # default_hub_address_space = "10.1.0.0/16"

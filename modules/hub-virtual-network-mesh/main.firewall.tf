@@ -18,6 +18,7 @@ module "hub_firewalls" {
   firewall_private_ip_ranges = each.value.private_ip_ranges
   firewall_zones             = each.value.zones
   ip_configurations          = local.firewall_ip_configurations[each.key]
+  lock                       = each.value.lock
   tags                       = each.value.tags == null ? var.tags : each.value.tags
 }
 
@@ -26,18 +27,21 @@ module "fw_default_ips" {
   version  = "0.2.0"
   for_each = local.fw_default_ip_configuration_pip
 
-  location            = each.value.location
-  name                = each.value.name
-  resource_group_name = each.value.resource_group_name
-  allocation_method   = "Static"
-  domain_name_label   = each.value.domain_name_label
-  enable_telemetry    = var.enable_telemetry
-  ip_version          = each.value.ip_version
-  public_ip_prefix_id = each.value.public_ip_prefix_id
-  sku                 = "Standard"
-  sku_tier            = each.value.sku_tier
-  tags                = each.value.tags == null ? var.tags : each.value.tags
-  zones               = each.value.zones
+  location                = each.value.location
+  name                    = each.value.name
+  resource_group_name     = each.value.resource_group_name
+  allocation_method       = "Static"
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
+  domain_name_label       = each.value.domain_name_label
+  enable_telemetry        = var.enable_telemetry
+  ip_tags                 = each.value.ip_tags
+  ip_version              = each.value.ip_version
+  public_ip_prefix_id     = each.value.public_ip_prefix_id
+  sku                     = "Standard"
+  sku_tier                = each.value.sku_tier
+  tags                    = each.value.tags == null ? var.tags : each.value.tags
+  zones                   = each.value.zones
 }
 
 module "fw_management_ips" {
@@ -45,18 +49,21 @@ module "fw_management_ips" {
   version  = "0.2.0"
   for_each = local.fw_management_ip_configuration_pip
 
-  location            = each.value.location
-  name                = each.value.name
-  resource_group_name = each.value.resource_group_name
-  allocation_method   = "Static"
-  domain_name_label   = each.value.domain_name_label
-  enable_telemetry    = var.enable_telemetry
-  ip_version          = each.value.ip_version
-  public_ip_prefix_id = each.value.public_ip_prefix_id
-  sku                 = "Standard"
-  sku_tier            = each.value.sku_tier
-  tags                = each.value.tags == null ? var.tags : each.value.tags
-  zones               = each.value.zones
+  location                = each.value.location
+  name                    = each.value.name
+  resource_group_name     = each.value.resource_group_name
+  allocation_method       = "Static"
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
+  domain_name_label       = each.value.domain_name_label
+  enable_telemetry        = var.enable_telemetry
+  ip_tags                 = each.value.ip_tags
+  ip_version              = each.value.ip_version
+  public_ip_prefix_id     = each.value.public_ip_prefix_id
+  sku                     = "Standard"
+  sku_tier                = each.value.sku_tier
+  tags                    = each.value.tags == null ? var.tags : each.value.tags
+  zones                   = each.value.zones
 }
 
 module "fw_policies" {
@@ -82,5 +89,6 @@ module "fw_policies" {
   firewall_policy_threat_intelligence_mode          = each.value.threat_intelligence_mode
   firewall_policy_timeouts                          = var.timeouts
   firewall_policy_tls_certificate                   = each.value.tls_certificate
+  lock                                              = each.value.lock
   tags                                              = each.value.tags == null ? var.tags : each.value.tags
 }

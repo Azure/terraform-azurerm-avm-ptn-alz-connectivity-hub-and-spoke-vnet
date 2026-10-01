@@ -8,6 +8,14 @@ output "firewall_policies" {
   }
 }
 
+output "firewall_public_ip_configurations" {
+  description = "Resolved public IP settings for the firewall default and management IP configurations."
+  value = {
+    default    = local.fw_default_ip_configuration_pip
+    management = local.fw_management_ip_configuration_pip
+  }
+}
+
 output "firewalls" {
   description = "A curated output of the firewalls created by this module."
   value = {
@@ -46,6 +54,19 @@ output "name" {
   value       = { for key, value in module.hub_virtual_networks : key => value.name }
 }
 
+output "nat_gateways" {
+  description = "A curated output of the NAT gateways created by this module."
+  value = {
+    for key, value in module.nat_gateway : key => {
+      id                  = value.resource_id
+      name                = value.resource.name
+      resource_id         = value.resource_id
+      public_ip_addresses = value.public_ip_resource
+      public_ip_ids       = [for pip in value.public_ip_resource : pip.id]
+    }
+  }
+}
+
 output "resource_id" {
   description = "The resource IDs of the hub virtual networks."
   value       = { for key, value in module.hub_virtual_networks : key => value.resource_id }
@@ -58,7 +79,8 @@ output "virtual_networks" {
       name                        = vnet_mod.name
       parent_id                   = var.hub_virtual_networks[vnet_key].parent_id
       resource_group_name         = local.resource_group_names[vnet_key]
-      id                          = vnet_mod.resource_id
+      resource_id                 = vnet_mod.resource_id
+      id                          = vnet_mod.resource_id # Deprecated: use `resource_id` instead. This attribute will be removed in a future major version.
       virtual_network_resource_id = vnet_mod.resource.id
       location                    = var.hub_virtual_networks[vnet_key].location
       address_spaces              = var.hub_virtual_networks[vnet_key].address_space

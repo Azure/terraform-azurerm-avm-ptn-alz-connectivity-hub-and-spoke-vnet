@@ -1,10 +1,10 @@
 resource "azurerm_subnet" "vgw" {
   count = var.subnet_creation_enabled ? 1 : 0
 
-  address_prefixes     = [var.subnet_address_prefix]
   name                 = "GatewaySubnet"
   resource_group_name  = local.resource_group_name
   virtual_network_name = local.virtual_network_name
+  address_prefixes     = [var.subnet_address_prefix]
 }
 
 resource "azurerm_route_table" "vgw" {
@@ -60,13 +60,9 @@ resource "azapi_resource" "vgw" {
     extendedLocation = local.extended_location
     properties       = local.virtual_network_gateway_properties_filtered
   }
-  create_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers           = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   response_export_values = ["*"]
   retry                  = var.retry
   tags                   = var.tags
-  update_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
     create = var.timeouts.create
@@ -113,6 +109,7 @@ resource "azurerm_monitor_diagnostic_setting" "vgw" {
       category_group = enabled_log.value
     }
   }
+
   dynamic "metric" {
     for_each = each.value.metric_categories
 
@@ -126,6 +123,15 @@ resource "azurerm_monitor_diagnostic_setting" "vgw" {
 moved {
   from = azurerm_virtual_network_gateway.vgw
   to   = azapi_resource.vgw
+}
+
+resource "azurerm_management_lock" "vgw" {
+  count = var.lock != null ? 1 : 0
+
+  lock_level = var.lock.kind
+  name       = coalesce(var.lock.name, "lock-${var.lock.kind}")
+  scope      = azapi_resource.vgw.id
+  notes      = var.lock.kind == "CanNotDelete" ? "Cannot delete the resource or its child resources." : "Cannot delete or modify the resource or its child resources."
 }
 
 resource "azurerm_local_network_gateway" "vgw" {
@@ -184,6 +190,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
       secondary = each.value.custom_bgp_addresses.secondary
     }
   }
+
   dynamic "ipsec_policy" {
     for_each = try(each.value.ipsec_policy, null) == null ? [] : ["IPSecPolicy"]
 
@@ -198,6 +205,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
       sa_lifetime      = each.value.ipsec_policy.sa_lifetime
     }
   }
+
   dynamic "traffic_selector_policy" {
     for_each = try(each.value.traffic_selector_policy, null) == null ? [] : each.value.traffic_selector_policy
 

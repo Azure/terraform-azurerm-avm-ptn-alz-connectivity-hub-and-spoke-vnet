@@ -15,9 +15,12 @@ variable "default_naming_convention" {
     virtual_network_gateway_vpn_public_ip_name                  = optional(string, "pip-vgw-hub-vpn-$${location}-$${sequence}")
     virtual_network_gateway_route_table_name                    = optional(string, "rt-hub-gateway-$${location}-$${sequence}")
     private_dns_resolver_name                                   = optional(string, "pdr-hub-$${location}-$${sequence}")
+    dns_resolver_policy_name                                    = optional(string, "dnspol-hub-$${location}-$${sequence}")
+    dns_resolver_domain_list_name                               = optional(string, "dnsdl-hub-$${location}-$${sequence}")
     bastion_host_name                                           = optional(string, "bas-hub-$${location}-$${sequence}")
     bastion_host_public_ip_name                                 = optional(string, "pip-bas-hub-$${location}-$${sequence}")
     ddos_protection_plan_name                                   = optional(string, "ddos-hub-$${location}-$${sequence}")
+    nat_gateway_name                                            = optional(string, "natgw-hub-$${location}-$${sequence}")
   })
   default     = {}
   description = <<DESCRIPTION
@@ -38,9 +41,12 @@ variable "default_naming_convention" {
 - `virtual_network_gateway_vpn_public_ip_name` - The naming convention for VPN gateway public IPs.
 - `virtual_network_gateway_route_table_name` - The naming convention for gateway route tables.
 - `private_dns_resolver_name` - The naming convention for private DNS resolvers.
+- `dns_resolver_policy_name` - The naming convention for DNS resolver policies.
+- `dns_resolver_domain_list_name` - The naming convention for DNS resolver domain lists.
 - `bastion_host_name` - The naming convention for Azure Bastion hosts.
 - `bastion_host_public_ip_name` - The naming convention for Azure Bastion public IPs.
 - `ddos_protection_plan_name` - The naming convention for DDoS Protection Plans.
+- `nat_gateway_name` - The naming convention for NAT Gateways.
 
 The following placeholders can be used in the naming conventions:
   - `$${location}` - The location of the resource.
@@ -116,29 +122,37 @@ variable "hub_virtual_networks" {
       virtual_network_gateway_vpn           = optional(bool, true)
       private_dns_zones                     = optional(bool, true)
       private_dns_resolver                  = optional(bool, true)
+      dns_resolver_policy                   = optional(bool, true)
+      nat_gateway                           = optional(bool, false)
     }), {})
 
+    is_primary                = optional(bool, false)
     default_hub_address_space = optional(string)
     default_parent_id         = optional(string)
     location                  = string
 
     hub_virtual_network = optional(object({
-      name                             = optional(string)
-      address_space                    = optional(list(string))
-      parent_id                        = optional(string)
-      route_table_firewall_enabled     = optional(bool, true)
-      route_table_user_subnets_enabled = optional(bool, true)
-      route_table_name_firewall        = optional(string)
-      route_table_name_user_subnets    = optional(string)
-      bgp_community                    = optional(string)
-      ddos_protection_plan_id          = optional(string)
-      dns_servers                      = optional(list(string))
-      flow_timeout_in_minutes          = optional(number, 4)
-      mesh_peering_enabled             = optional(bool, true)
-      peering_names                    = optional(map(string))
-      routing_address_space            = optional(list(string), [])
-      hub_router_ip_address            = optional(string)
-      tags                             = optional(map(string))
+      name                                             = optional(string)
+      address_space                                    = optional(list(string))
+      parent_id                                        = optional(string)
+      route_table_firewall_enabled                     = optional(bool, true)
+      route_table_user_subnets_enabled                 = optional(bool, true)
+      route_table_user_subnets_bgp_propagation_enabled = optional(bool, true)
+      route_table_name_firewall                        = optional(string)
+      route_table_name_user_subnets                    = optional(string)
+      bgp_community                                    = optional(string)
+      ddos_protection_plan_id                          = optional(string)
+      dns_servers                                      = optional(list(string))
+      flow_timeout_in_minutes                          = optional(number, 4)
+      mesh_peering_enabled                             = optional(bool, true)
+      peering_names                                    = optional(map(string))
+      routing_address_space                            = optional(list(string), [])
+      hub_router_ip_address                            = optional(string)
+      tags                                             = optional(map(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
 
       route_table_entries_firewall = optional(set(object({
         name                = string
@@ -161,7 +175,8 @@ variable "hub_virtual_networks" {
           name             = string
           address_prefixes = list(string)
           nat_gateway = optional(object({
-            id = string
+            id                           = optional(string)
+            assign_generated_nat_gateway = optional(bool, false)
           }))
           network_security_group = optional(object({
             id = string
@@ -171,6 +186,7 @@ variable "hub_virtual_networks" {
           route_table = optional(object({
             id                           = optional(string)
             assign_generated_route_table = optional(bool, true)
+            route_table_reference_key    = optional(string, "UserSubnets")
           }))
           service_endpoints_with_location = optional(list(object({
             service   = string
@@ -193,6 +209,38 @@ variable "hub_virtual_networks" {
       )), {})
     }), {})
 
+    nat_gateway = optional(object({
+      name                    = optional(string)
+      parent_id               = optional(string)
+      location                = optional(string)
+      sku                     = optional(string, "StandardV2")
+      idle_timeout_in_minutes = optional(number, 4)
+      tags                    = optional(map(string), null)
+      zones                   = optional(set(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+      ip_configurations = optional(map(object({
+        is_default                 = optional(bool, false)
+        name                       = optional(string)
+        public_ip_creation_enabled = optional(bool, true)
+        public_ip_configuration = optional(object({
+          ip_version                     = optional(string, "IPv4")
+          name                           = optional(string)
+          public_ip_existing_resource_id = optional(string)
+          sku                            = optional(string, "StandardV2")
+          sku_tier                       = optional(string, "Regional")
+          zones                          = optional(set(string))
+          allocation_method              = optional(string, "Static")
+          public_ip_prefix_id            = optional(string)
+          domain_name_label              = optional(string)
+          idle_timeout_in_minutes        = optional(number, 4)
+          ddos_protection_mode           = optional(string, "VirtualNetworkInherited")
+        }), {})
+      })), {})
+    }), {})
+
     firewall = optional(object({
       name                                              = optional(string)
       resource_group_name                               = optional(string)
@@ -208,18 +256,29 @@ variable "hub_virtual_networks" {
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+      firewall_subnet_nat_gateway = optional(object({
+        id                           = optional(string, null)
+        assign_generated_nat_gateway = optional(bool, false)
+      }))
 
       default_ip_configuration = optional(object({
         is_default = optional(bool, true)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version          = optional(string, "IPv4")
-          name                = optional(string)
-          resource_group_name = optional(string)
-          sku_tier            = optional(string, "Regional")
-          zones               = optional(set(string))
-          public_ip_prefix_id = optional(string)
-          domain_name_label   = optional(string)
+          ip_version              = optional(string, "IPv4")
+          name                    = optional(string)
+          resource_group_name     = optional(string)
+          sku_tier                = optional(string, "Regional")
+          zones                   = optional(set(string))
+          public_ip_prefix_id     = optional(string)
+          domain_name_label       = optional(string)
+          ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+          ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       }), {})
 
@@ -227,26 +286,32 @@ variable "hub_virtual_networks" {
         is_default = optional(bool, false)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version          = optional(string, "IPv4")
-          name                = optional(string)
-          resource_group_name = optional(string)
-          sku_tier            = optional(string, "Regional")
-          zones               = optional(set(string))
-          public_ip_prefix_id = optional(string)
-          domain_name_label   = optional(string)
+          ip_version              = optional(string, "IPv4")
+          name                    = optional(string)
+          resource_group_name     = optional(string)
+          sku_tier                = optional(string, "Regional")
+          zones                   = optional(set(string))
+          public_ip_prefix_id     = optional(string)
+          domain_name_label       = optional(string)
+          ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+          ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       })), {})
 
       management_ip_configuration = optional(object({
         name = optional(string)
         public_ip_config = optional(object({
-          ip_version          = optional(string, "IPv4")
-          name                = optional(string)
-          resource_group_name = optional(string)
-          sku_tier            = optional(string, "Regional")
-          zones               = optional(set(string))
-          public_ip_prefix_id = optional(string)
-          domain_name_label   = optional(string)
+          ip_version              = optional(string, "IPv4")
+          name                    = optional(string)
+          resource_group_name     = optional(string)
+          sku_tier                = optional(string, "Regional")
+          zones                   = optional(set(string))
+          public_ip_prefix_id     = optional(string)
+          domain_name_label       = optional(string)
+          ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+          ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }), {})
       }), {})
     }), {})
@@ -258,6 +323,10 @@ variable "hub_virtual_networks" {
       auto_learn_private_ranges_enabled = optional(bool)
       base_policy_id                    = optional(string)
       location                          = optional(string)
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
       dns = optional(object({
         proxy_enabled = optional(bool, false)
         servers       = optional(list(string))
@@ -371,6 +440,10 @@ variable "hub_virtual_networks" {
         express_route_scale_unit_min = optional(number, 1)
         express_route_scale_unit_max = optional(number, 1)
         edge_zone                    = optional(string)
+        lock = optional(object({
+          kind = string
+          name = optional(string)
+        }))
         express_route_circuits = optional(map(object({
           id = string
           connection = optional(object({
@@ -430,6 +503,7 @@ variable "hub_virtual_networks" {
           }), {})
         })), {})
         local_network_gateways = optional(map(object({
+          id                  = optional(string, null)
           name                = optional(string, null)
           resource_group_name = optional(string, null)
           address_space       = optional(list(string), null)
@@ -489,6 +563,10 @@ variable "hub_virtual_networks" {
         sku                                   = optional(string, "VpnGw1AZ")
         edge_zone                             = optional(string)
         hosted_on_behalf_of_public_ip_enabled = optional(bool, false)
+        lock = optional(object({
+          kind = string
+          name = optional(string)
+        }))
         ip_configurations = optional(map(object({
           name                          = optional(string, null)
           apipa_addresses               = optional(list(string), null)
@@ -518,6 +596,7 @@ variable "hub_virtual_networks" {
           active_active_2 = {}
         })
         local_network_gateways = optional(map(object({
+          id                  = optional(string, null)
           name                = optional(string, null)
           resource_group_name = optional(string, null)
           address_space       = optional(list(string), null)
@@ -640,6 +719,10 @@ variable "hub_virtual_networks" {
       auto_registration_zone_enabled   = optional(bool, true)
       auto_registration_zone_name      = optional(string, null)
       auto_registration_zone_parent_id = optional(string, null)
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
 
       private_link_excluded_zones = optional(set(string), [])
       private_link_private_dns_zones = optional(map(object({
@@ -707,6 +790,10 @@ variable "hub_virtual_networks" {
       subnet_default_outbound_access_enabled = optional(bool, false)
       default_inbound_endpoint_enabled       = optional(bool, true)
       ip_address                             = optional(string, null)
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
       inbound_endpoints = optional(map(object({
         name                         = optional(string)
         subnet_name                  = string
@@ -745,6 +832,36 @@ variable "hub_virtual_networks" {
       })), {})
       tags = optional(map(string), null)
     }), {})
+
+    dns_resolver_policy = optional(object({
+      name                               = optional(string)
+      parent_id                          = optional(string)
+      link_to_hub_virtual_network        = optional(bool, true)
+      virtual_network_link_name_template = optional(string, "$${hub_key}-$${location}-hub")
+      additional_virtual_network_links = optional(map(object({
+        name               = optional(string)
+        virtual_network_id = string
+      })), {})
+      domain_lists = optional(map(object({
+        name    = optional(string)
+        domains = list(string)
+        tags    = optional(map(string), null)
+      })), {})
+      rules = optional(map(object({
+        name                     = optional(string)
+        priority                 = number
+        action                   = optional(string, "Block")
+        state                    = optional(string, "Enabled")
+        domain_list_keys         = optional(list(string), [])
+        domain_list_resource_ids = optional(list(string), [])
+        managed_domain_lists     = optional(list(string), [])
+      })), {})
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+      tags = optional(map(string), null)
+    }), null)
   }))
   default     = {}
   description = <<DESCRIPTION
@@ -760,6 +877,9 @@ The following top level attributes are supported:
     - `virtual_network_gateway_vpn` - (Optional) Should the VPN gateway be created? Default `true`.
     - `private_dns_zones` - (Optional) Should private DNS zones be created? Default `true`.
     - `private_dns_resolver` - (Optional) Should the private DNS resolver be created? Default `true`.
+    - `dns_resolver_policy` - (Optional) Should the DNS resolver policy (DNS Security Policy) be created? Default `true`.
+    - `nat_gateway` - (Optional) Should the NAT Gateway be created? Default `true`.
+  - `is_primary` - (Optional) Marks this hub as the primary region. The primary region is used for shared resources like private DNS zones and DDoS protection plans. Only one hub should be marked as primary. If no hub is marked as primary, the first key in alphabetical order is used. Default `false`.
   - `default_hub_address_space` - (Optional) The default address space to use if not specified in hub_virtual_network. This defaults to `10.0.0.0/16` and increments to the next /16 for each region if not supplied.
   - `default_parent_id` - (Optional) The default parent resource group ID to use if not specified in hub_virtual_network or individual sections.
   - `location` - (Required) The Azure location where the hub network resources should be created.
@@ -768,8 +888,10 @@ The following top level attributes are supported:
   - `firewall_policy` - (Optional) The firewall policy settings.
   - `bastion` - (Optional) The bastion host settings.
   - `virtual_network_gateways` - (Optional) The virtual network gateway settings.
+  - `nat_gateway` - (Optional) The NAT Gateway settings.
   - `private_dns_zones` - (Optional) The private DNS zone settings.
   - `private_dns_resolver` - (Optional) The private DNS resolver settings.
+  - `dns_resolver_policy` - (Optional) The DNS resolver policy (DNS Security Policy) settings.
 
 ## Hub Virtual Network
 
@@ -779,6 +901,7 @@ The following top level attributes are supported:
   - `parent_id` - (Optional) The ID of the parent resource group where the virtual network should be created.
   - `route_table_firewall_enabled` - (Optional) Should the firewall route table be created? Default `true`.
   - `route_table_user_subnets_enabled` - (Optional) Should the user subnets route table be created? Default `true`.
+  - `route_table_user_subnets_bgp_propagation_enabled` - (Optional) Should BGP route propagation be enabled on the user subnet route table? Default `true`.
   - `bgp_community` - The BGP community associated with the virtual network.
   - `ddos_protection_plan_id` - The ID of the DDoS protection plan associated with the virtual network.
   - `dns_servers` - A list of DNS servers IP addresses for the virtual network.
@@ -790,6 +913,9 @@ The following top level attributes are supported:
   - `routing_address_space` - A list of IPv4 address spaces in CIDR format that are used for routing to this hub, e.g. `["192.168.0.0","172.16.0.0/12"]`.
   - `hub_router_ip_address` - If not using Azure Firewall, this is the IP address of the hub router. This is used to create route table entries for other hub networks.
   - `tags` - A map of tags to apply to the virtual network.
+  - `lock` - (Optional) An object for resource lock configuration applied to the hub virtual network resource with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
   - `route_table_entries_firewall` - (Optional) A set of additional route table entries to add to the Firewall route table for this hub network. Default empty `[]`. The value is an object with the following fields:
     - `name` - The name of the route table entry.
     - `address_prefix` - The address prefix to match for this route table entry.
@@ -807,6 +933,7 @@ The following top level attributes are supported:
     - `address_prefixes` - The IPv4 address prefixes to use for the subnet in CIDR format.
     - `nat_gateway` - (Optional) An object with the following fields:
       - `id` - The ID of the NAT Gateway which should be associated with the Subnet. Changing this forces a new resource to be created.
+      - `assign_generated_nat_gateway` - (Optional) Should the NAT Gateway generated by this module be associated with this Subnet? Default `false`.
     - `network_security_group` - (Optional) An object with the following fields:
       - `id` - The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new association to be created.
     - `private_endpoint_network_policies_enabled` - (Optional) Enable or Disable network policies for the private endpoint on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
@@ -814,6 +941,7 @@ The following top level attributes are supported:
     - `route_table` - (Optional) An object with the following fields which are mutually exclusive, choose either an external route table or the generated route table:
       - `id` - The ID of the Route Table which should be associated with the Subnet. Changing this forces a new association to be created.
       - `assign_generated_route_table` - (Optional) Should the Route Table generated by this module be associated with this Subnet? Default `true`.
+      - `route_table_reference_key` - (Optional) The key of the Route Table to reference if using the generated Route Table. This is used to link the subnet to the correct Route Table when multiple Route Tables are generated. Possible values are 'Firewall' or 'UserSubnets'. Defaults to 'UserSubnets'.
     - `service_endpoints_with_location` - (Optional) The list of Service endpoints to associate with the subnet.
     - `service_endpoint_policy_ids` - (Optional) The list of Service Endpoint Policy IDs to associate with the subnet.
     - `delegations` - (Optional) A list of delegation objects with the following fields:
@@ -840,6 +968,9 @@ The following top level attributes are supported:
   - `subnet_route_table_id` = (Optional) The resource id of the Route Table which should be associated with the Azure Firewall subnet. If not specified the module will assign the generated route table.
   - `tags` - (Optional) A map of tags to apply to the Azure Firewall. If not specified
   - `zones` - (Optional) A list of availability zones to use for the Azure Firewall. Set to `[]` for no zones.
+  - `lock` - (Optional) An object for resource lock configuration applied to the Azure Firewall resource with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
   - `default_ip_configuration` - (Optional) An object with the following fields. This is for legacy purpose, consider using `ip_configurations` instead. If `ip_configurations` is specified, this input will be ignored. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
     - `is_default` - (Optional) Indicates this is the default IP configuration. This must always be `true` for the legacy configuration. If not specified will be `true`.
@@ -851,6 +982,9 @@ The following top level attributes are supported:
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `domain_name_label` - (Optional) The domain name label for the public IP configuration.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled. Possible values are Disabled, Enabled, VirtualNetworkInherited
+      - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `ip_configurations` - (Optional) A map of the default IP configuration for the Azure Firewall. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
     - `is_default` - (Optional) Indicates this is the default IP configuration, which will be linked to the Firewall subnet. If not specified will be `false`. At least one and only one IP configuration must have this set to `true`.
@@ -862,6 +996,9 @@ The following top level attributes are supported:
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `domain_name_label` - (Optional) The domain name label for the public IP configuration.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled. Possible values are Disabled, Enabled, VirtualNetworkInherited
+      - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `management_ip_configuration` - (Optional) An object with the following fields. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
     - `public_ip_config` - (Optional) An object with the following fields:
@@ -872,6 +1009,9 @@ The following top level attributes are supported:
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `domain_name_label` - (Optional) The domain name label for the public IP configuration.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled. Possible values are Disabled, Enabled, VirtualNetworkInherited
+      - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
 
 ## Azure Firewall Policy
 
@@ -882,6 +1022,9 @@ The following top level attributes are supported:
   - `sku` - (Optional) The SKU to use for the firewall policy. Possible values include `Standard`, `Premium`. Default `Standard`.
   - `auto_learn_private_ranges_enabled` - (Optional) Should the firewall policy automatically learn private ranges? Default `false`.
   - `base_policy_id` - (Optional) The resource id of the base policy to use for the firewall policy.
+  - `lock` - (Optional) An object for resource lock configuration applied to the Azure Firewall Policy resource with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
   - `dns` - (Optional) An object with the following fields:
     - `proxy_enabled` - (Optional) Should the DNS proxy be enabled for the firewall policy? Default `false`.
     - `servers` - (Optional) A list of DNS server IP addresses for the firewall policy.
@@ -962,6 +1105,36 @@ The following top level attributes are supported:
     - `ddos_protection_plan_id` - (Optional) The ID of the DDoS protection plan.
     - `resource_group_name` - (Optional) The name of the resource group where the public IP should be created. If not specified will use the bastion resource group name or the parent resource group of the virtual network.
 
+## NAT Gateway
+
+- `nat_gateway` - (Optional) An object with the following fields:
+  - `name` - (Optional) The name of the NAT Gateway resource.
+  - `parent_id` - (Optional) The ID of the parent resource group where the NAT Gateway should be created.
+  - `location` - (Optional) The Azure location where the NAT Gateway should be created. If not specified, uses the hub's location.
+  - `sku` - (Optional) The SKU of the NAT Gateway. Default `StandardV2`.
+  - `idle_timeout_in_minutes` - (Optional) The idle timeout in minutes for the NAT Gateway. Default `4`.
+  - `tags` - (Optional) A map of tags to apply to the NAT Gateway.
+  - `zones` - (Optional) A set of availability zones for the NAT Gateway.
+  - `lock` - (Optional) An object for resource lock configuration applied to the NAT Gateway resource with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
+  - `ip_configurations` - (Optional) A map of IP configurations for the NAT Gateway. Maximum 16 configurations are supported. Each configuration is an object with:
+    - `is_default` - (Optional) Is this the default IP configuration? Default `false`.
+    - `name` - (Optional) The name of the IP configuration.
+    - `public_ip_creation_enabled` - (Optional) Should a public IP be created for this configuration? Default `true`.
+    - `public_ip_configuration` - (Optional) An object with the following fields:
+      - `ip_version` - (Optional) The IP version. Possible values are `IPv4`, `IPv6`. Default `IPv4`.
+      - `name` - (Optional) The name of the public IP.
+      - `public_ip_existing_resource_id` - (Optional) The resource ID of an existing public IP to use instead of creating a new one.
+      - `sku` - (Optional) The SKU of the public IP. Default `StandardV2`. Required for StandardV2 NAT Gateway with availability zones support.
+      - `sku_tier` - (Optional) The SKU tier of the public IP. Possible values are `Regional`, `Global`. Default `Regional`.
+      - `zones` - (Optional) A set of availability zones for the public IP.
+      - `allocation_method` - (Optional) The allocation method for the public IP. Possible values are `Static`, `Dynamic`. Default `Static`.
+      - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
+      - `domain_name_label` - (Optional) The domain name label for the public IP.
+      - `idle_timeout_in_minutes` - (Optional) The idle timeout in minutes for the public IP. Default `4`.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Possible values are `Disabled`, `Enabled`, `VirtualNetworkInherited`. Default `VirtualNetworkInherited`.
+
 ## Virtual Network Gateways
 
 - `virtual_network_gateways` - (Optional) An object with the following fields:
@@ -987,6 +1160,9 @@ The following top level attributes are supported:
   - `express_route_scale_unit_min` - (Optional) The minimum number of scale units for the ExpressRoute Gateway when using the `ErGwScale` SKU. Must be between 1 and 40. Default `1`.
   - `express_route_scale_unit_max` - (Optional) The maximum number of scale units for the ExpressRoute Gateway when using the `ErGwScale` SKU. Must be between 1 and 40. Default `1`.
   - `edge_zone` - (Optional) The edge zone for the ExpressRoute gateway.
+  - `lock` - (Optional) An object for resource lock configuration applied to the ExpressRoute Virtual Network Gateway resource with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
   - `express_route_circuits` - (Optional) A map of ExpressRoute circuits to connect. Each circuit is an object with:
     - `id` - The ID of the ExpressRoute circuit (required).
     - `connection` - (Optional) An object with the following fields:
@@ -1040,6 +1216,7 @@ The following top level attributes are supported:
       - `reverse_fqdn` - (Optional) The reverse FQDN.
       - `sku_tier` - (Optional) The SKU tier. Default `Regional`.
   - `local_network_gateways` - (Optional) A map of local network gateways. Each gateway is an object with:
+    - `id` - (Optional) The resource ID of an existing Local Network Gateway to use instead of creating a new one. When specified, the other gateway properties (`name`, `address_space`, `gateway_fqdn`, `gateway_address`, `bgp_settings`, `tags`) are ignored.
     - `name` - (Optional) The name of the local network gateway.
     - `resource_group_name` - (Optional) The resource group name.
     - `address_space` - (Optional) A list of address spaces.
@@ -1092,6 +1269,9 @@ The following top level attributes are supported:
   - `sku` - (Optional) The SKU of the VPN gateway. Possible values include `Basic`, `VpnGw1`, `VpnGw2`, `VpnGw3`, `VpnGw4`, `VpnGw5`, `VpnGw1AZ`, `VpnGw2AZ`, `VpnGw3AZ`, `VpnGw4AZ`, `VpnGw5AZ`. Default `VpnGw1AZ`.
   - `edge_zone` - (Optional) The edge zone for the VPN gateway.
   - `hosted_on_behalf_of_public_ip_enabled` - (Optional) Should hosted on behalf of public IP be enabled? Default `false`.
+  - `lock` - (Optional) An object for resource lock configuration applied to the VPN Virtual Network Gateway resource with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
   - `ip_configurations` - (Optional) A map of IP configurations. Each configuration is an object with:
     - `name` - (Optional) The name of the IP configuration.
     - `apipa_addresses` - (Optional) A list of APIPA addresses.
@@ -1116,6 +1296,7 @@ The following top level attributes are supported:
       - `reverse_fqdn` - (Optional) The reverse FQDN.
       - `sku_tier` - (Optional) The SKU tier. Default `Regional`.
   - `local_network_gateways` - (Optional) A map of local network gateways. Each gateway is an object with:
+    - `id` - (Optional) The resource ID of an existing Local Network Gateway to use instead of creating a new one. When specified, the other gateway properties (`name`, `address_space`, `gateway_fqdn`, `gateway_address`, `bgp_settings`, `tags`) are ignored.
     - `name` - (Optional) The name of the local network gateway.
     - `resource_group_name` - (Optional) The resource group name.
     - `address_space` - (Optional) A list of address spaces.
@@ -1220,6 +1401,9 @@ The following top level attributes are supported:
   - `auto_registration_zone_enabled` - (Optional) Should an auto-registration zone be created? Default `true`.
   - `auto_registration_zone_name` - (Optional) The name of the auto-registration zone.
   - `auto_registration_zone_parent_id` - (Optional) The resource group resource id for the auto-registration zone.
+  - `lock` - (Optional) An object for resource lock configuration. Because the number of private DNS zones created by this module can be large, this lock is applied to the resource group containing the private DNS zones rather than to each individual zone. Fields:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
   - `private_link_excluded_zones` - (Optional) A set of private link zones to exclude from creation. Default `[]`.
   - `private_link_private_dns_zones` - (Optional) A map of private link DNS zones. Each zone is an object with:
     - `zone_name` - (Optional) The DNS zone name.
@@ -1271,6 +1455,9 @@ The following top level attributes are supported:
   - `subnet_default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the DNS resolver subnet? Default `false`.
   - `default_inbound_endpoint_enabled` - (Optional) Should a default inbound endpoint be created? Default `true`.
   - `ip_address` - (Optional) The IP address for the default inbound endpoint.
+  - `lock` - (Optional) An object for resource lock configuration applied to the Private DNS Resolver resource with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
   - `inbound_endpoints` - (Optional) A map of additional inbound endpoints. Each endpoint is an object with:
     - `name` - (Optional) The endpoint name.
     - `subnet_name` - The subnet name for the endpoint (required).
@@ -1303,12 +1490,122 @@ The following top level attributes are supported:
         - `metadata` - (Optional) A map of metadata.
   - `tags` - (Optional) A map of tags to apply to the DNS resolver.
 
+## DNS Resolver Policy (DNS Security Policy)
+
+- `dns_resolver_policy` - (Optional) An object configuring an Azure DNS Security Policy (`Microsoft.Network/dnsResolverPolicies`) for this hub. When set together with `enabled_resources.dns_resolver_policy = true` a policy is deployed, linked to virtual networks, and security rules referencing domain lists are created. The object has the following fields:
+  - `name` - (Optional) The name of the DNS resolver policy.
+  - `parent_id` - (Optional) The resource ID of the resource group where the policy and domain lists should be created. Defaults to the hub's `default_parent_id` (or the hub virtual network's `parent_id`).
+  - `link_to_hub_virtual_network` - (Optional) Should a virtual network link be automatically created from the policy to the hub virtual network? Default `true`.
+  - `virtual_network_link_name_template` - (Optional) A template for the name of the virtual network link that is automatically created from the policy to the hub virtual network when `link_to_hub_virtual_network` is `true`. Default `"$${hub_key}-$${location}-hub"`. The template supports the following placeholders:
+    - `$${hub_key}` - The map key of the hub virtual network from `var.hub_virtual_networks`.
+    - `$${vnet_name}` - The name of the hub virtual network.
+    - `$${location}` - The location of the hub virtual network.
+  - `additional_virtual_network_links` - (Optional) A map of additional virtual networks to link to the policy. Each entry has:
+    - `name` - (Optional) The name of the virtual network link.
+    - `virtual_network_id` - (Required) The resource ID of the virtual network to link.
+  - `domain_lists` - (Optional) A map of `Microsoft.Network/dnsResolverDomainLists` resources to create. Each entry has:
+    - `name` - (Optional) The name of the domain list.
+    - `domains` - (Required) The list of domains (FQDNs) in the domain list.
+    - `tags` - (Optional) A map of tags to apply to the domain list.
+  - `rules` - (Optional) A map of DNS security rules to create. Each entry has:
+    - `name` - (Optional) The name of the rule.
+    - `priority` - (Required) The priority of the rule. Lower values are evaluated first.
+    - `action` - (Optional) The action to take when the rule matches. One of `Alert`, `Allow`, `Block`. Default `Block`.
+    - `state` - (Optional) Whether the rule is `Enabled` or `Disabled`. Default `Enabled`.
+    - `domain_list_keys` - (Optional) A list of keys referencing entries in `domain_lists` for this hub. The matching domain list resource IDs are passed to the rule.
+    - `domain_list_resource_ids` - (Optional) A list of pre-existing domain list resource IDs to associate with the rule.
+    - `managed_domain_lists` - (Optional) A list of Azure-managed domain lists to associate with the rule. Currently only `AzureDnsThreatIntel` is supported.
+  - `lock` - (Optional) An object for resource lock configuration applied to the DNS resolver policy with:
+    - `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+    - `name` - (Optional) The name of the lock.
+  - `tags` - (Optional) A map of tags to apply to the DNS resolver policy.
+
 DESCRIPTION
+
+  validation {
+    condition     = length([for key, value in var.hub_virtual_networks : key if value.is_primary]) <= 1
+    error_message = "Only one hub virtual network can be marked as primary (is_primary = true)."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.nat_gateway == null ? true : alltrue([
+        for ip_config_key, ip_config in coalesce(hub.nat_gateway.ip_configurations, {}) :
+        ip_config.public_ip_creation_enabled != false || (
+          ip_config.public_ip_configuration != null && ip_config.public_ip_configuration.public_ip_existing_resource_id != null
+        )
+      ])
+    ])
+    error_message = "When public_ip_creation_enabled is set to false for a NAT gateway IP configuration, public_ip_existing_resource_id must be provided."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.nat_gateway == null ? true : length(coalesce(hub.nat_gateway.ip_configurations, {})) <= 16
+    ])
+    error_message = "The NAT gateway ip_configurations cannot contain more than 16 elements. This is a limitation of Azure NAT Gateway."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.hub_virtual_network == null ? true : alltrue([
+        for subnet_key, subnet in coalesce(hub.hub_virtual_network.subnets, {}) :
+        subnet.route_table == null ? true : (
+          subnet.route_table.route_table_reference_key == null ? true : contains(
+            ["Firewall", "UserSubnets"],
+            subnet.route_table.route_table_reference_key
+          )
+        )
+      ])
+    ])
+    error_message = "The subnet route_table_reference_key must be either 'Firewall' or 'UserSubnets'."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.dns_resolver_policy == null || try(hub.dns_resolver_policy.parent_id, null) == null ? true :
+      can(provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", hub.dns_resolver_policy.parent_id))
+    ])
+    error_message = "When set, hub_virtual_networks[*].dns_resolver_policy.parent_id must be a valid resource group resource ID (e.g. /subscriptions/<sub>/resourceGroups/<rg>)."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.dns_resolver_policy == null ? true : alltrue([
+        for _, link in hub.dns_resolver_policy.additional_virtual_network_links :
+        can(provider::azapi::parse_resource_id("Microsoft.Network/virtualNetworks", link.virtual_network_id))
+      ])
+    ])
+    error_message = "hub_virtual_networks[*].dns_resolver_policy.additional_virtual_network_links[*].virtual_network_id must be a valid Microsoft.Network/virtualNetworks resource ID."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.dns_resolver_policy == null ? true : alltrue([
+        for _, rule in hub.dns_resolver_policy.rules :
+        contains(["Alert", "Allow", "Block"], rule.action) && contains(["Enabled", "Disabled"], rule.state)
+      ])
+    ])
+    error_message = "hub_virtual_networks[*].dns_resolver_policy.rules[*].action must be one of Alert/Allow/Block and .state must be Enabled/Disabled."
+  }
+  validation {
+    condition = alltrue([
+      for hub_key, hub in var.hub_virtual_networks :
+      hub.hub_virtual_network == null ? true : alltrue([
+        for subnet_key, subnet in coalesce(hub.hub_virtual_network.subnets, {}) :
+        subnet.route_table == null ? true : (
+          try(subnet.route_table.route_table_reference_key, "UserSubnets") != "Firewall" ||
+          try(hub.hub_virtual_network.route_table_firewall_enabled, true)
+        )
+      ])
+    ])
+    error_message = "When route_table_reference_key is 'Firewall', hub_virtual_network.route_table_firewall_enabled must be true."
+  }
 }
 
 variable "retry" {
   type = object({
-    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
+    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"])
     interval_seconds     = optional(number, 10)
     max_interval_seconds = optional(number, 180)
   })
@@ -1316,7 +1613,7 @@ variable "retry" {
   description = <<DESCRIPTION
 (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
 
-- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"]`.
 - `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
 - `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 DESCRIPTION

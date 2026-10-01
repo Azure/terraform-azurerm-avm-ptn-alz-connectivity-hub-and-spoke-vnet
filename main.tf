@@ -25,6 +25,7 @@ module "virtual_network_gateway" {
   hosted_on_behalf_of_public_ip_enabled     = each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled
   ip_configurations                         = each.value.ip_configurations
   local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
+  lock                                      = each.value.lock
   retry                                     = var.retry
   route_table_creation_enabled              = false
   sku                                       = each.value.sku
@@ -70,11 +71,11 @@ module "gateway_route_table_routes" {
   version  = "0.5.0"
   for_each = local.gateway_route_table_routes_flattened
 
-  name                = each.value.name
   address_prefix      = each.value.address_prefix
-  next_hop_ip_address = each.value.next_hop_ip_address
+  name                = each.value.name
   next_hop_type       = each.value.next_hop_type
   parent_id           = module.gateway_route_table[each.value.hub_network_key].resource_id
+  next_hop_ip_address = each.value.next_hop_ip_address
 }
 
 module "dns_resolver" {
@@ -88,18 +89,20 @@ module "dns_resolver" {
   virtual_network_resource_id = module.hub_and_spoke_vnet.virtual_networks[each.key].id
   enable_telemetry            = var.enable_telemetry
   inbound_endpoints           = each.value.inbound_endpoints
+  lock                        = each.value.lock
   outbound_endpoints          = each.value.outbound_endpoints
   tags                        = each.value.tags
 }
 
 module "private_dns_zones" {
   source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
-  version  = "0.23.1"
+  version  = "0.23.2"
   for_each = local.private_dns_zones
 
   location                                                   = each.value.location
   parent_id                                                  = each.value.parent_id
   enable_telemetry                                           = var.enable_telemetry
+  lock                                                       = each.value.lock
   private_link_excluded_zones                                = each.value.private_link_excluded_zones
   private_link_private_dns_zones                             = each.value.private_link_private_dns_zones
   private_link_private_dns_zones_additional                  = each.value.private_link_private_dns_zones_additional

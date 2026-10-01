@@ -14,6 +14,8 @@ Optionally, these virtual networks can be peered in a mesh topology.
 - A routing address space can be specified for each hub network, this module will then create route tables for the other hub networks and associate them with the subnets.
 - Azure Firewall can be deployed in each hub network. This module will configure routing for the AzureFirewallSubnet.
 
+> **Deprecation notice:** The `id` attribute on entries of the `virtual_networks` output is deprecated in favour of `resource_id` and will be removed in a future major version. Consumers should migrate to `module.<name>.virtual_networks[<key>].resource_id` (or the top-level `module.<name>.resource_id[<key>]` map).
+
 ## Example
 
 ```terraform
@@ -54,7 +56,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.12)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.116, < 5.0)
 
@@ -114,6 +116,7 @@ Description: A map of the hub virtual networks to create. The map key is an arbi
 - `peering_names` - A map of the names of the peering connections to create between this virtual network and other hub networks. The key is the key of the peered hub network, and the value is the name of the peering connection.
 - `route_table_name_firewall` - The name of the route table to create for the firewall routes. Default `route-{vnetname}`.
 - `route_table_name_user_subnets` - The name of the route table to create for the user subnet routes. Default `route-{vnetname}`.
+- `route_table_user_subnets_bgp_propagation_enabled` - (Optional) Should BGP route propagation be enabled on the user subnet route table? Default `true`.
 - `routing_address_space` - A list of IPv4 address spaces in CIDR format that are used for routing to this hub, e.g. `["192.168.0.0","172.16.0.0/12"]`.
 - `hub_router_ip_address` - If not using Azure Firewall, this is the IP address of the hub router. This is used to create route table entries for other hub networks.
 - `tags` - A map of tags to apply to the virtual network.
@@ -183,6 +186,9 @@ Description: A map of the hub virtual networks to create. The map key is an arbi
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
+      - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `ip_configurations` - (Optional) A map of the default IP configuration for the Azure Firewall. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the default IP configuration. If not specified will use `default`.
     - `is_default` - (Optional) Indicates this is the default IP configuration, which will be linked to the Firewall subnet. If not specified will be `false`. At least one and only one IP configuration must have this set to `true`.
@@ -192,6 +198,9 @@ Description: A map of the hub virtual networks to create. The map key is an arbi
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
+      - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `management_ip_configuration` - (Optional) An object with the following fields. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the management IP configuration. If not specified will use `defaultMgmt`.
     - `public_ip_config` - (Optional) An object with the following fields:
@@ -200,6 +209,9 @@ Description: A map of the hub virtual networks to create. The map key is an arbi
       - `ip_version` - (Optional) The IP version to use for the public IP configuration. Possible values include `IPv4`, `IPv6`. If not specified will be `IPv4`.
       - `sku_tier` - (Optional) The SKU tier to use for the public IP configuration. Possible values include `Regional`, `Global`. If not specified will be `Regional`.
       - `public_ip_prefix_id` - (Optional) The ID of the public IP prefix.
+      - `ddos_protection_mode` - (Optional) The DDoS protection mode. Default `VirtualNetworkInherited`. For IP plan use Enabled
+      - `ddos_protection_plan_id` - (Optional) The DDoS protection plan ID. For IP plan do not create ddos plan, nor send in id here
+      - `ip_tags` - (Optional) A map of IP tags to apply to the public IP.
   - `firewall_policy` - (Optional) An object with the following fields. Cannot be used with `firewall_policy_id`. If not specified the defaults below will be used:
     - `name` - (Optional) The name of the firewall policy. If not specified will use `afw-policy-{vnetname}`.
     - `sku` - (Optional) The SKU to use for the firewall policy. Possible values include `Standard`, `Premium`.
@@ -218,23 +230,58 @@ Type:
 
 ```hcl
 map(object({
-    name                             = string
-    address_space                    = list(string)
-    location                         = string
-    parent_id                        = string
-    route_table_firewall_enabled     = optional(bool, true)
-    route_table_user_subnets_enabled = optional(bool, true)
-    route_table_name_firewall        = optional(string)
-    route_table_name_user_subnets    = optional(string)
-    bgp_community                    = optional(string)
-    ddos_protection_plan_id          = optional(string)
-    dns_servers                      = optional(list(string))
-    flow_timeout_in_minutes          = optional(number, 4)
-    mesh_peering_enabled             = optional(bool, true)
-    peering_names                    = optional(map(string))
-    routing_address_space            = optional(list(string), [])
-    hub_router_ip_address            = optional(string)
-    tags                             = optional(map(string))
+    name                                             = string
+    address_space                                    = list(string)
+    location                                         = string
+    parent_id                                        = string
+    route_table_firewall_enabled                     = optional(bool, true)
+    route_table_user_subnets_enabled                 = optional(bool, true)
+    route_table_user_subnets_bgp_propagation_enabled = optional(bool, true)
+    route_table_name_firewall                        = optional(string)
+    route_table_name_user_subnets                    = optional(string)
+    bgp_community                                    = optional(string)
+    ddos_protection_plan_id                          = optional(string)
+    dns_servers                                      = optional(list(string))
+    flow_timeout_in_minutes                          = optional(number, 4)
+    mesh_peering_enabled                             = optional(bool, true)
+    peering_names                                    = optional(map(string))
+    routing_address_space                            = optional(list(string), [])
+    hub_router_ip_address                            = optional(string)
+    tags                                             = optional(map(string))
+    lock = optional(object({
+      kind = string
+      name = optional(string)
+    }))
+
+    nat_gateway = optional(object({
+      name                    = optional(string)
+      parent_id               = optional(string)
+      location                = optional(string)
+      sku                     = optional(string, "StandardV2")
+      idle_timeout_in_minutes = optional(number, 4)
+      zones                   = optional(set(string))
+      tags                    = optional(map(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+      ip_configurations = optional(map(object({
+        public_ip_creation_enabled = optional(bool, true)
+        public_ip_configuration = optional(object({
+          name                           = optional(string)
+          allocation_method              = optional(string, "Static")
+          ddos_protection_mode           = optional(string, "VirtualNetworkInherited")
+          idle_timeout_in_minutes        = optional(number, 4)
+          ip_version                     = optional(string, "IPv4")
+          sku                            = optional(string, "StandardV2")
+          sku_tier                       = optional(string, "Regional")
+          zones                          = optional(set(string))
+          public_ip_prefix_id            = optional(string)
+          public_ip_existing_resource_id = optional(string)
+          domain_name_label              = optional(string)
+        }), {})
+      })), {})
+    }))
 
     route_table_entries_firewall = optional(set(object({
       name           = string
@@ -259,7 +306,8 @@ map(object({
         name             = string
         address_prefixes = list(string)
         nat_gateway = optional(object({
-          id = string
+          id                           = optional(string)
+          assign_generated_nat_gateway = optional(bool, false)
         }))
         network_security_group = optional(object({
           id = string
@@ -269,6 +317,7 @@ map(object({
         route_table = optional(object({
           id                           = optional(string)
           assign_generated_route_table = optional(bool, true)
+          route_table_reference_key    = optional(string, "UserSubnets")
         }))
         service_endpoints_with_location = optional(list(object({
           service   = string
@@ -305,43 +354,61 @@ map(object({
       subnet_route_table_id                             = optional(string)
       tags                                              = optional(map(string))
       zones                                             = optional(list(string))
+      lock = optional(object({
+        kind = string
+        name = optional(string)
+      }))
+
+      firewall_subnet_nat_gateway = optional(object({
+        id                           = optional(string, null)
+        assign_generated_nat_gateway = optional(bool, false)
+      }))
 
       default_ip_configuration = optional(object({
         is_default = optional(bool, true)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version          = optional(string, "IPv4")
-          name                = optional(string)
-          resource_group_name = optional(string)
-          sku_tier            = optional(string, "Regional")
-          zones               = optional(set(string))
-          public_ip_prefix_id = optional(string)
-          domain_name_label   = optional(string)
+          ip_version              = optional(string, "IPv4")
+          name                    = optional(string)
+          resource_group_name     = optional(string)
+          sku_tier                = optional(string, "Regional")
+          zones                   = optional(set(string))
+          public_ip_prefix_id     = optional(string)
+          domain_name_label       = optional(string)
+          ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+          ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }))
       }))
       ip_configurations = optional(map(object({
         is_default = optional(bool, false)
         name       = optional(string)
         public_ip_config = optional(object({
-          ip_version          = optional(string, "IPv4")
-          name                = optional(string)
-          resource_group_name = optional(string)
-          sku_tier            = optional(string, "Regional")
-          zones               = optional(set(string))
-          public_ip_prefix_id = optional(string)
-          domain_name_label   = optional(string)
+          ip_version              = optional(string, "IPv4")
+          name                    = optional(string)
+          resource_group_name     = optional(string)
+          sku_tier                = optional(string, "Regional")
+          zones                   = optional(set(string))
+          public_ip_prefix_id     = optional(string)
+          domain_name_label       = optional(string)
+          ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+          ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }))
       })), {})
       management_ip_configuration = optional(object({
         name = optional(string)
         public_ip_config = optional(object({
-          ip_version          = optional(string, "IPv4")
-          name                = optional(string)
-          resource_group_name = optional(string)
-          sku_tier            = optional(string, "Regional")
-          zones               = optional(set(string))
-          public_ip_prefix_id = optional(string)
-          domain_name_label   = optional(string)
+          ip_version              = optional(string, "IPv4")
+          name                    = optional(string)
+          resource_group_name     = optional(string)
+          sku_tier                = optional(string, "Regional")
+          zones                   = optional(set(string))
+          public_ip_prefix_id     = optional(string)
+          domain_name_label       = optional(string)
+          ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+          ddos_protection_plan_id = optional(string, null)
+          ip_tags                 = optional(map(string), {})
         }))
       }))
       firewall_policy = optional(object({
@@ -351,6 +418,10 @@ map(object({
         sku                               = optional(string, "Standard")
         auto_learn_private_ranges_enabled = optional(bool)
         base_policy_id                    = optional(string)
+        lock = optional(object({
+          kind = string
+          name = optional(string)
+        }))
         dns = optional(object({
           proxy_enabled = optional(bool, false)
           servers       = optional(list(string))
@@ -471,6 +542,10 @@ The following outputs are exported:
 
 Description: A curated output of the firewall policies created by this module.
 
+### <a name="output_firewall_public_ip_configurations"></a> [firewall\_public\_ip\_configurations](#output\_firewall\_public\_ip\_configurations)
+
+Description: Resolved public IP settings for the firewall default and management IP configurations.
+
 ### <a name="output_firewalls"></a> [firewalls](#output\_firewalls)
 
 Description: A curated output of the firewalls created by this module.
@@ -486,6 +561,10 @@ Description: A curated output of the route tables created by this module.
 ### <a name="output_name"></a> [name](#output\_name)
 
 Description: The names of the hub virtual networks.
+
+### <a name="output_nat_gateways"></a> [nat\_gateways](#output\_nat\_gateways)
+
+Description: A curated output of the NAT gateways created by this module.
 
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
@@ -552,6 +631,12 @@ Version: 0.15.0
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
 Version: 0.15.0
+
+### <a name="module_nat_gateway"></a> [nat\_gateway](#module\_nat\_gateway)
+
+Source: Azure/avm-res-network-natgateway/azurerm
+
+Version: 0.3.2
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

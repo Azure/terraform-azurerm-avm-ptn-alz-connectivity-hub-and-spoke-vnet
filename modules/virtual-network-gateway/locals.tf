@@ -3,6 +3,7 @@ locals {
   azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
     for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway
+    if local_network_gateway.id == null
   }
   azurerm_public_ip = var.hosted_on_behalf_of_public_ip_enabled ? {} : {
     for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
@@ -218,10 +219,12 @@ locals {
     for k, v in local.virtual_network_gateway_properties : k => v if v != null
   }
 }
+
 locals {
   resource_group_name  = provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", var.parent_id).resource_group_name
   virtual_network_name = var.subnet_creation_enabled ? basename(var.virtual_network_id) : ""
 }
+
 locals {
   default_ip_configuration = {
     name                          = null
@@ -278,6 +281,7 @@ locals {
     )
   }
 }
+
 locals {
   express_route_circuit_virtual_network_gateway_connections = {
     for express_route_circuit_key, express_route_circuit in var.express_route_circuits : "erc-${express_route_circuit_key}" => merge(
@@ -299,6 +303,7 @@ locals {
     if local_network_gateway.connection != null
   }
 }
+
 locals {
   express_route_circuit_peerings = {
     for express_route_circuit_key, express_route_circuit in var.express_route_circuits : express_route_circuit_key => merge(

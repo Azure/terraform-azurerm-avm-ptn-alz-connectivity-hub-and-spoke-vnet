@@ -279,6 +279,7 @@ DESCRIPTION
 
 variable "local_network_gateways" {
   type = map(object({
+    id                  = optional(string, null)
     name                = optional(string, null)
     resource_group_name = optional(string, null)
     address_space       = optional(list(string), null)
@@ -332,6 +333,7 @@ variable "local_network_gateways" {
   description = <<DESCRIPTION
 Map of Local Network Gateways and Virtual Network Gateway Connections to create for the Virtual Network Gateway.
 
+- `id` - (Optional) The resource ID of an existing Local Network Gateway to use instead of creating a new one. When specified, the other gateway properties (`name`, `address_space`, `gateway_fqdn`, `gateway_address`, `bgp_settings`, `tags`) are ignored.
 - `name` - (Optional) The name of the Local Network Gateway to create.
 - `address_space` - (Optional) The list of address spaces for the Local Network Gateway.
 - `gateway_fqdn` - (Optional) The gateway FQDN for the Local Network Gateway.
@@ -377,14 +379,37 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   nullable    = false
 
   validation {
-    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : (v.gateway_fqdn == null && v.gateway_address == null ? false : true)])
-    error_message = "At least one of gateway_fqdn or gateway_address must be specified for local_network_gateways."
+    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.id != null || v.gateway_fqdn != null || v.gateway_address != null])
+    error_message = "At least one of id, gateway_fqdn, or gateway_address must be specified for local_network_gateways."
+  }
+  validation {
+    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.id == null ? true : can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft\\.Network/localNetworkGateways/[^/]+$", v.id))])
+    error_message = "id must be a valid Local Network Gateway resource ID (e.g. /subscriptions/.../resourceGroups/.../providers/Microsoft.Network/localNetworkGateways/...)."
+  }
+}
+
+variable "lock" {
+  type = object({
+    kind = string
+    name = optional(string, null)
+  })
+  default     = null
+  description = <<DESCRIPTION
+Controls the Resource Lock configuration for the Virtual Network Gateway. The following properties can be specified:
+
+- `kind` - (Required) The type of lock. Possible values are `CanNotDelete` and `ReadOnly`.
+- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+DESCRIPTION
+
+  validation {
+    condition     = var.lock == null ? true : contains(["CanNotDelete", "ReadOnly"], var.lock.kind)
+    error_message = "lock.kind must be either CanNotDelete or ReadOnly."
   }
 }
 
 variable "retry" {
   type = object({
-    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
+    error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"])
     interval_seconds     = optional(number, 10)
     max_interval_seconds = optional(number, 180)
   })
@@ -392,7 +417,7 @@ variable "retry" {
   description = <<DESCRIPTION
 (Optional) An object defining the retry configuration for resource operations. This is useful for handling transient errors during resource provisioning.
 
-- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned"]`.
+- `error_message_regex` - (Optional) A list of regular expressions to match against error messages. If a match is found, the operation will be retried. Default `["ReferencedResourceNotProvisioned", "VmssGatewayDeploymentFailed"]`.
 - `interval_seconds` - (Optional) The initial interval in seconds between retry attempts. Default `10`.
 - `max_interval_seconds` - (Optional) The maximum interval in seconds between retry attempts. Default `180`.
 DESCRIPTION
