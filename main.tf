@@ -10,41 +10,41 @@ module "hub_and_spoke_vnet" {
 
 module "virtual_network_gateway" {
   source   = "./modules/virtual-network-gateway"
-  for_each = local.virtual_network_gateways
+  for_each = local.gateway_instance_index
 
-  location                                  = each.value.virtual_network_gateway.location
-  name                                      = each.value.name
-  parent_id                                 = each.value.parent_id
-  edge_zone                                 = try(each.value.virtual_network_gateway.edge_zone, null)
+  location                                  = local.virtual_network_gateways[each.key].virtual_network_gateway.location
+  name                                      = local.virtual_network_gateways[each.key].name
+  parent_id                                 = local.virtual_network_gateways[each.key].parent_id
+  edge_zone                                 = try(local.virtual_network_gateways[each.key].virtual_network_gateway.edge_zone, null)
   enable_telemetry                          = var.enable_telemetry
-  express_route_circuits                    = try(each.value.virtual_network_gateway.express_route_circuits, null)
-  express_route_remote_vnet_traffic_enabled = try(each.value.virtual_network_gateway.express_route_remote_vnet_traffic_enabled, false)
-  express_route_virtual_wan_traffic_enabled = try(each.value.virtual_network_gateway.express_route_virtual_wan_traffic_enabled, false)
-  hosted_on_behalf_of_public_ip_enabled     = each.value.virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled
-  ip_configurations                         = each.value.ip_configurations
-  local_network_gateways                    = try(each.value.virtual_network_gateway.local_network_gateways, null)
-  lock                                      = each.value.lock
+  express_route_circuits                    = each.value.gateway_type == "express_route" ? var.hub_virtual_networks[each.value.hub_key].virtual_network_gateways.express_route.express_route_circuits : null
+  express_route_remote_vnet_traffic_enabled = try(local.virtual_network_gateways[each.key].virtual_network_gateway.express_route_remote_vnet_traffic_enabled, false)
+  express_route_virtual_wan_traffic_enabled = try(local.virtual_network_gateways[each.key].virtual_network_gateway.express_route_virtual_wan_traffic_enabled, false)
+  hosted_on_behalf_of_public_ip_enabled     = local.virtual_network_gateways[each.key].virtual_network_gateway.hosted_on_behalf_of_public_ip_enabled
+  ip_configurations                         = local.virtual_network_gateways[each.key].ip_configurations
+  local_network_gateways                    = var.hub_virtual_networks[each.value.hub_key].virtual_network_gateways[each.value.gateway_type].local_network_gateways
+  lock                                      = local.virtual_network_gateways[each.key].lock
   retry                                     = var.retry
   route_table_creation_enabled              = false
-  sku                                       = each.value.sku
+  sku                                       = local.virtual_network_gateways[each.key].sku
   subnet_creation_enabled                   = false
-  tags                                      = each.value.tags
+  tags                                      = local.virtual_network_gateways[each.key].tags
   timeouts                                  = var.timeouts
-  type                                      = each.value.virtual_network_gateway.type
-  virtual_network_gateway_subnet_id         = each.value.virtual_network_gateway_subnet_id
-  vpn_active_active_enabled                 = try(each.value.virtual_network_gateway.vpn_active_active_enabled, null)
-  vpn_bgp_enabled                           = try(each.value.virtual_network_gateway.vpn_bgp_enabled, null)
-  vpn_bgp_route_translation_for_nat_enabled = try(each.value.virtual_network_gateway.vpn_bgp_route_translation_for_nat_enabled, false)
-  vpn_bgp_settings                          = try(each.value.virtual_network_gateway.vpn_bgp_settings, null)
-  vpn_custom_route                          = try(each.value.virtual_network_gateway.vpn_custom_route, null)
-  vpn_default_local_network_gateway_id      = try(each.value.virtual_network_gateway.vpn_default_local_network_gateway_id, null)
-  vpn_dns_forwarding_enabled                = try(each.value.virtual_network_gateway.vpn_dns_forwarding_enabled, null)
-  vpn_generation                            = try(each.value.virtual_network_gateway.vpn_generation, null)
-  vpn_ip_sec_replay_protection_enabled      = try(each.value.virtual_network_gateway.vpn_ip_sec_replay_protection_enabled, true)
-  vpn_point_to_site                         = try(each.value.virtual_network_gateway.vpn_point_to_site, null)
-  vpn_policy_groups                         = try(each.value.virtual_network_gateway.vpn_policy_groups, null)
-  vpn_private_ip_address_enabled            = try(each.value.virtual_network_gateway.vpn_private_ip_address_enabled, null)
-  vpn_type                                  = try(each.value.virtual_network_gateway.vpn_type, null)
+  type                                      = local.virtual_network_gateways[each.key].virtual_network_gateway.type
+  virtual_network_gateway_subnet_id         = local.virtual_network_gateways[each.key].virtual_network_gateway_subnet_id
+  vpn_active_active_enabled                 = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_active_active_enabled, null)
+  vpn_bgp_enabled                           = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_bgp_enabled, null)
+  vpn_bgp_route_translation_for_nat_enabled = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_bgp_route_translation_for_nat_enabled, false)
+  vpn_bgp_settings                          = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_bgp_settings, null)
+  vpn_custom_route                          = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_custom_route, null)
+  vpn_default_local_network_gateway_id      = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_default_local_network_gateway_id, null)
+  vpn_dns_forwarding_enabled                = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_dns_forwarding_enabled, null)
+  vpn_generation                            = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_generation, null)
+  vpn_ip_sec_replay_protection_enabled      = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_ip_sec_replay_protection_enabled, true)
+  vpn_point_to_site                         = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_point_to_site, null)
+  vpn_policy_groups                         = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_policy_groups, null)
+  vpn_private_ip_address_enabled            = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_private_ip_address_enabled, null)
+  vpn_type                                  = try(local.virtual_network_gateways[each.key].virtual_network_gateway.vpn_type, null)
 
   depends_on = [
     module.hub_and_spoke_vnet

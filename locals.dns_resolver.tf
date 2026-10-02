@@ -1,13 +1,13 @@
 locals {
-  private_dns_resolver_enabled = { for key, value in var.hub_virtual_networks : key => value.enabled_resources.private_dns_resolver }
+  private_dns_resolver_enabled = { for key, value in local.hub_virtual_networks_by_key : key => nonsensitive(value.enabled_resources.private_dns_resolver) }
 }
 
 locals {
-  private_dns_resolver = { for key, value in var.hub_virtual_networks : key => {
+  private_dns_resolver = { for key, value in local.hub_virtual_networks_by_key : key => {
     name                = coalesce(value.private_dns_resolver.name, local.default_names[key].private_dns_resolver_name)
     location            = value.location
     resource_group_name = coalesce(value.private_dns_resolver.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
-    inbound_endpoints = local.private_dns_zones_enabled[key] && value.private_dns_resolver.default_inbound_endpoint_enabled ? merge(tomap({
+    inbound_endpoints = local.private_dns_zones_enabled[key] && nonsensitive(value.private_dns_resolver.default_inbound_endpoint_enabled) ? merge(tomap({
       dns = {
         name                         = "dns"
         subnet_name                  = module.hub_and_spoke_vnet.virtual_networks[key].subnets["${key}-dns_resolver"].name
@@ -16,8 +16,8 @@ locals {
         tags                         = coalesce(value.private_dns_resolver.tags, var.tags, {})
         merge_with_module_tags       = false
       }
-    }), value.private_dns_resolver.inbound_endpoints) : value.private_dns_resolver.inbound_endpoints
-    outbound_endpoints = value.private_dns_resolver.outbound_endpoints
+    }), { for endpoint_key in nonsensitive(keys(value.private_dns_resolver.inbound_endpoints)) : endpoint_key => value.private_dns_resolver.inbound_endpoints[endpoint_key] }) : { for endpoint_key in nonsensitive(keys(value.private_dns_resolver.inbound_endpoints)) : endpoint_key => value.private_dns_resolver.inbound_endpoints[endpoint_key] }
+    outbound_endpoints = { for endpoint_key in nonsensitive(keys(value.private_dns_resolver.outbound_endpoints)) : endpoint_key => value.private_dns_resolver.outbound_endpoints[endpoint_key] }
     tags               = coalesce(value.private_dns_resolver.tags, var.tags, {})
     lock = value.private_dns_resolver.lock == null ? null : {
       kind = value.private_dns_resolver.lock.kind

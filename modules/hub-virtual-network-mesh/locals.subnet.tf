@@ -2,7 +2,7 @@ locals {
   firewall_internet_route_name    = "internet"
   firewall_management_subnet_name = "AzureFirewallManagementSubnet"
   firewall_management_subnets = {
-    for k, v in var.hub_virtual_networks : "${k}-${local.firewall_management_subnet_name}" => {
+    for k, v in local.hub_virtual_networks_by_key : "${k}-${local.firewall_management_subnet_name}" => {
       composite_key                                 = "${k}-${local.firewall_management_subnet_name}"
       virtual_network_key                           = k
       virtual_network_id                            = local.virtual_network_id[k]
@@ -18,7 +18,7 @@ locals {
       route_table                                   = null
       default_outbound_access_enabled               = v.firewall.management_subnet_default_outbound_access_enabled
     }
-    if v.firewall != null && try(v.firewall.management_ip_enabled, true)
+    if nonsensitive(v.firewall != null && try(v.firewall.management_ip_enabled, true))
   }
   firewall_route_table_ids = {
     # NOTE: For the destroy, you cannot delete the default route before removing the route table from the AzureFirewallSubnet.
@@ -27,7 +27,7 @@ locals {
   }
   firewall_subnet_name = "AzureFirewallSubnet"
   firewall_subnets = {
-    for k, v in var.hub_virtual_networks : "${k}-${local.firewall_subnet_name}" => {
+    for k, v in local.hub_virtual_networks_by_key : "${k}-${local.firewall_subnet_name}" => {
       composite_key                                 = "${k}-${local.firewall_subnet_name}"
       virtual_network_key                           = k
       virtual_network_id                            = local.virtual_network_id[k]
@@ -42,12 +42,12 @@ locals {
       delegation                                    = null
       route_table                                   = { id = v.firewall.subnet_route_table_id != null ? v.firewall.subnet_route_table_id : local.firewall_route_table_ids[k] }
       default_outbound_access_enabled               = v.firewall.subnet_default_outbound_access_enabled
-    } if v.firewall != null
+    } if nonsensitive(v.firewall != null)
   }
   subnets = merge(local.user_subnets, local.firewall_subnets, local.firewall_management_subnets)
   user_subnets = { for subnet in flatten([
-    for k, v in var.hub_virtual_networks : [
-      for subnetKey, subnet in v.subnets : [{
+    for k, v in local.hub_virtual_networks_by_key : [
+      for subnetKey, subnet in { for subnet_key in nonsensitive(keys(v.subnets)) : subnet_key => v.subnets[subnet_key] } : [{
         composite_key                                 = "${k}-${subnetKey}"
         virtual_network_key                           = k
         virtual_network_id                            = local.virtual_network_id[k]

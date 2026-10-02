@@ -1,9 +1,9 @@
 # Route Tables
 locals {
-  create_route_tables_firewall     = { for key, value in var.hub_virtual_networks : key => value.route_table_firewall_enabled && (value.firewall != null || value.hub_router_ip_address != null) }
-  create_route_tables_user_subnets = { for key, value in var.hub_virtual_networks : key => value.route_table_user_subnets_enabled && (value.firewall != null || value.hub_router_ip_address != null) }
-  route_tables_firewall            = { for key, value in var.hub_virtual_networks : key => value if local.create_route_tables_firewall[key] || length(value.route_table_entries_firewall) > 0 }
-  route_tables_user_subnets        = { for key, value in var.hub_virtual_networks : key => value if local.create_route_tables_user_subnets[key] || length(value.route_table_entries_user_subnets) > 0 }
+  create_route_tables_firewall     = { for key, value in local.hub_virtual_networks_by_key : key => nonsensitive(value.route_table_firewall_enabled && (value.firewall != null || value.hub_router_ip_address != null)) }
+  create_route_tables_user_subnets = { for key, value in local.hub_virtual_networks_by_key : key => nonsensitive(value.route_table_user_subnets_enabled && (value.firewall != null || value.hub_router_ip_address != null)) }
+  route_tables_firewall            = { for key, value in local.hub_virtual_networks_by_key : key => value if local.create_route_tables_firewall[key] || nonsensitive(length(value.route_table_entries_firewall) > 0) }
+  route_tables_user_subnets        = { for key, value in local.hub_virtual_networks_by_key : key => value if local.create_route_tables_user_subnets[key] || nonsensitive(length(value.route_table_entries_user_subnets) > 0) }
 }
 
 # Final Routes

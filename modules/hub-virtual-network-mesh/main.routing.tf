@@ -23,7 +23,7 @@ resource "azurerm_route" "firewall_default" {
 }
 
 resource "azurerm_route" "firewall_mesh" {
-  for_each = local.final_route_map_firewall
+  for_each = { for route_key in nonsensitive(keys(local.final_route_map_firewall)) : route_key => local.final_route_map_firewall[route_key] }
 
   address_prefix         = each.value.address_prefix
   name                   = each.value.name
@@ -47,7 +47,7 @@ module "hub_routing_user_subnets" {
 }
 
 resource "azurerm_route" "user_subnets" {
-  for_each = local.final_route_map_user_subnets
+  for_each = { for route_key in nonsensitive(keys(local.final_route_map_user_subnets)) : route_key => local.final_route_map_user_subnets[route_key] }
 
   address_prefix         = each.value.address_prefix
   name                   = each.value.name
