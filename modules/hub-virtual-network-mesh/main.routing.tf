@@ -1,6 +1,6 @@
 module "hub_routing_firewall" {
   source   = "Azure/avm-res-network-routetable/azurerm"
-  version  = "0.3.1"
+  version  = "0.5.0"
   for_each = local.route_tables_firewall
 
   location                      = each.value.location
@@ -35,7 +35,7 @@ resource "azurerm_route" "firewall_mesh" {
 
 module "hub_routing_user_subnets" {
   source   = "Azure/avm-res-network-routetable/azurerm"
-  version  = "0.3.1"
+  version  = "0.5.0"
   for_each = local.route_tables_user_subnets
 
   location                      = each.value.location
