@@ -73,6 +73,11 @@ run "first_post_import_plan" {
     )
     error_message = "Adopting the imported state must preserve both the VNet and the independent subnet identities."
   }
+
+  assert {
+    condition     = try(length(module.hub_virtual_network_subnets["primary-app"].resource.body.properties.serviceEndpoints), -1) == 0
+    error_message = "A subnet without service endpoints must send an empty list, matching Azure, so the imported [] is not planned as null."
+  }
 }
 
 run "apply_after_import" {

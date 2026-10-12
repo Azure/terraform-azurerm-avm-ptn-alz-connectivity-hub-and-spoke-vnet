@@ -20,7 +20,8 @@ resource "azapi_resource" "subnet" {
   type      = "Microsoft.Network/virtualNetworks/subnets@2024-07-01"
   body = {
     properties = {
-      addressPrefixes = ["10.0.1.0/24"]
+      addressPrefixes  = ["10.0.1.0/24"]
+      serviceEndpoints = []
     }
   }
   response_export_values = []

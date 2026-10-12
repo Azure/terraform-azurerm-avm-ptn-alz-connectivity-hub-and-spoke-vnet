@@ -12,7 +12,7 @@ locals {
       network_security_group                        = null
       private_endpoint_network_policies             = null
       private_link_service_network_policies_enabled = null
-      service_endpoints                             = null
+      service_endpoints                             = toset([])
       service_endpoint_policies                     = null
       delegation                                    = null
       route_table                                   = null
@@ -38,7 +38,7 @@ locals {
       network_security_group                        = null
       private_endpoint_network_policies             = null
       private_link_service_network_policies_enabled = null
-      service_endpoints                             = null
+      service_endpoints                             = toset([])
       service_endpoint_policies                     = null
       delegation                                    = null
       route_table                                   = { id = v.firewall.subnet_route_table_id != null ? v.firewall.subnet_route_table_id : local.firewall_route_table_ids[k] }
@@ -59,8 +59,9 @@ locals {
         network_security_group                        = subnet.network_security_group
         private_endpoint_network_policies             = subnet.private_endpoint_network_policies_enabled ? "Enabled" : "Disabled"
         private_link_service_network_policies_enabled = subnet.private_link_service_network_policies_enabled
+        # Azure returns an empty list for subnets without endpoints; sending null would plan a perpetual [] -> null diff.
         service_endpoints = subnet.service_endpoints != null ? subnet.service_endpoints : (
-          subnet.service_endpoints_with_location != null ? toset([for endpoint in subnet.service_endpoints_with_location : endpoint.service]) : null
+          subnet.service_endpoints_with_location != null ? toset([for endpoint in subnet.service_endpoints_with_location : endpoint.service]) : toset([])
         )
         service_endpoint_policies = try(local.service_endpoint_policy_map[k][subnetKey], null)
         delegation                = subnet.delegations

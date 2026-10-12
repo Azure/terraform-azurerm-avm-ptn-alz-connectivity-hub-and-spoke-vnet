@@ -47,8 +47,8 @@ run "service_endpoints_passed_through" {
   }
 
   assert {
-    condition     = local.subnets["primary-none"].service_endpoints == null
-    error_message = "service_endpoints must be null when no service endpoint input is set."
+    condition     = try(length(local.subnets["primary-none"].service_endpoints), -1) == 0
+    error_message = "service_endpoints must be an empty set, not null, when no service endpoint input is set."
   }
 }
 
