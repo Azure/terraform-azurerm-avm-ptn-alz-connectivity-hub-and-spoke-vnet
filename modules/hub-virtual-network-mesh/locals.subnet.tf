@@ -12,7 +12,7 @@ locals {
       network_security_group                        = null
       private_endpoint_network_policies             = null
       private_link_service_network_policies_enabled = null
-      service_endpoints_with_location               = null
+      service_endpoints                             = null
       service_endpoint_policies                     = null
       delegation                                    = null
       route_table                                   = null
@@ -37,7 +37,7 @@ locals {
       network_security_group                        = null
       private_endpoint_network_policies             = null
       private_link_service_network_policies_enabled = null
-      service_endpoints_with_location               = null
+      service_endpoints                             = null
       service_endpoint_policies                     = null
       delegation                                    = null
       route_table                                   = { id = v.firewall.subnet_route_table_id != null ? v.firewall.subnet_route_table_id : local.firewall_route_table_ids[k] }
@@ -57,9 +57,11 @@ locals {
         network_security_group                        = subnet.network_security_group
         private_endpoint_network_policies             = subnet.private_endpoint_network_policies_enabled ? "Enabled" : "Disabled"
         private_link_service_network_policies_enabled = subnet.private_link_service_network_policies_enabled
-        service_endpoints_with_location               = subnet.service_endpoints_with_location
-        service_endpoint_policies                     = try(local.service_endpoint_policy_map[k][subnetKey], null)
-        delegation                                    = subnet.delegations
+        service_endpoints = subnet.service_endpoints != null ? subnet.service_endpoints : (
+          subnet.service_endpoints_with_location != null ? toset([for endpoint in subnet.service_endpoints_with_location : endpoint.service]) : null
+        )
+        service_endpoint_policies = try(local.service_endpoint_policy_map[k][subnetKey], null)
+        delegation                = subnet.delegations
         route_table = try(subnet.route_table.assign_generated_route_table, true) ? (
           try(subnet.route_table.route_table_reference_key, "UserSubnets") == "Firewall" ? (
             local.create_route_tables_firewall[k] ? { id = module.hub_routing_firewall[k].resource_id } : null

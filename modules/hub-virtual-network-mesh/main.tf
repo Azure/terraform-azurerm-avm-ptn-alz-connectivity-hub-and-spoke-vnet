@@ -1,6 +1,6 @@
 module "hub_virtual_networks" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version  = "0.15.0"
+  version  = "0.22.2"
   for_each = var.hub_virtual_networks
 
   location      = each.value.location
@@ -24,7 +24,7 @@ module "hub_virtual_networks" {
 
 module "hub_virtual_network_subnets" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version  = "0.15.0"
+  version  = "0.22.2"
   for_each = local.subnets
 
   name                                          = each.value.name
@@ -39,13 +39,13 @@ module "hub_virtual_network_subnets" {
   retry                                         = var.retry
   route_table                                   = each.value.route_table
   service_endpoint_policies                     = each.value.service_endpoint_policies
-  service_endpoints_with_location               = each.value.service_endpoints_with_location
+  service_endpoints                             = each.value.service_endpoints
   timeouts                                      = var.timeouts
 }
 
 module "hub_virtual_network_peering" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version  = "0.15.0"
+  version  = "0.22.2"
   for_each = local.peerings
 
   name                         = each.value.name
@@ -58,4 +58,18 @@ module "hub_virtual_network_peering" {
   retry                        = var.retry
   timeouts                     = var.timeouts
   use_remote_gateways          = each.value.use_remote_gateways
+}
+
+check "service_endpoints_with_location_locations_ignored" {
+  assert {
+    condition = alltrue(flatten([
+      for vnet in values(var.hub_virtual_networks) : [
+        for subnet in values(vnet.subnets) : [
+          for endpoint in coalesce(subnet.service_endpoints_with_location, []) :
+          endpoint.locations == null || try(toset(endpoint.locations) == toset(["*"]), false)
+        ]
+      ]
+    ]))
+    error_message = "`service_endpoints_with_location[*].locations` is ignored because Azure applies service endpoint locations implicitly. Migrate to `service_endpoints`."
+  }
 }
