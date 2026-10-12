@@ -118,6 +118,7 @@ variable "hub_virtual_networks" {
           )
         ))
         default_outbound_access_enabled = optional(bool, false)
+        ignore_body_changes             = optional(list(string), [])
       }
     )), {})
 
@@ -327,6 +328,7 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `name` - The name of the service delegation.
       - `actions` - A list of actions that should be delegated, the list is specific to the service being delegated.
   - `default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the subnet? Default `false`.
+  - `ignore_body_changes` - (Optional) A list of subnet body property paths, in dot notation (for example `properties.routeTable`), that the `azapi` provider stops reconciling after creation. Takes precedence over `ignore_body_changes.virtual_networks_subnets`. Default `[]`.
 
 #### Azure Firewall
 
@@ -403,6 +405,42 @@ DESCRIPTION
       ]
     ]))
     error_message = "Set either `service_endpoints` or the deprecated `service_endpoints_with_location` on a subnet, not both."
+  }
+}
+
+variable "ignore_body_changes" {
+  type = object({
+    virtual_networks = optional(list(string), [])
+    virtual_networks_subnets = optional(object({
+      virtual_networks_subnets = optional(list(string), [])
+    }), {})
+    virtual_networks_virtual_network_peerings = optional(object({
+      virtual_networks_virtual_network_peerings = optional(list(string), [])
+    }), {})
+  })
+  default     = {}
+  description = <<DESCRIPTION
+(Optional) Body property paths that the `azapi` provider stops reconciling after creation, so an out-of-band controller can own them without producing perpetual drift. Paths use dot notation relative to the request body.
+
+- `virtual_networks` - (Optional) Ignored body paths for every hub virtual network. Default `[]`.
+- `virtual_networks_subnets` - (Optional) An object with the following field:
+  - `virtual_networks_subnets` - (Optional) Ignored body paths applied to every subnet created by this module. A per-subnet `ignore_body_changes` entry takes precedence. Default `[]`.
+- `virtual_networks_virtual_network_peerings` - (Optional) An object with the following field:
+  - `virtual_networks_virtual_network_peerings` - (Optional) Ignored body paths applied to every mesh peering. Default `[]`.
+
+The value is write-only provider state, so a change only takes effect after an `apply`, and supplying a non-empty list requires Terraform 1.11 or later.
+DESCRIPTION
+  nullable    = false
+
+  validation {
+    condition = alltrue([
+      for path in concat(
+        var.ignore_body_changes.virtual_networks,
+        var.ignore_body_changes.virtual_networks_subnets.virtual_networks_subnets,
+        var.ignore_body_changes.virtual_networks_virtual_network_peerings.virtual_networks_virtual_network_peerings
+      ) : length(trimspace(path)) > 0
+    ])
+    error_message = "Every ignore_body_changes entry must be a non-empty body path in dot notation, for example \"properties.routeTable\" or \"tags\"."
   }
 }
 

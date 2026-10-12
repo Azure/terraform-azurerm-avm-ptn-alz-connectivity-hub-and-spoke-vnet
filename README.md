@@ -257,6 +257,7 @@ The following top level attributes are supported:
         - `name` - The name of the service delegation.
         - `actions` - (Optional) A list of actions that should be delegated, the list is specific to the service being delegated.
     - `default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the subnet? Default `false`.
+    - `ignore_body_changes` - (Optional) A list of subnet body property paths, in dot notation (for example `properties.routeTable`), that the `azapi` provider stops reconciling after creation. Takes precedence over `ignore_body_changes.virtual_networks_subnets`. Leave the matching dedicated input unset for any path you ignore. The value is write-only provider state, so a change only takes effect after an `apply`, and supplying a non-empty list requires Terraform 1.11 or later. Default `[]`.
 
 ## Azure Firewall
 
@@ -921,6 +922,7 @@ map(object({
             )
           ))
           default_outbound_access_enabled = optional(bool, false)
+          ignore_body_changes             = optional(list(string), [])
         }
       )), {})
     }), {})
@@ -1577,6 +1579,36 @@ map(object({
       tags = optional(map(string), null)
     }), null)
   }))
+```
+
+Default: `{}`
+
+### <a name="input_ignore_body_changes"></a> [ignore\_body\_changes](#input\_ignore\_body\_changes)
+
+Description: (Optional) Body property paths on the hub virtual network resources that the `azapi` provider stops reconciling after creation, so an out-of-band controller such as Azure Virtual Network Manager or an Azure Policy `DeployIfNotExists` assignment can own them without producing perpetual drift. Paths use dot notation relative to the request body and cannot target individual list items.
+
+- `virtual_networks` - (Optional) Ignored body paths for every hub virtual network, for example `["tags"]`. Default `[]`.
+- `virtual_networks_subnets` - (Optional) An object with the following field:
+  - `virtual_networks_subnets` - (Optional) Ignored body paths applied to every hub subnet, for example `["properties.routeTable"]`. A per-subnet `ignore_body_changes` entry in `hub_virtual_networks.<key>.hub_virtual_network.subnets` takes precedence over this shared value. Default `[]`.
+- `virtual_networks_virtual_network_peerings` - (Optional) An object with the following field:
+  - `virtual_networks_virtual_network_peerings` - (Optional) Ignored body paths applied to every hub-to-hub mesh peering. Default `[]`.
+
+Leave the matching dedicated input unset for any path you ignore, because while a path is ignored, configuration changes at that path are no longer sent to Azure. The value is write-only provider state, so a change only takes effect after an `apply`, and supplying a non-empty list requires Terraform 1.11 or later.
+
+The parent virtual network's `properties.subnets` and `properties.virtualNetworkPeerings` are always ignored, including on the first plan after import, so they do not need to be listed here.
+
+Type:
+
+```hcl
+object({
+    virtual_networks = optional(list(string), [])
+    virtual_networks_subnets = optional(object({
+      virtual_networks_subnets = optional(list(string), [])
+    }), {})
+    virtual_networks_virtual_network_peerings = optional(object({
+      virtual_networks_virtual_network_peerings = optional(list(string), [])
+    }), {})
+  })
 ```
 
 Default: `{}`
