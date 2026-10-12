@@ -41,7 +41,7 @@ locals {
 
 module "resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
-  version  = "0.2.0"
+  version  = "0.4.0"
   for_each = local.resource_groups
 
   location         = each.value.location
@@ -52,7 +52,7 @@ module "resource_groups" {
 
 module "base_firewall_policy" {
   source  = "Azure/avm-res-network-firewallpolicy/azurerm"
-  version = "0.3.3"
+  version = "0.3.4"
 
   location            = "uksouth"
   name                = "fwp-global-base-uksouth-001"
