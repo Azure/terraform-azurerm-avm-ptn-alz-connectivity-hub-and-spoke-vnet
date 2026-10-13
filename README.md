@@ -8,6 +8,22 @@ This module is leveraged by the [Azure Landing Zones IaC Accelerator](https://ak
 
 > **Deprecation notice:** The `id` attribute on entries of the curated `virtual_networks` output (exposed by the `hub-virtual-network-mesh` submodule and consumed internally by this root module) is deprecated in favour of `resource_id` and will be removed in a future major version. New code should read `module.<name>.virtual_networks[<key>].resource_id` or use the top-level `resource_id` map output.
 
+## Configuring subnet Service Endpoints
+
+Configure subnet Service Endpoints with the names-only `service_endpoints` set of service names:
+
+```terraform
+subnets = {
+  workload = {
+    name              = "workload"
+    address_prefixes  = ["192.168.1.0/24"]
+    service_endpoints = ["Microsoft.KeyVault", "Microsoft.Storage"]
+  }
+}
+```
+
+> **Deprecation notice:** The `service_endpoints_with_location` subnet field is deprecated and will be removed in a future major version. Existing values are still accepted and mapped to service names; `locations` is ignored because Azure expands service endpoint locations implicitly. Setting both fields on the same subnet fails validation.
+
 <!-- markdownlint-disable MD033 -->
 ## Requirements
 
