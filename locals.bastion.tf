@@ -15,11 +15,20 @@ locals {
   }
   bastion_hosts = {
     for key, value in var.hub_virtual_networks : key => {
-      name      = coalesce(value.bastion.name, local.default_names[key].bastion_host_name)
-      location  = value.location
-      parent_id = coalesce(value.bastion.parent_id, value.default_parent_id, value.hub_virtual_network.parent_id)
-      zones     = value.bastion.private_only_enabled ? coalesce(value.bastion.zones, local.availability_zones[key], []) : coalesce(value.bastion.zones, local.bastion_host_public_ips[key].zones, local.availability_zones[key], [])
-      tags      = coalesce(value.bastion.tags, var.tags, {})
+      name     = coalesce(value.bastion.name, local.default_names[key].bastion_host_name)
+      location = value.location
+      # `parent_id` is preferred for placement. For backwards compatibility, the (deprecated) `resource_group_name`
+      # is retained as a fallback: when `parent_id` is unset but `resource_group_name` is provided, we preserve the
+      # original resource group placement so an existing or imported Bastion host is not replaced. The subscription
+      # scope is derived from the hub/default parent so the resulting resource group ID is in the same subscription.
+      parent_id = coalesce(
+        value.bastion.parent_id,
+        value.bastion.resource_group_name != null ? "/subscriptions/${provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", coalesce(value.default_parent_id, value.hub_virtual_network.parent_id)).subscription_id}/resourceGroups/${value.bastion.resource_group_name}" : null,
+        value.default_parent_id,
+        value.hub_virtual_network.parent_id,
+      )
+      zones = value.bastion.private_only_enabled ? coalesce(value.bastion.zones, local.availability_zones[key], []) : coalesce(value.bastion.zones, local.bastion_host_public_ips[key].zones, local.availability_zones[key], [])
+      tags  = coalesce(value.bastion.tags, var.tags, {})
       ip_configuration = value.bastion.private_only_enabled ? {
         name                 = "bastion-ip-config"
         subnet_id            = module.hub_and_spoke_vnet.virtual_networks[key].subnet_ids["${key}-bastion"]
