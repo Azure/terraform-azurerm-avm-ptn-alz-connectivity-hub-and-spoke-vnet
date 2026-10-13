@@ -8,6 +8,34 @@ This module is leveraged by the [Azure Landing Zones IaC Accelerator](https://ak
 
 > **Deprecation notice:** The `id` attribute on entries of the curated `virtual_networks` output (exposed by the `hub-virtual-network-mesh` submodule and consumed internally by this root module) is deprecated in favour of `resource_id` and will be removed in a future major version. New code should read `module.<name>.virtual_networks[<key>].resource_id` or use the top-level `resource_id` map output.
 
+## Upgrading Azure Bastion
+
+Azure Bastion now supports the `Premium` SKU through `hub_virtual_networks[*].bastion.private_only_enabled` and `hub_virtual_networks[*].bastion.session_recording_enabled`. Delivering this required upgrading the underlying `Azure/avm-res-network-bastionhost/azurerm` module from `0.6.0` to `0.9.0`, which moves the bastion host from the `azurerm` provider to the `azapi` provider and therefore changes its address in state.
+
+Existing deployments with a bastion host must migrate state before applying, otherwise the host is destroyed and recreated, interrupting connectivity. For each hub key that has a bastion, add the following to your root configuration, apply once, then remove the blocks:
+
+```terraform
+removed {
+  from = module.<your_module_name>.module.bastion_host["<hub_key>"].azurerm_bastion_host.this
+
+  lifecycle {
+    destroy = false
+  }
+}
+
+import {
+  id = "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.Network/bastionHosts/<bastion_name>"
+  to = module.<your_module_name>.module.bastion_host["<hub_key>"].azapi_resource.bastion[0]
+}
+```
+
+The child module sets `replace_triggers_external_values = [var.sku]` on the bastion resource. Because of [azapi#858](https://github.com/Azure/terraform-provider-azapi/issues/858), an import combined with that argument can still plan a replacement. Review the plan before applying and, if a replacement is proposed, either accept the recreate or complete the import against a copy of the child module with that argument temporarily removed.
+
+Two other changes accompany this upgrade:
+
+- `bastion.parent_id` is the new way to place the bastion host in a specific resource group, replacing the resource group name that was previously derived for the host. `bastion.resource_group_name` is still honoured for the bastion public IP.
+- `bastion.copy_paste_enabled` now defaults to `true`, matching the upstream module. Setting it to `false` requires the `Standard` or `Premium` SKU.
+
 <!-- markdownlint-disable MD033 -->
 ## Requirements
 
@@ -382,17 +410,20 @@ The following top level attributes are supported:
   - `subnet_address_prefix` - (Optional) The IPv4 address prefix to use for the Azure Bastion subnet in CIDR format. Must be named `AzureBastionSubnet` and be a part of the virtual network's address space.
   - `subnet_default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the Azure Bastion subnet? Default `false`.
   - `name` - (Optional) The name of the Azure Bastion resource.
-  - `copy_paste_enabled` - (Optional) Should copy-paste be enabled for the Azure Bastion? Default `false`.
-  - `file_copy_enabled` - (Optional) Should file copy be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
-  - `ip_connect_enabled` - (Optional) Should IP connect be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
+  - `copy_paste_enabled` - (Optional) Should copy-paste be enabled for the Azure Bastion? Setting this to `false` requires the `Standard` or `Premium` SKU. Default `true`.
+  - `file_copy_enabled` - (Optional) Should file copy be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
+  - `ip_connect_enabled` - (Optional) Should IP connect be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
   - `kerberos_enabled` - (Optional) Should Kerberos authentication be enabled for the Azure Bastion? Default `false`.
+  - `private_only_enabled` - (Optional) Should the Azure Bastion be deployed without a public IP address? Requires the `Premium` SKU. When `true`, no public IP is created for this hub and the `bastion_public_ip` settings must not be supplied. Default `false`.
   - `scale_units` - (Optional) The number of scale units for the Azure Bastion. Valid values are between 2 and 50. Default `2`.
-  - `shareable_link_enabled` - (Optional) Should shareable links be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
-  - `sku` - (Optional) The SKU of the Azure Bastion. Possible values are `Basic`, `Standard`. Default `Standard`.
+  - `session_recording_enabled` - (Optional) Should session recording be enabled for the Azure Bastion? Requires the `Premium` SKU and is not compatible with `tunneling_enabled`. Default `false`.
+  - `shareable_link_enabled` - (Optional) Should shareable links be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
+  - `sku` - (Optional) The SKU of the Azure Bastion. Possible values are `Basic`, `Standard`, `Premium`. Default `Standard`.
   - `tags` - (Optional) A map of tags to apply to the Azure Bastion.
-  - `tunneling_enabled` - (Optional) Should tunneling be enabled for the Azure Bastion? Requires `Standard` SKU. Default `false`.
+  - `tunneling_enabled` - (Optional) Should tunneling be enabled for the Azure Bastion? Requires the `Standard` or `Premium` SKU. Default `false`.
   - `zones` - (Optional) A set of availability zones for the Azure Bastion. Set to `[]` for no zones.
-  - `resource_group_name` - (Optional) The name of the resource group where the Azure Bastion should be created. If not specified will use the parent resource group of the virtual network.
+  - `parent_id` - (Optional) The resource ID of the resource group where the Azure Bastion should be created. Defaults to the hub's `default_parent_id` (or the hub virtual network's `parent_id`).
+  - `resource_group_name` - (Optional) The name of the resource group used as the default for the Azure Bastion public IP. If not specified will use the parent resource group of the virtual network.
   - `bastion_public_ip` - (Optional) An object with the following fields:
     - `name` - (Optional) The name of the public IP for the Azure Bastion. If not specified will use `pip-bastion-{vnetname}`.
     - `allocation_method` - (Optional) The allocation method for the public IP. Possible values are `Static`, `Dynamic`. Default `Static`.
@@ -1101,16 +1132,19 @@ map(object({
       subnet_address_prefix                  = optional(string)
       subnet_default_outbound_access_enabled = optional(bool, false)
       name                                   = optional(string)
-      copy_paste_enabled                     = optional(bool, false)
+      copy_paste_enabled                     = optional(bool, true)
       file_copy_enabled                      = optional(bool, false)
       ip_connect_enabled                     = optional(bool, false)
       kerberos_enabled                       = optional(bool, false)
+      private_only_enabled                   = optional(bool, false)
       scale_units                            = optional(number, 2)
+      session_recording_enabled              = optional(bool, false)
       shareable_link_enabled                 = optional(bool, false)
       sku                                    = optional(string, "Standard")
       tags                                   = optional(map(string), null)
       tunneling_enabled                      = optional(bool, false)
       zones                                  = optional(set(string), null)
+      parent_id                              = optional(string)
       resource_group_name                    = optional(string)
 
       bastion_public_ip = optional(object({
@@ -1808,7 +1842,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-bastionhost/azurerm
 
-Version: 0.6.0
+Version: 0.9.0
 
 ### <a name="module_bastion_public_ip"></a> [bastion\_public\_ip](#module\_bastion\_public\_ip)
 
