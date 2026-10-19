@@ -2,6 +2,10 @@ terraform {
   required_version = "~> 1.12"
 
   required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
@@ -53,7 +57,11 @@ module "resource_groups" {
 # This is the module call
 module "test" {
   source = "../../"
+  providers = {
+    azapi = azapi
+  }
 
+  location = var.location
   default_naming_convention = {
     virtual_network_name = "vnet-test-${random_string.suffix.result}-$${location}-$${sequence}"
   }

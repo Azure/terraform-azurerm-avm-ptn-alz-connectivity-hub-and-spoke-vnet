@@ -1,6 +1,7 @@
 module "hub_and_spoke_vnet" {
   source = "./modules/hub-virtual-network-mesh"
 
+  location             = var.location
   enable_telemetry     = var.enable_telemetry
   hub_virtual_networks = local.hub_virtual_networks
   retry                = var.retry
@@ -172,7 +173,6 @@ module "bastion_host" {
 
   location               = each.value.location
   name                   = each.value.name
-  resource_group_name    = each.value.resource_group_name
   copy_paste_enabled     = each.value.bastion_settings.copy_paste_enabled
   enable_telemetry       = var.enable_telemetry
   file_copy_enabled      = each.value.bastion_settings.file_copy_enabled
@@ -185,4 +185,5 @@ module "bastion_host" {
   tags                   = each.value.tags
   tunneling_enabled      = each.value.bastion_settings.tunneling_enabled
   zones                  = each.value.zones
+  resource_group_name    = each.value.resource_group_name
 }

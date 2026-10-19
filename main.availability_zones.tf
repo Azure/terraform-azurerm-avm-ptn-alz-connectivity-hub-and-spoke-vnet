@@ -3,6 +3,7 @@ module "regions" {
   version = "0.13.0"
   count   = local.has_regions ? 1 : 0
 
+  location         = var.location
   enable_telemetry = var.enable_telemetry
   use_cached_data  = true
 }
