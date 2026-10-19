@@ -2,6 +2,10 @@ terraform {
   required_version = "~> 1.12"
 
   required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
@@ -45,7 +49,7 @@ locals {
 
 module "resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
-  version  = "0.2.0"
+  version  = "0.4.0"
   for_each = local.resource_groups
 
   location         = each.value.location
@@ -57,7 +61,11 @@ module "resource_groups" {
 # This is the module call
 module "test" {
   source = "../../"
+  providers = {
+    azapi = azapi
+  }
 
+  location         = var.location
   enable_telemetry = var.enable_telemetry
   hub_and_spoke_networks_settings = {
     enabled_resources = {

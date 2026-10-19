@@ -58,28 +58,29 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.116, < 5.0)
-
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.116, < 5.11)
 
 ## Resources
 
 The following resources are used by this module:
 
+- [azapi_resource.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_route.firewall_default](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route) (resource)
 - [azurerm_route.firewall_mesh](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route) (resource)
 - [azurerm_route.user_subnets](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route) (resource)
-- [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
-- [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
+- [terraform_data.telemetry](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) (resource)
 - [azapi_client_config.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
-- [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The Azure region for this module's resources or telemetry deployment.
+
+Type: `string`
 
 ## Optional Inputs
 
@@ -582,19 +583,19 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-publicipaddress/azurerm
 
-Version: 0.2.0
+Version: 0.2.1
 
 ### <a name="module_fw_management_ips"></a> [fw\_management\_ips](#module\_fw\_management\_ips)
 
 Source: Azure/avm-res-network-publicipaddress/azurerm
 
-Version: 0.2.0
+Version: 0.2.1
 
 ### <a name="module_fw_policies"></a> [fw\_policies](#module\_fw\_policies)
 
 Source: Azure/avm-res-network-firewallpolicy/azurerm
 
-Version: 0.3.3
+Version: 0.3.4
 
 ### <a name="module_hub_firewalls"></a> [hub\_firewalls](#module\_hub\_firewalls)
 
@@ -606,31 +607,31 @@ Version: 0.4.0
 
 Source: Azure/avm-res-network-routetable/azurerm
 
-Version: 0.3.1
+Version: 0.5.0
 
 ### <a name="module_hub_routing_user_subnets"></a> [hub\_routing\_user\_subnets](#module\_hub\_routing\_user\_subnets)
 
 Source: Azure/avm-res-network-routetable/azurerm
 
-Version: 0.3.1
+Version: 0.5.0
 
 ### <a name="module_hub_virtual_network_peering"></a> [hub\_virtual\_network\_peering](#module\_hub\_virtual\_network\_peering)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.15.0
+Version: 0.22.3
 
 ### <a name="module_hub_virtual_network_subnets"></a> [hub\_virtual\_network\_subnets](#module\_hub\_virtual\_network\_subnets)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
 
-Version: 0.15.0
+Version: 0.22.3
 
 ### <a name="module_hub_virtual_networks"></a> [hub\_virtual\_networks](#module\_hub\_virtual\_networks)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.15.0
+Version: 0.22.3
 
 ### <a name="module_nat_gateway"></a> [nat\_gateway](#module\_nat\_gateway)
 

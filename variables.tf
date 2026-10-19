@@ -1,3 +1,9 @@
+variable "location" {
+  type        = string
+  description = "The Azure region for this module's resources or telemetry deployment."
+  nullable    = false
+}
+
 variable "default_naming_convention" {
   type = object({
     virtual_network_name                                        = optional(string, "vnet-hub-$${location}-$${sequence}")

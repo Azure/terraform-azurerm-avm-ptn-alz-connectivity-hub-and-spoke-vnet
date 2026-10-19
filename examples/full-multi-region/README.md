@@ -9,6 +9,10 @@ terraform {
   required_version = "~> 1.12"
 
   required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
@@ -50,7 +54,7 @@ module "config" {
 
 module "resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
-  version  = "0.2.0"
+  version  = "0.4.0"
   for_each = module.config.outputs.connectivity_resource_groups
 
   location         = each.value.location
@@ -71,7 +75,11 @@ locals {
 # This is the module call
 module "test" {
   source = "../../"
+  providers = {
+    azapi = azapi
+  }
 
+  location                        = var.location
   enable_telemetry                = var.enable_telemetry
   hub_and_spoke_networks_settings = local.hub_and_spoke_networks_settings
   hub_virtual_networks            = local.hub_virtual_networks
@@ -85,6 +93,8 @@ module "test" {
 The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.12)
+
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.21)
 
@@ -198,6 +208,14 @@ Type: `any`
 
 Default: `{}`
 
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The Azure region for this module's resources or telemetry deployment.
+
+Type: `string`
+
+Default: `"eastus"`
+
 ### <a name="input_management_group_settings"></a> [management\_group\_settings](#input\_management\_group\_settings)
 
 Description: The settings for the management groups. Details of the settings can be found in the module documentation at https://registry.terraform.io/modules/Azure/avm-ptn-alz
@@ -267,7 +285,7 @@ Version: main
 
 Source: Azure/avm-res-resources-resourcegroup/azurerm
 
-Version: 0.2.0
+Version: 0.4.0
 
 ### <a name="module_test"></a> [test](#module\_test)
 

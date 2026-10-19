@@ -9,6 +9,10 @@ terraform {
   required_version = "~> 1.12"
 
   required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.21"
@@ -52,7 +56,7 @@ locals {
 
 module "resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
-  version  = "0.2.0"
+  version  = "0.4.0"
   for_each = local.resource_groups
 
   location         = each.value.location
@@ -64,7 +68,11 @@ module "resource_groups" {
 # This is the module call
 module "test" {
   source = "../../"
+  providers = {
+    azapi = azapi
+  }
 
+  location         = var.location
   enable_telemetry = var.enable_telemetry
   hub_and_spoke_networks_settings = {
     enabled_resources = {
@@ -116,6 +124,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.12)
 
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
+
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.21)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.7)
@@ -145,6 +155,14 @@ Type: `bool`
 
 Default: `true`
 
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The Azure region for this module's resources or telemetry deployment.
+
+Type: `string`
+
+Default: `"eastus"`
+
 ## Outputs
 
 The following outputs are exported:
@@ -161,7 +179,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-resources-resourcegroup/azurerm
 
-Version: 0.2.0
+Version: 0.4.0
 
 ### <a name="module_test"></a> [test](#module\_test)
 
