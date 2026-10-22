@@ -6,6 +6,7 @@ module "nat_gateway" {
   location                         = each.value.location
   name                             = each.value.name
   parent_id                        = each.value.parent_id
+  enable_telemetry                 = var.enable_telemetry
   idle_timeout_in_minutes          = each.value.idle_timeout_in_minutes
   lock                             = each.value.lock
   public_ip_configuration          = each.value.public_ip_configuration
