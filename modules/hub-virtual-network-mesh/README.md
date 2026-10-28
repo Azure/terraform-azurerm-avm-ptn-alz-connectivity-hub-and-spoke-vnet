@@ -163,7 +163,7 @@ Description: A map of the hub virtual networks to create. The map key is an arbi
       - `name` - The name of the service delegation.
       - `actions` - A list of actions that should be delegated, the list is specific to the service being delegated.
   - `default_outbound_access_enabled` - (Optional) Should the default outbound access be enabled for the subnet? Default `false`.
-  - `ignore_body_changes` - (Optional) A list of subnet body property paths, in dot notation (for example `properties.routeTable`), that the `azapi` provider stops reconciling after creation. Takes precedence over `ignore_body_changes.virtual_networks_subnets`. Default `[]`.
+  - `ignore_body_changes` - (Optional) A list of subnet body property paths, in dot notation (for example `properties.routeTable`), that the `azapi` provider stops reconciling after creation. When omitted or `null`, the subnet inherits `ignore_body_changes.virtual_networks_subnets.virtual_networks_subnets`. Any other value, including an empty list, replaces that shared value for this subnet, so set `[]` to keep reconciling every path on this subnet. Default `null`.
 
 #### Azure Firewall
 
@@ -341,7 +341,7 @@ map(object({
           )
         ))
         default_outbound_access_enabled = optional(bool, false)
-        ignore_body_changes             = optional(list(string), [])
+        ignore_body_changes             = optional(list(string))
       }
     )), {})
 
@@ -495,7 +495,7 @@ Description: (Optional) Body property paths that the `azapi` provider stops reco
 
 - `virtual_networks` - (Optional) Ignored body paths for every hub virtual network. Default `[]`.
 - `virtual_networks_subnets` - (Optional) An object with the following field:
-  - `virtual_networks_subnets` - (Optional) Ignored body paths applied to every subnet created by this module. A per-subnet `ignore_body_changes` entry takes precedence. Default `[]`.
+  - `virtual_networks_subnets` - (Optional) Ignored body paths applied to every subnet created by this module. A per-subnet `ignore_body_changes` value, including an empty list, takes precedence. Default `[]`.
 - `virtual_networks_virtual_network_peerings` - (Optional) An object with the following field:
   - `virtual_networks_virtual_network_peerings` - (Optional) Ignored body paths applied to every mesh peering. Default `[]`.
 

@@ -25,6 +25,11 @@ variables {
           address_prefixes    = ["10.0.2.0/24"]
           ignore_body_changes = ["properties.networkSecurityGroup"]
         }
+        opt_out = {
+          name                = "snet-opt-out"
+          address_prefixes    = ["10.0.3.0/24"]
+          ignore_body_changes = []
+        }
       }
     }
     secondary = {
@@ -79,8 +84,65 @@ run "per_subnet_value_takes_precedence" {
   }
 
   assert {
+    condition     = try(length(local.subnets["primary-opt_out"].ignore_body_changes), -1) == 0
+    error_message = "An explicit empty per-subnet ignore_body_changes must take precedence over the shared value so the subnet stays fully reconciled."
+  }
+
+  assert {
     condition     = length(module.hub_virtual_network_peering) == 2
     error_message = "Supplying peering ignore_body_changes must not change the mesh peerings."
+  }
+}
+
+run "root_preserves_omitted_and_empty_per_subnet_values" {
+  command = plan
+
+  variables {
+    hub_and_spoke_networks_settings = {
+      enabled_resources = {
+        ddos_protection_plan = false
+      }
+    }
+    hub_virtual_networks = {
+      primary = {
+        location          = "westeurope"
+        default_parent_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-hub-test"
+        enabled_resources = {
+          firewall                              = false
+          firewall_policy                       = false
+          bastion                               = false
+          virtual_network_gateway_express_route = false
+          virtual_network_gateway_vpn           = false
+          private_dns_zones                     = false
+          private_dns_resolver                  = false
+          dns_resolver_policy                   = false
+        }
+        hub_virtual_network = {
+          address_space = ["10.0.0.0/16"]
+          subnets = {
+            inherit = {
+              name             = "snet-inherit"
+              address_prefixes = ["10.0.1.0/24"]
+            }
+            opt_out = {
+              name                = "snet-opt-out"
+              address_prefixes    = ["10.0.2.0/24"]
+              ignore_body_changes = []
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert {
+    condition     = local.hub_virtual_networks["primary"].subnets["inherit"].ignore_body_changes == null
+    error_message = "An omitted per-subnet ignore_body_changes must reach the mesh module as null so the subnet inherits the shared paths."
+  }
+
+  assert {
+    condition     = try(length(local.hub_virtual_networks["primary"].subnets["opt_out"].ignore_body_changes), -1) == 0
+    error_message = "An explicit empty per-subnet ignore_body_changes must reach the mesh module as an empty list, not null."
   }
 }
 

@@ -73,7 +73,8 @@ locals {
           )
         ) : (try(subnet.route_table.id, null) == null ? null : { id = subnet.route_table.id })
         default_outbound_access_enabled = subnet.default_outbound_access_enabled
-        ignore_body_changes             = length(subnet.ignore_body_changes) > 0 ? subnet.ignore_body_changes : var.ignore_body_changes.virtual_networks_subnets.virtual_networks_subnets
+        # coalesce skips only null, so an explicit [] opts the subnet out of the shared paths.
+        ignore_body_changes = coalesce(subnet.ignore_body_changes, var.ignore_body_changes.virtual_networks_subnets.virtual_networks_subnets)
       }]
     ]]) : subnet.composite_key => subnet
   }
