@@ -3,6 +3,7 @@ module "hub_and_spoke_vnet" {
 
   enable_telemetry     = var.enable_telemetry
   hub_virtual_networks = local.hub_virtual_networks
+  ignore_body_changes  = var.ignore_body_changes
   retry                = var.retry
   tags                 = var.tags
   timeouts             = var.timeouts

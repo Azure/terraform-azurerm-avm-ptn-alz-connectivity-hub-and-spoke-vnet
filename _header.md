@@ -31,6 +31,21 @@ The child module sets `replace_triggers_external_values = [var.sku]` on the bast
 
 Two other changes accompany this upgrade:
 
-- `bastion.parent_id` is the new way to place the bastion host in a specific resource group, replacing the resource group name that was previously derived for the host. `bastion.resource_group_name` is still honoured for the bastion public IP.
+- `bastion.parent_id` is the preferred way to place the bastion host in a specific resource group. When it is unset, `bastion.resource_group_name` remains a deprecated fallback for host placement and is still honoured for the bastion public IP.
 - `bastion.copy_paste_enabled` now defaults to `true`, matching the upstream module. Setting it to `false` requires the `Standard` or `Premium` SKU.
 
+## Configuring subnet Service Endpoints
+
+Configure subnet Service Endpoints with the names-only `service_endpoints` set of service names:
+
+```terraform
+subnets = {
+  workload = {
+    name              = "workload"
+    address_prefixes  = ["192.168.1.0/24"]
+    service_endpoints = ["Microsoft.KeyVault", "Microsoft.Storage"]
+  }
+}
+```
+
+> **Deprecation notice:** The `service_endpoints_with_location` subnet field is deprecated and will be removed in a future major version. Existing values are still accepted and mapped to service names; `locations` is ignored because Azure expands service endpoint locations implicitly. Setting both fields on the same subnet fails validation.
