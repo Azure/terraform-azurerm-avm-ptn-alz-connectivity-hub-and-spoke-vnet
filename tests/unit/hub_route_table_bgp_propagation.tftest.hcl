@@ -5,8 +5,17 @@
 # the default behavior remains enabled.
 
 mock_provider "azurerm" {}
-mock_provider "azapi" {}
+
+mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
+}
+
 mock_provider "random" {}
+
 mock_provider "modtm" {}
 
 run "bgp_route_propagation_can_be_disabled" {
@@ -31,6 +40,7 @@ run "bgp_route_propagation_can_be_disabled" {
         hub_router_ip_address                            = "10.0.0.4"
       }
     }
+    location = "eastus"
   }
 
   assert {
@@ -60,6 +70,7 @@ run "bgp_route_propagation_defaults_to_enabled" {
         hub_router_ip_address            = "10.0.0.4"
       }
     }
+    location = "eastus"
   }
 
   assert {
@@ -90,6 +101,7 @@ run "bgp_route_propagation_can_be_enabled" {
         hub_router_ip_address                            = "10.0.0.4"
       }
     }
+    location = "eastus"
   }
 
   assert {

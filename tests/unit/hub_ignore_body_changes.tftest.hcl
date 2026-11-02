@@ -2,8 +2,17 @@
 # The value is write-only provider state, so assertions target the resolved per-subnet paths.
 
 mock_provider "azurerm" {}
-mock_provider "azapi" {}
+
+mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
+}
+
 mock_provider "random" {}
+
 mock_provider "modtm" {}
 
 variables {
@@ -52,6 +61,9 @@ run "defaults_to_no_ignored_paths" {
     condition     = length(local.subnets["primary-shared"].ignore_body_changes) == 0
     error_message = "Subnets must not ignore any body path by default."
   }
+  variables {
+    location = "eastus"
+  }
 }
 
 run "per_subnet_value_takes_precedence" {
@@ -71,6 +83,7 @@ run "per_subnet_value_takes_precedence" {
         virtual_networks_virtual_network_peerings = ["properties.allowForwardedTraffic"]
       }
     }
+    location = "eastus"
   }
 
   assert {
@@ -133,6 +146,7 @@ run "root_preserves_omitted_and_empty_per_subnet_values" {
         }
       }
     }
+    location = "eastus"
   }
 
   assert {
@@ -156,6 +170,7 @@ run "root_rejects_empty_path" {
         virtual_networks_subnets = [" "]
       }
     }
+    location = "eastus"
   }
 
   expect_failures = [

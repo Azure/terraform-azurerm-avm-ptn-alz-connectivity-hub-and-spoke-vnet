@@ -1,6 +1,7 @@
 module "hub_and_spoke_vnet" {
   source = "./modules/hub-virtual-network-mesh"
 
+  location             = var.location
   enable_telemetry     = var.enable_telemetry
   hub_virtual_networks = local.hub_virtual_networks
   ignore_body_changes  = var.ignore_body_changes

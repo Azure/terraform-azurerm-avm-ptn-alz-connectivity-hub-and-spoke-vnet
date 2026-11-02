@@ -63,6 +63,7 @@ module "resource_groups" {
 module "test" {
   source = "../../"
 
+  location         = var.location
   enable_telemetry = var.enable_telemetry
   hub_and_spoke_networks_settings = {
     enabled_resources = {
@@ -145,6 +146,14 @@ If it is set to false, then no telemetry will be collected.
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The Azure region for this module's resources or telemetry deployment.
+
+Type: `string`
+
+Default: `"eastus"`
 
 ## Outputs
 

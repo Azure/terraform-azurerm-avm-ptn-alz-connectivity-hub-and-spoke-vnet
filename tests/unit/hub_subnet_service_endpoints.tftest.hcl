@@ -4,8 +4,17 @@
 # pass names-only `service_endpoints` and map the deprecated input to service names.
 
 mock_provider "azurerm" {}
-mock_provider "azapi" {}
+
+mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
+}
+
 mock_provider "random" {}
+
 mock_provider "modtm" {}
 
 variables {
@@ -39,6 +48,7 @@ run "service_endpoints_passed_through" {
         }
       }
     }
+    location = "eastus"
   }
 
   assert {
@@ -78,6 +88,7 @@ run "deprecated_service_endpoints_with_location_mapped_to_names" {
         }
       }
     }
+    location = "eastus"
   }
 
   expect_failures = [
@@ -110,6 +121,7 @@ run "both_service_endpoint_inputs_rejected" {
         }
       }
     }
+    location = "eastus"
   }
 
   expect_failures = [
