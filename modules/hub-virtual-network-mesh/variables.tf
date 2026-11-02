@@ -444,6 +444,17 @@ DESCRIPTION
   }
 }
 
+variable "location" {
+  type        = string
+  default     = null
+  description = "The Azure region for this module's resources or telemetry deployment."
+
+  validation {
+    condition     = !var.enable_telemetry || var.location != null
+    error_message = "The location must not be null when telemetry is enabled."
+  }
+}
+
 variable "retry" {
   type = object({
     error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
