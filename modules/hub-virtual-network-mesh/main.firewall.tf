@@ -24,7 +24,7 @@ module "hub_firewalls" {
 
 module "fw_default_ips" {
   source   = "Azure/avm-res-network-publicipaddress/azurerm"
-  version  = "0.2.0"
+  version  = "0.2.1"
   for_each = local.fw_default_ip_configuration_pip
 
   location                = each.value.location
@@ -46,7 +46,7 @@ module "fw_default_ips" {
 
 module "fw_management_ips" {
   source   = "Azure/avm-res-network-publicipaddress/azurerm"
-  version  = "0.2.0"
+  version  = "0.2.1"
   for_each = local.fw_management_ip_configuration_pip
 
   location                = each.value.location
@@ -68,7 +68,7 @@ module "fw_management_ips" {
 
 module "fw_policies" {
   source   = "Azure/avm-res-network-firewallpolicy/azurerm"
-  version  = "0.3.3"
+  version  = "0.3.4"
   for_each = local.fw_policies
 
   location                                          = each.value.location
