@@ -7,10 +7,17 @@ mock_provider "azapi" {
       id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-hub-test/providers/Microsoft.Network/virtualNetworks/vnet-hub-test"
     }
   }
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
 }
 
 mock_provider "azurerm" {}
+
 mock_provider "modtm" {}
+
 mock_provider "random" {}
 
 override_resource {
@@ -78,6 +85,9 @@ run "first_post_import_plan" {
     condition     = try(length(module.hub_virtual_network_subnets["primary-app"].resource.body.properties.serviceEndpoints), -1) == 0
     error_message = "A subnet without service endpoints must send an empty list, matching Azure, so the imported [] is not planned as null."
   }
+  variables {
+    location = "eastus"
+  }
 }
 
 run "apply_after_import" {
@@ -86,6 +96,9 @@ run "apply_after_import" {
 
   module {
     source = "./modules/hub-virtual-network-mesh"
+  }
+  variables {
+    location = "eastus"
   }
 }
 
@@ -103,6 +116,7 @@ run "tag_update_plan" {
         tags = { regression = "after-import" }
       })
     }
+    location = "eastus"
   }
 
   assert {

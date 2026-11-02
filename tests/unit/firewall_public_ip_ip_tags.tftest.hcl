@@ -6,8 +6,17 @@
 # `azurerm_public_ip`, that produced permanent drift and a failing destroy-and-recreate.
 
 mock_provider "azurerm" {}
-mock_provider "azapi" {}
+
+mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
+}
+
 mock_provider "random" {}
+
 mock_provider "modtm" {}
 
 run "ip_tags_reaches_default_and_management_public_ips" {
@@ -46,6 +55,7 @@ run "ip_tags_reaches_default_and_management_public_ips" {
         }
       }
     }
+    location = "eastus"
   }
 
   # HCL literal object constructors compare as objects, not maps; the actual
@@ -99,6 +109,7 @@ run "ip_tags_defaults_to_empty_map" {
         }
       }
     }
+    location = "eastus"
   }
 
   assert {
