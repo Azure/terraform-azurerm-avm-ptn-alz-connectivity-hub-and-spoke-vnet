@@ -29,13 +29,12 @@ locals {
   azurerm_virtual_network_gateway = {
     bgp_settings = {
       asn         = try(var.vpn_bgp_settings.asn, 65515)
-      peer_weight = try(var.vpn_bgp_settings.peer_weight, 0)
+      peer_weight = var.vpn_bgp_settings == null ? 0 : coalesce(var.vpn_bgp_settings.peer_weight, 0)
       peering_addresses = {
         for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
           ip_configuration_name = ip_configuration.name
-          apipa_addresses       = ip_configuration.apipa_addresses
+          apipa_addresses       = ip_configuration.apipa_addresses == null ? [] : ip_configuration.apipa_addresses
         }
-        if ip_configuration.apipa_addresses != null
       }
     }
     ip_configuration = {
@@ -55,6 +54,9 @@ locals {
     local.local_network_gateway_virtual_network_gateway_connections,
     local.express_route_circuit_virtual_network_gateway_connections
   )
+  bgp_peering_addresses_enabled = anytrue([
+    for ip_configuration in values(local.ip_configurations) : ip_configuration.apipa_addresses != null
+  ])
   # Transform edge_zone string to extendedLocation object for AzAPI
   extended_location = var.edge_zone != null ? {
     name = var.edge_zone
@@ -100,14 +102,16 @@ locals {
     } : null
     # BGP Settings
     bgpSettings = var.type == "Vpn" && var.vpn_bgp_enabled == true ? {
-      asn        = local.azurerm_virtual_network_gateway.bgp_settings.asn
-      peerWeight = local.azurerm_virtual_network_gateway.bgp_settings.peer_weight
-      bgpPeeringAddresses = [
-        for key, peering_addr in local.azurerm_virtual_network_gateway.bgp_settings.peering_addresses : {
-          ipconfigurationId    = "${var.parent_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/ipConfigurations/${peering_addr.ip_configuration_name}"
-          customBgpIpAddresses = peering_addr.apipa_addresses
-        }
-      ]
+      for key, value in {
+        asn        = local.azurerm_virtual_network_gateway.bgp_settings.asn
+        peerWeight = local.azurerm_virtual_network_gateway.bgp_settings.peer_weight
+        bgpPeeringAddresses = local.bgp_peering_addresses_enabled ? [
+          for key, peering_addr in local.azurerm_virtual_network_gateway.bgp_settings.peering_addresses : {
+            ipconfigurationId    = "${var.parent_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/ipConfigurations/${peering_addr.ip_configuration_name}"
+            customBgpIpAddresses = peering_addr.apipa_addresses
+          }
+        ] : null
+      } : key => value if value != null
     } : null
     # Custom Routes
     customRoutes = var.type == "Vpn" && var.vpn_custom_route != null ? {
