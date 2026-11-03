@@ -13,8 +13,10 @@ locals {
         name = coalesce(hub_network_value.virtual_network_gateways.express_route.lock.name, "lock-${hub_network_key}-express-route-gateway-${hub_network_value.virtual_network_gateways.express_route.lock.kind}")
       }
       virtual_network_gateway = merge({
-        location = hub_network_value.location
-        type     = "ExpressRoute"
+        location                     = hub_network_value.location
+        type                         = "ExpressRoute"
+        express_route_scale_unit_min = hub_network_value.virtual_network_gateways.express_route.express_route_scale_unit_min
+        express_route_scale_unit_max = hub_network_value.virtual_network_gateways.express_route.express_route_scale_unit_max
       }, hub_network_value.virtual_network_gateways.express_route)
     } if local.virtual_network_gateways_express_route_enabled[hub_network_key]
   }
