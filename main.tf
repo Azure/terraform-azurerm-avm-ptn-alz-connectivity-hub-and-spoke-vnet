@@ -55,7 +55,7 @@ module "virtual_network_gateway" {
 
 module "gateway_route_table" {
   source   = "Azure/avm-res-network-routetable/azurerm"
-  version  = "0.5.0"
+  version  = "0.6.0"
   for_each = local.gateway_route_table
 
   location                      = each.value.location
@@ -68,7 +68,7 @@ module "gateway_route_table" {
 
 module "gateway_route_table_routes" {
   source   = "Azure/avm-res-network-routetable/azurerm//modules/route"
-  version  = "0.5.0"
+  version  = "0.6.0"
   for_each = local.gateway_route_table_routes_flattened
 
   address_prefix      = each.value.address_prefix
@@ -80,7 +80,7 @@ module "gateway_route_table_routes" {
 
 module "dns_resolver" {
   source   = "Azure/avm-res-network-dnsresolver/azurerm"
-  version  = "0.7.3"
+  version  = "0.8.0"
   for_each = local.private_dns_resolver
 
   location                    = each.value.location
@@ -120,7 +120,7 @@ module "private_dns_zones" {
 
 module "private_dns_zone_auto_registration" {
   source   = "Azure/avm-res-network-privatednszone/azurerm"
-  version  = "0.4.3"
+  version  = "0.6.0"
   for_each = local.private_dns_zones_auto_registration
 
   domain_name           = each.value.domain_name
@@ -144,7 +144,7 @@ module "ddos_protection_plan" {
 
 module "bastion_public_ip" {
   source   = "Azure/avm-res-network-publicipaddress/azurerm"
-  version  = "0.2.0"
+  version  = "0.2.1"
   for_each = local.bastion_host_public_ips
 
   location                = each.value.location
