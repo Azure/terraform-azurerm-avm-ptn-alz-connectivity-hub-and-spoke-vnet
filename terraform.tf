@@ -9,7 +9,7 @@ terraform {
     # tflint-ignore: terraform_unused_required_providers
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "~> 5.13"
     }
     # tflint-ignore: terraform_unused_required_providers
     modtm = {
