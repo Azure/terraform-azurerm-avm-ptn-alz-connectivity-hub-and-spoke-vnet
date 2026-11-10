@@ -59,7 +59,7 @@ locals {
           next_hop_type          = route_table_entry.next_hop_type
           next_hop_in_ip_address = route_table_entry.next_hop_ip_address
           resource_group_name    = local.resource_group_names[k_src]
-        } if route_table_entry.address_prefix != "0.0.0.0/0"
+        } if route_table_entry.address_prefix != "0.0.0.0/0" || !local.create_route_tables_firewall[k_src]
       ]
     ]) : route.name => route
   }
