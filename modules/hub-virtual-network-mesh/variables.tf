@@ -404,7 +404,6 @@ DESCRIPTION
     ])
     error_message = "Each hub's route_table_entries_firewall may contain at most one 0.0.0.0/0 route."
   }
-
   validation {
     condition = alltrue(flatten([
       for vnet in values(var.hub_virtual_networks) : [
