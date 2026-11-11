@@ -84,6 +84,7 @@ resource "azapi_resource" "security_rule" {
 resource "azapi_resource" "virtual_network_link" {
   for_each = var.virtual_network_links
 
+  location  = var.location
   name      = coalesce(each.value.name, each.key)
   parent_id = azapi_resource.this.id
   type      = var.resource_types.dns_resolver_policy_virtual_network_link
