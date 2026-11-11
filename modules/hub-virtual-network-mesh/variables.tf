@@ -260,16 +260,7 @@ variable "hub_virtual_networks" {
       }))
     }))
   }))
-  default = {}
-
-  validation {
-    condition = alltrue([
-      for hub in values(var.hub_virtual_networks) :
-      length([for route in hub.route_table_entries_firewall : route if route.address_prefix == "0.0.0.0/0"]) <= 1
-    ])
-    error_message = "Each hub's route_table_entries_firewall may contain at most one 0.0.0.0/0 route."
-  }
-
+  default     = {}
   description = <<DESCRIPTION
 A map of the hub virtual networks to create. The map key is an arbitrary value to avoid Terraform's restriction that map keys must be known at plan time.
 
@@ -401,6 +392,14 @@ A map of the hub virtual networks to create. The map key is an arbitrary value t
       - `ip_addresses` - (Optional) A set of IP addresses to allowlist for threat intelligence.
 DESCRIPTION
   nullable    = false
+
+  validation {
+    condition = alltrue([
+      for hub in values(var.hub_virtual_networks) :
+      length([for route in hub.route_table_entries_firewall : route if route.address_prefix == "0.0.0.0/0"]) <= 1
+    ])
+    error_message = "Each hub's route_table_entries_firewall may contain at most one 0.0.0.0/0 route."
+  }
 }
 
 variable "retry" {
