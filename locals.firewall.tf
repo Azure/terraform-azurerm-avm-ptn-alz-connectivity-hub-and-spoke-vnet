@@ -8,7 +8,8 @@ locals {
       })
     })
   }
-  firewall_enabled = { for key, value in var.hub_virtual_networks : key => value.enabled_resources.firewall }
+  firewall_enabled        = { for key, value in var.hub_virtual_networks : key => value.enabled_resources.firewall }
+  firewall_policy_enabled = { for key, value in var.hub_virtual_networks : key => value.enabled_resources.firewall_policy }
   firewall_ip_configurations = {
     for key, value in var.hub_virtual_networks : key => merge(value.firewall.ip_configurations, {
       for ip_config_key, ip_config_value in value.firewall.ip_configurations : ip_config_key => merge(ip_config_value, {
@@ -29,7 +30,7 @@ locals {
       })
     })
   }
-  firewall_policies = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] ? merge(value.firewall_policy, {
+  firewall_policies = { for key, value in var.hub_virtual_networks : key => local.firewall_enabled[key] && local.firewall_policy_enabled[key] ? merge(value.firewall_policy, {
     name     = coalesce(value.firewall_policy.name, local.default_names[key].firewall_policy_name)
     location = coalesce(value.firewall_policy.location, value.location)
     dns      = value.firewall_policy.dns != null ? value.firewall_policy.dns : local.firewall_policy_dns_defaults[key]
