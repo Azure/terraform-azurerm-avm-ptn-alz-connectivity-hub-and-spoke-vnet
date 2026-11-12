@@ -161,11 +161,11 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
   type                               = each.value.type
   virtual_network_gateway_id         = azapi_resource.vgw.id
   authorization_key                  = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].authorization_key, null)
+  bgp_enabled                        = try(each.value.enable_bgp, null)
   connection_mode                    = try(each.value.connection_mode, null)
   connection_protocol                = try(each.value.connection_protocol, null)
   dpd_timeout_seconds                = try(each.value.dpd_timeout_seconds, null)
   egress_nat_rule_ids                = try(each.value.egress_nat_rule_ids, null)
-  enable_bgp                         = try(each.value.enable_bgp, null)
   express_route_circuit_id           = try(each.value.express_route_circuit_id, null)
   express_route_gateway_bypass       = try(each.value.express_route_gateway_bypass, null)
   ingress_nat_rule_ids               = try(each.value.ingress_nat_rule_ids, null)
