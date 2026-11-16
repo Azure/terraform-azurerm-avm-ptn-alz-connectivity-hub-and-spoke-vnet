@@ -54,6 +54,7 @@ module "resource_groups" {
 module "test" {
   source = "../../"
 
+  location = var.location
   default_naming_convention = {
     virtual_network_name = "vnet-test-${random_string.suffix.result}-$${location}-$${sequence}"
   }

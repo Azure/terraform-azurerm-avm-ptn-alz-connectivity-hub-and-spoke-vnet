@@ -76,6 +76,13 @@ The following attributes are supported:
 DESCRIPTION
 }
 
+variable "location" {
+  type        = string
+  default     = "eastus"
+  description = "The Azure region for this module's resources or telemetry deployment."
+  nullable    = false
+}
+
 variable "management_group_settings" {
   type        = any
   default     = {}

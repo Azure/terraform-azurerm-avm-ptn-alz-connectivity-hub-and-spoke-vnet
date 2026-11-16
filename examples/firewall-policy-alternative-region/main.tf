@@ -66,6 +66,7 @@ module "base_firewall_policy" {
 module "test" {
   source = "../../"
 
+  location         = var.location
   enable_telemetry = var.enable_telemetry
   hub_and_spoke_networks_settings = {
     enabled_resources = {

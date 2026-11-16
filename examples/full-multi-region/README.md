@@ -72,6 +72,7 @@ locals {
 module "test" {
   source = "../../"
 
+  location                        = var.location
   enable_telemetry                = var.enable_telemetry
   hub_and_spoke_networks_settings = local.hub_and_spoke_networks_settings
   hub_virtual_networks            = local.hub_virtual_networks
@@ -197,6 +198,14 @@ The following attributes are supported:
 Type: `any`
 
 Default: `{}`
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The Azure region for this module's resources or telemetry deployment.
+
+Type: `string`
+
+Default: `"eastus"`
 
 ### <a name="input_management_group_settings"></a> [management\_group\_settings](#input\_management\_group\_settings)
 

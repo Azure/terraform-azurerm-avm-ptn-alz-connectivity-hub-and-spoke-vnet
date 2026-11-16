@@ -1,6 +1,6 @@
 module "hub_virtual_networks" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version  = "0.15.0"
+  version  = "0.22.2"
   for_each = var.hub_virtual_networks
 
   location      = each.value.location
@@ -15,23 +15,29 @@ module "hub_virtual_networks" {
   }
   enable_telemetry        = var.enable_telemetry
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
-  lock                    = each.value.lock
-  name                    = each.value.name
-  retry                   = var.retry
-  tags                    = each.value.tags == null ? var.tags : each.value.tags
-  timeouts                = var.timeouts
+  ignore_body_changes = {
+    virtual_networks = var.ignore_body_changes.virtual_networks
+  }
+  lock     = each.value.lock
+  name     = each.value.name
+  retry    = var.retry
+  tags     = each.value.tags == null ? var.tags : each.value.tags
+  timeouts = var.timeouts
 }
 
 module "hub_virtual_network_subnets" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version  = "0.15.0"
+  version  = "0.22.2"
   for_each = local.subnets
 
-  name                                          = each.value.name
-  parent_id                                     = each.value.virtual_network_id
-  address_prefixes                              = each.value.address_prefixes
-  default_outbound_access_enabled               = each.value.default_outbound_access_enabled
-  delegation                                    = each.value.delegation
+  name                            = each.value.name
+  parent_id                       = each.value.virtual_network_id
+  address_prefixes                = each.value.address_prefixes
+  default_outbound_access_enabled = each.value.default_outbound_access_enabled
+  delegation                      = each.value.delegation
+  ignore_body_changes = {
+    virtual_networks_subnets = each.value.ignore_body_changes
+  }
   nat_gateway                                   = each.value.nat_gateway
   network_security_group                        = each.value.network_security_group
   private_endpoint_network_policies             = each.value.private_endpoint_network_policies
@@ -39,13 +45,13 @@ module "hub_virtual_network_subnets" {
   retry                                         = var.retry
   route_table                                   = each.value.route_table
   service_endpoint_policies                     = each.value.service_endpoint_policies
-  service_endpoints_with_location               = each.value.service_endpoints_with_location
+  service_endpoints                             = each.value.service_endpoints
   timeouts                                      = var.timeouts
 }
 
 module "hub_virtual_network_peering" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version  = "0.15.0"
+  version  = "0.22.2"
   for_each = local.peerings
 
   name                         = each.value.name
@@ -55,7 +61,22 @@ module "hub_virtual_network_peering" {
   allow_gateway_transit        = each.value.allow_gateway_transit
   allow_virtual_network_access = each.value.allow_virtual_network_access
   create_reverse_peering       = false
+  ignore_body_changes          = var.ignore_body_changes.virtual_networks_virtual_network_peerings
   retry                        = var.retry
   timeouts                     = var.timeouts
   use_remote_gateways          = each.value.use_remote_gateways
+}
+
+check "service_endpoints_with_location_locations_ignored" {
+  assert {
+    condition = alltrue(flatten([
+      for vnet in values(var.hub_virtual_networks) : [
+        for subnet in values(vnet.subnets) : [
+          for endpoint in coalesce(subnet.service_endpoints_with_location, []) :
+          endpoint.locations == null || try(toset(endpoint.locations) == toset(["*"]), false)
+        ]
+      ]
+    ]))
+    error_message = "`service_endpoints_with_location[*].locations` is ignored because Azure applies service endpoint locations implicitly. Migrate to `service_endpoints`."
+  }
 }
