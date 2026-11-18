@@ -60,7 +60,7 @@ resource "azapi_resource" "vgw" {
     extendedLocation = local.extended_location
     properties       = local.virtual_network_gateway_properties_filtered
   }
-  response_export_values = ["*"]
+  response_export_values = ["properties.bgpSettings"]
   retry                  = var.retry
   tags                   = var.tags
 
