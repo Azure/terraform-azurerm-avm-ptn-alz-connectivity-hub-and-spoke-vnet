@@ -70,10 +70,10 @@ DESCRIPTION
 
 variable "resource_types" {
   type = object({
-    dns_resolver_policy                      = optional(string, "Microsoft.Network/dnsResolverPolicies@2023-07-01-preview")
-    dns_resolver_domain_list                 = optional(string, "Microsoft.Network/dnsResolverDomainLists@2023-07-01-preview")
-    dns_resolver_policy_security_rule        = optional(string, "Microsoft.Network/dnsResolverPolicies/dnsSecurityRules@2023-07-01-preview")
-    dns_resolver_policy_virtual_network_link = optional(string, "Microsoft.Network/dnsResolverPolicies/virtualNetworkLinks@2023-07-01-preview")
+    dns_resolver_policy                      = optional(string, "Microsoft.Network/dnsResolverPolicies@2025-10-01-preview")
+    dns_resolver_domain_list                 = optional(string, "Microsoft.Network/dnsResolverDomainLists@2025-10-01-preview")
+    dns_resolver_policy_security_rule        = optional(string, "Microsoft.Network/dnsResolverPolicies/dnsSecurityRules@2025-10-01-preview")
+    dns_resolver_policy_virtual_network_link = optional(string, "Microsoft.Network/dnsResolverPolicies/virtualNetworkLinks@2025-10-01-preview")
     lock                                     = optional(string, "Microsoft.Authorization/locks@2020-05-01")
   })
   default     = {}
