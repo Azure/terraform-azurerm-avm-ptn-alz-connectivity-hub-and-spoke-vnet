@@ -124,9 +124,9 @@ module "private_dns_zone_auto_registration" {
   for_each = local.private_dns_zones_auto_registration
 
   domain_name           = each.value.domain_name
-  location              = each.value.location
   parent_id             = each.value.parent_id
   enable_telemetry      = var.enable_telemetry
+  location              = each.value.location
   tags                  = each.value.tags
   virtual_network_links = each.value.virtual_network_links
 }
