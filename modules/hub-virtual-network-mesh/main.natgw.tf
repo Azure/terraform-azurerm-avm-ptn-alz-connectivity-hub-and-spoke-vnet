@@ -1,6 +1,6 @@
 module "nat_gateway" {
   source   = "Azure/avm-res-network-natgateway/azurerm"
-  version  = "0.3.2"
+  version  = "0.4.0"
   for_each = local.nat_gateways
 
   location                         = each.value.location
