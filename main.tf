@@ -55,7 +55,7 @@ module "virtual_network_gateway" {
 
 module "gateway_route_table" {
   source   = "Azure/avm-res-network-routetable/azurerm"
-  version  = "0.5.0"
+  version  = "0.7.0"
   for_each = local.gateway_route_table
 
   location                      = each.value.location
@@ -68,7 +68,7 @@ module "gateway_route_table" {
 
 module "gateway_route_table_routes" {
   source   = "Azure/avm-res-network-routetable/azurerm//modules/route"
-  version  = "0.5.0"
+  version  = "0.7.0"
   for_each = local.gateway_route_table_routes_flattened
 
   address_prefix      = each.value.address_prefix
@@ -80,7 +80,7 @@ module "gateway_route_table_routes" {
 
 module "dns_resolver" {
   source   = "Azure/avm-res-network-dnsresolver/azurerm"
-  version  = "0.7.3"
+  version  = "0.9.0"
   for_each = local.private_dns_resolver
 
   location                    = each.value.location
@@ -96,7 +96,7 @@ module "dns_resolver" {
 
 module "private_dns_zones" {
   source   = "Azure/avm-ptn-network-private-link-private-dns-zones/azurerm"
-  version  = "0.23.2"
+  version  = "0.23.3"
   for_each = local.private_dns_zones
 
   location                                                   = each.value.location
@@ -133,7 +133,7 @@ module "private_dns_zone_auto_registration" {
 
 module "ddos_protection_plan" {
   source  = "Azure/avm-res-network-ddosprotectionplan/azurerm"
-  version = "0.3.0"
+  version = "0.4.0"
   count   = local.ddos_protection_plan_enabled ? 1 : 0
 
   location            = local.ddos_protection_plan.location
@@ -145,7 +145,7 @@ module "ddos_protection_plan" {
 
 module "bastion_public_ip" {
   source   = "Azure/avm-res-network-publicipaddress/azurerm"
-  version  = "0.2.0"
+  version  = "0.3.0"
   for_each = local.bastion_host_public_ips
 
   location                = each.value.location
@@ -170,7 +170,7 @@ module "bastion_public_ip" {
 
 module "bastion_host" {
   source   = "Azure/avm-res-network-bastionhost/azurerm"
-  version  = "0.9.0"
+  version  = "0.10.0"
   for_each = local.bastion_hosts
 
   location                  = each.value.location
