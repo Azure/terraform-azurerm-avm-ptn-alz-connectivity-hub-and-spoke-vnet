@@ -76,6 +76,14 @@ resource "azapi_resource" "vgw" {
       condition     = var.vpn_active_active_enabled == true && var.type == "Vpn" ? length(local.azurerm_virtual_network_gateway.ip_configuration) > 1 : true
       error_message = "An active-active gateway requires at least two IP configurations."
     }
+    precondition {
+      condition     = var.express_route_scale_unit_min <= var.express_route_scale_unit_max
+      error_message = "express_route_scale_unit_min must be less than or equal to express_route_scale_unit_max."
+    }
+    precondition {
+      condition     = var.sku != "ErGwScale" || var.express_route_scale_unit_min >= 2 || var.express_route_scale_unit_max == 1
+      error_message = "ErGwScale autoscaling requires express_route_scale_unit_min to be at least 2; a minimum of 1 is supported only with a maximum of 1."
+    }
   }
 }
 

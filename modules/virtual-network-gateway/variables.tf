@@ -174,6 +174,30 @@ variable "express_route_remote_vnet_traffic_enabled" {
   nullable    = false
 }
 
+variable "express_route_scale_unit_max" {
+  type        = number
+  default     = 1
+  description = "The maximum number of scale units for the ExpressRoute Gateway when using the ErGwScale SKU. Must be a whole number between 1 and 40, and at least express_route_scale_unit_min. Set both bounds to the same value for fixed scaling."
+  nullable    = false
+
+  validation {
+    condition     = var.express_route_scale_unit_max >= 1 && var.express_route_scale_unit_max <= 40 && floor(var.express_route_scale_unit_max) == var.express_route_scale_unit_max
+    error_message = "express_route_scale_unit_max must be a whole number between 1 and 40."
+  }
+}
+
+variable "express_route_scale_unit_min" {
+  type        = number
+  default     = 1
+  description = "The minimum number of scale units for the ExpressRoute Gateway when using the ErGwScale SKU. Must be a whole number between 1 and 40, and no greater than express_route_scale_unit_max. Autoscaling requires at least 2; fixed scaling permits 1 when both bounds are 1."
+  nullable    = false
+
+  validation {
+    condition     = var.express_route_scale_unit_min >= 1 && var.express_route_scale_unit_min <= 40 && floor(var.express_route_scale_unit_min) == var.express_route_scale_unit_min
+    error_message = "express_route_scale_unit_min must be a whole number between 1 and 40."
+  }
+}
+
 variable "express_route_virtual_wan_traffic_enabled" {
   type        = bool
   default     = false
@@ -441,8 +465,8 @@ variable "sku" {
   nullable    = false
 
   validation {
-    condition     = contains(["Basic", "HighPerformance", "Standard", "UltraPerformance", "VpnGw1", "VpnGw2", "VpnGw3", "VpnGw4", "VpnGw5", "VpnGw1AZ", "VpnGw2AZ", "VpnGw3AZ", "VpnGw4AZ", "VpnGw5AZ", "ErGw1AZ", "ErGw2AZ", "ErGw3AZ"], var.sku)
-    error_message = "sku possible values are Basic, HighPerformance, Standard, UltraPerformance, VpnGw1, VpnGw2, VpnGw3, VpnGw4, VpnGw5, VpnGw1AZ, VpnGw2AZ, VpnGw3AZ, VpnGw4AZ, VpnGw5AZ, ErGw1AZ, ErGw2AZ, ErGw3AZ."
+    condition     = contains(["Basic", "HighPerformance", "Standard", "UltraPerformance", "VpnGw1", "VpnGw2", "VpnGw3", "VpnGw4", "VpnGw5", "VpnGw1AZ", "VpnGw2AZ", "VpnGw3AZ", "VpnGw4AZ", "VpnGw5AZ", "ErGw1AZ", "ErGw2AZ", "ErGw3AZ", "ErGwScale"], var.sku)
+    error_message = "sku possible values are Basic, HighPerformance, Standard, UltraPerformance, VpnGw1, VpnGw2, VpnGw3, VpnGw4, VpnGw5, VpnGw1AZ, VpnGw2AZ, VpnGw3AZ, VpnGw4AZ, VpnGw5AZ, ErGw1AZ, ErGw2AZ, ErGw3AZ, ErGwScale."
   }
 }
 
