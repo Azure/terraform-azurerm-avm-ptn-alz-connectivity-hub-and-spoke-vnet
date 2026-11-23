@@ -1,4 +1,9 @@
 locals {
+  apipa_ip_configuration_names = merge([
+    for ip_configuration in values(local.ip_configurations) : {
+      for address in coalesce(ip_configuration.apipa_addresses, []) : address => ip_configuration.name
+    }
+  ]...)
   azurerm_express_route_circuit_peering           = nonsensitive(sensitive(local.express_route_circuit_peerings))
   azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
@@ -62,6 +67,70 @@ locals {
     name = var.edge_zone
     type = "EdgeZone"
   } : null
+  virtual_network_gateway_connection_parent_ids = {
+    for connection_key, connection in local.azurerm_virtual_network_gateway_connection : connection_key =>
+    "/subscriptions/${provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", var.parent_id).subscription_id}/resourceGroups/${coalesce(connection.resource_group_name, local.resource_group_name)}"
+  }
+  virtual_network_gateway_connection_properties = {
+    for connection_key, connection in local.azurerm_virtual_network_gateway_connection : connection_key => {
+      for property, value in {
+        connectionType                 = connection.type
+        virtualNetworkGateway1         = { id = azapi_resource.vgw.id, properties = {} }
+        connectionMode                 = try(connection.connection_mode, null)
+        connectionProtocol             = try(connection.connection_protocol, null)
+        dpdTimeoutSeconds              = try(connection.dpd_timeout_seconds, null)
+        enableBgp                      = try(connection.enable_bgp, null)
+        egressNatRules                 = try(connection.egress_nat_rule_ids, null) == null ? null : [for id in connection.egress_nat_rule_ids : { id = id }]
+        ingressNatRules                = try(connection.ingress_nat_rule_ids, null) == null ? null : [for id in connection.ingress_nat_rule_ids : { id = id }]
+        enablePrivateLinkFastPath      = try(connection.private_link_fast_path_enabled, null)
+        expressRouteGatewayBypass      = try(connection.express_route_gateway_bypass, null)
+        useLocalAzureIpAddress         = try(connection.local_azure_ip_address_enabled, null)
+        usePolicyBasedTrafficSelectors = try(connection.use_policy_based_traffic_selectors, null)
+        routingWeight                  = try(connection.routing_weight, null)
+        localNetworkGateway2 = startswith(connection_key, "lgw-") ? {
+          id         = try(azurerm_local_network_gateway.vgw[trimprefix(connection_key, "lgw-")].id, connection.local_network_gateway_id)
+          properties = {}
+        } : null
+        peer                   = try(connection.express_route_circuit_id, null) == null ? null : { id = connection.express_route_circuit_id }
+        virtualNetworkGateway2 = try(connection.peer_virtual_network_gateway_id, null) == null ? null : { id = connection.peer_virtual_network_gateway_id, properties = {} }
+        gatewayCustomBgpIpAddresses = try(connection.enable_bgp, false) != true || try(connection.custom_bgp_addresses, null) == null ? null : [
+          for address in [connection.custom_bgp_addresses.primary, connection.custom_bgp_addresses.secondary] : {
+            ipConfigurationId  = "${azapi_resource.vgw.id}/ipConfigurations/${local.apipa_ip_configuration_names[address]}"
+            customBgpIpAddress = address
+          } if address != null && address != ""
+        ]
+        ipsecPolicies = try(connection.ipsec_policy, null) == null ? null : [{
+          dhGroup             = connection.ipsec_policy.dh_group
+          ikeEncryption       = connection.ipsec_policy.ike_encryption
+          ikeIntegrity        = connection.ipsec_policy.ike_integrity
+          ipsecEncryption     = connection.ipsec_policy.ipsec_encryption
+          ipsecIntegrity      = connection.ipsec_policy.ipsec_integrity
+          pfsGroup            = connection.ipsec_policy.pfs_group
+          saDataSizeKilobytes = coalesce(connection.ipsec_policy.sa_datasize, 102400000)
+          saLifeTimeSeconds   = coalesce(connection.ipsec_policy.sa_lifetime, 27000)
+        }]
+        trafficSelectorPolicies = try(connection.traffic_selector_policy, null) == null ? null : [
+          for policy in connection.traffic_selector_policy : {
+            localAddressRanges  = policy.local_address_prefixes
+            remoteAddressRanges = policy.remote_address_prefixes
+          }
+        ]
+      } : property => value if value != null
+    }
+  }
+  virtual_network_gateway_connection_sensitive_properties = {
+    for connection_key, connection in local.azurerm_virtual_network_gateway_connection_sensitive : connection_key => {
+      for property, value in {
+        authorizationKey = try(connection.authorization_key, null)
+        sharedKey        = try(connection.shared_key, null)
+      } : property => value if value != null && value != ""
+    }
+  }
+  virtual_network_gateway_connection_sensitive_versions = {
+    for connection_key, properties in local.virtual_network_gateway_connection_sensitive_properties : connection_key => sensitive({
+      for property, value in properties : "properties.${property}" => sha256(value)
+    })
+  }
   virtual_network_gateway_properties = {
     # Common properties for all gateway types
     gatewayType = var.type
