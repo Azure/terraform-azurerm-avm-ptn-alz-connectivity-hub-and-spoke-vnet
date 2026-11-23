@@ -58,6 +58,7 @@ module "resource_groups" {
 module "test" {
   source = "../../"
 
+  location         = var.location
   enable_telemetry = var.enable_telemetry
   hub_virtual_networks = {
     primary = {

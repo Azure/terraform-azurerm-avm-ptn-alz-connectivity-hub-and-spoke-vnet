@@ -6,7 +6,13 @@
 # `azurerm_public_ip`, that produced permanent drift and a failing destroy-and-recreate.
 
 mock_provider "azurerm" {}
-mock_provider "azapi" {}
+mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
+}
 mock_provider "random" {}
 mock_provider "modtm" {}
 
@@ -27,10 +33,11 @@ run "ip_tags_reaches_default_and_management_public_ips" {
         parent_id     = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-hub-test"
 
         firewall = {
-          sku_name              = "AZFW_VNet"
-          sku_tier              = "Premium"
-          subnet_address_prefix = "10.0.1.0/26"
-          management_ip_enabled = true
+          sku_name                         = "AZFW_VNet"
+          sku_tier                         = "Premium"
+          subnet_address_prefix            = "10.0.1.0/26"
+          management_ip_enabled            = true
+          management_subnet_address_prefix = "10.0.1.64/26"
 
           default_ip_configuration = {
             public_ip_config = {
@@ -79,10 +86,11 @@ run "ip_tags_defaults_to_empty_map" {
         parent_id     = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-hub-test"
 
         firewall = {
-          sku_name              = "AZFW_VNet"
-          sku_tier              = "Standard"
-          subnet_address_prefix = "10.0.1.0/26"
-          management_ip_enabled = true
+          sku_name                         = "AZFW_VNet"
+          sku_tier                         = "Standard"
+          subnet_address_prefix            = "10.0.1.0/26"
+          management_ip_enabled            = true
+          management_subnet_address_prefix = "10.0.1.64/26"
 
           # The mesh submodule does not apply its own defaults to these
           # objects (the root module's locals.firewall.tf merge() does that) —

@@ -60,7 +60,7 @@ resource "azapi_resource" "vgw" {
     extendedLocation = local.extended_location
     properties       = local.virtual_network_gateway_properties_filtered
   }
-  response_export_values = ["*"]
+  response_export_values = ["properties.bgpSettings"]
   retry                  = var.retry
   tags                   = var.tags
 
@@ -161,11 +161,11 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
   type                               = local.azurerm_virtual_network_gateway_connection[each.key].type
   virtual_network_gateway_id         = azapi_resource.vgw.id
   authorization_key                  = try(local.azurerm_virtual_network_gateway_connection[each.key].authorization_key, null)
+  bgp_enabled                        = try(local.azurerm_virtual_network_gateway_connection[each.key].enable_bgp, null)
   connection_mode                    = try(local.azurerm_virtual_network_gateway_connection[each.key].connection_mode, null)
   connection_protocol                = try(local.azurerm_virtual_network_gateway_connection[each.key].connection_protocol, null)
   dpd_timeout_seconds                = try(local.azurerm_virtual_network_gateway_connection[each.key].dpd_timeout_seconds, null)
   egress_nat_rule_ids                = try(local.azurerm_virtual_network_gateway_connection[each.key].egress_nat_rule_ids, null)
-  enable_bgp                         = try(local.azurerm_virtual_network_gateway_connection[each.key].enable_bgp, null)
   express_route_circuit_id           = try(local.azurerm_virtual_network_gateway_connection[each.key].express_route_circuit_id, null)
   express_route_gateway_bypass       = try(local.azurerm_virtual_network_gateway_connection[each.key].express_route_gateway_bypass, null)
   ingress_nat_rule_ids               = try(local.azurerm_virtual_network_gateway_connection[each.key].ingress_nat_rule_ids, null)

@@ -20,10 +20,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
-
 ## Resources
 
 The following resources are used by this module:
@@ -31,12 +27,11 @@ The following resources are used by this module:
 - [azapi_resource.domain_list](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.lock](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.security_rule](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.this](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.virtual_network_link](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
-- [modtm_telemetry.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/resources/telemetry) (resource)
-- [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
+- [terraform_data.telemetry](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) (resource)
 - [azapi_client_config.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
-- [modtm_module_source.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -121,10 +116,10 @@ Type:
 
 ```hcl
 object({
-    dns_resolver_policy                      = optional(string, "Microsoft.Network/dnsResolverPolicies@2023-07-01-preview")
-    dns_resolver_domain_list                 = optional(string, "Microsoft.Network/dnsResolverDomainLists@2023-07-01-preview")
-    dns_resolver_policy_security_rule        = optional(string, "Microsoft.Network/dnsResolverPolicies/dnsSecurityRules@2023-07-01-preview")
-    dns_resolver_policy_virtual_network_link = optional(string, "Microsoft.Network/dnsResolverPolicies/virtualNetworkLinks@2023-07-01-preview")
+    dns_resolver_policy                      = optional(string, "Microsoft.Network/dnsResolverPolicies@2025-10-01-preview")
+    dns_resolver_domain_list                 = optional(string, "Microsoft.Network/dnsResolverDomainLists@2025-10-01-preview")
+    dns_resolver_policy_security_rule        = optional(string, "Microsoft.Network/dnsResolverPolicies/dnsSecurityRules@2025-10-01-preview")
+    dns_resolver_policy_virtual_network_link = optional(string, "Microsoft.Network/dnsResolverPolicies/virtualNetworkLinks@2025-10-01-preview")
     lock                                     = optional(string, "Microsoft.Authorization/locks@2020-05-01")
   })
 ```

@@ -14,6 +14,8 @@ Optionally, these virtual networks can be peered in a mesh topology.
 
 > **Deprecation notice:** The `id` attribute on entries of the `virtual_networks` output is deprecated in favour of `resource_id` and will be removed in a future major version. Consumers should migrate to `module.<name>.virtual_networks[<key>].resource_id` (or the top-level `module.<name>.resource_id[<key>]` map).
 
+> **Deprecation notice:** The `service_endpoints_with_location` subnet field is deprecated in favour of the names-only `service_endpoints` set. Existing values are mapped to service names; `locations` is ignored.
+
 ## Example
 
 ```terraform
