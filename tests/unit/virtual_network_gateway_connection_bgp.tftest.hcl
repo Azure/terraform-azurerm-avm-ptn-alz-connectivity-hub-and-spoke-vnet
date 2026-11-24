@@ -1,7 +1,7 @@
 # Regression test for Azure/Azure-Landing-Zones#4067.
 #
 # The public module interface continues to expose enable_bgp for backwards
-# compatibility, while the AzureRM provider resource uses bgp_enabled.
+# compatibility, while the AzAPI connection body uses enableBgp.
 
 mock_provider "azurerm" {}
 
@@ -45,7 +45,7 @@ run "enable_bgp_maps_to_bgp_enabled" {
   }
 
   assert {
-    condition     = azurerm_virtual_network_gateway_connection.vgw["lgw-test"].bgp_enabled == true
-    error_message = "enable_bgp input was not forwarded to the AzureRM bgp_enabled argument."
+    condition     = azapi_resource.vgw_connection["lgw-test"].body.properties.enableBgp == true
+    error_message = "enable_bgp input was not forwarded to the enableBgp property of the connection body."
   }
 }

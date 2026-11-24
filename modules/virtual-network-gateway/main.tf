@@ -152,64 +152,41 @@ resource "azurerm_local_network_gateway" "vgw" {
   }
 }
 
-resource "azurerm_virtual_network_gateway_connection" "vgw" {
+resource "azapi_resource" "vgw_connection" {
   for_each = local.azurerm_virtual_network_gateway_connection
 
-  location                           = var.location
-  name                               = coalesce(each.value.name, "con-${var.name}-${each.key}")
-  resource_group_name                = coalesce(each.value.resource_group_name, local.resource_group_name)
-  type                               = each.value.type
-  virtual_network_gateway_id         = azapi_resource.vgw.id
-  authorization_key                  = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].authorization_key, null)
-  bgp_enabled                        = try(each.value.enable_bgp, null)
-  connection_mode                    = try(each.value.connection_mode, null)
-  connection_protocol                = try(each.value.connection_protocol, null)
-  dpd_timeout_seconds                = try(each.value.dpd_timeout_seconds, null)
-  egress_nat_rule_ids                = try(each.value.egress_nat_rule_ids, null)
-  express_route_circuit_id           = try(each.value.express_route_circuit_id, null)
-  express_route_gateway_bypass       = try(each.value.express_route_gateway_bypass, null)
-  ingress_nat_rule_ids               = try(each.value.ingress_nat_rule_ids, null)
-  local_azure_ip_address_enabled     = try(each.value.local_azure_ip_address_enabled, null)
-  local_network_gateway_id           = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, each.value.local_network_gateway_id, null)
-  peer_virtual_network_gateway_id    = try(each.value.peer_virtual_network_gateway_id, null)
-  private_link_fast_path_enabled     = try(each.value.private_link_fast_path_enabled, null)
-  routing_weight                     = each.value.routing_weight
-  shared_key                         = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].shared_key, null)
-  tags                               = merge(var.tags, each.value.tags)
-  use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
-
-  dynamic "custom_bgp_addresses" {
-    for_each = try(each.value.custom_bgp_addresses, null) == null ? [] : ["CustomBgpAddresses"]
-
-    content {
-      primary   = each.value.custom_bgp_addresses.primary
-      secondary = each.value.custom_bgp_addresses.secondary
-    }
+  location  = var.location
+  name      = coalesce(each.value.name, "con-${var.name}-${each.key}")
+  parent_id = local.virtual_network_gateway_connection_parent_ids[each.key]
+  type      = "Microsoft.Network/connections@2024-07-01"
+  body = {
+    properties = local.virtual_network_gateway_connection_properties[each.key]
   }
-
-  dynamic "ipsec_policy" {
-    for_each = try(each.value.ipsec_policy, null) == null ? [] : ["IPSecPolicy"]
-
-    content {
-      dh_group         = each.value.ipsec_policy.dh_group
-      ike_encryption   = each.value.ipsec_policy.ike_encryption
-      ike_integrity    = each.value.ipsec_policy.ike_integrity
-      ipsec_encryption = each.value.ipsec_policy.ipsec_encryption
-      ipsec_integrity  = each.value.ipsec_policy.ipsec_integrity
-      pfs_group        = each.value.ipsec_policy.pfs_group
-      sa_datasize      = each.value.ipsec_policy.sa_datasize
-      sa_lifetime      = each.value.ipsec_policy.sa_lifetime
-    }
+  replace_triggers_refs = [
+    "properties.connectionType",
+    "properties.peer.id",
+    "properties.virtualNetworkGateway1.id",
+    "properties.virtualNetworkGateway2.id",
+  ]
+  response_export_values = []
+  retry                  = var.retry
+  sensitive_body = {
+    properties = local.virtual_network_gateway_connection_sensitive_properties[each.key]
   }
+  sensitive_body_version = local.virtual_network_gateway_connection_sensitive_versions[each.key]
+  tags                   = merge(var.tags, each.value.tags)
 
-  dynamic "traffic_selector_policy" {
-    for_each = try(each.value.traffic_selector_policy, null) == null ? [] : each.value.traffic_selector_policy
-
-    content {
-      local_address_cidrs  = traffic_selector_policy.value.local_address_prefixes
-      remote_address_cidrs = traffic_selector_policy.value.remote_address_prefixes
-    }
+  timeouts {
+    create = var.timeouts.create
+    delete = var.timeouts.delete
+    read   = var.timeouts.read
+    update = var.timeouts.update
   }
+}
+
+moved {
+  from = azurerm_virtual_network_gateway_connection.vgw
+  to   = azapi_resource.vgw_connection
 }
 
 resource "azurerm_express_route_circuit_peering" "vgw" {
