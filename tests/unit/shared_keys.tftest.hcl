@@ -1,4 +1,5 @@
 mock_provider "azurerm" {}
+
 mock_provider "azapi" {
   mock_data "azapi_resource_action" {
     defaults = {
@@ -17,8 +18,15 @@ mock_provider "azapi" {
       }
     }
   }
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
 }
+
 mock_provider "random" {}
+
 mock_provider "modtm" {}
 
 run "sensitive_leaves" {
@@ -79,6 +87,7 @@ run "sensitive_leaves" {
         }
       }
     }
+    location = "eastus"
   }
 
   assert {

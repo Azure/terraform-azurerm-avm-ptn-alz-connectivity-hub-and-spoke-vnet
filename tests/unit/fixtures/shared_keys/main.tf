@@ -7,6 +7,7 @@ resource "terraform_data" "key" {
 module "sut" {
   source = "../../../.."
 
+  location             = "eastus"
   enable_telemetry     = false
   hub_virtual_networks = local.input_hub_virtual_networks
 }

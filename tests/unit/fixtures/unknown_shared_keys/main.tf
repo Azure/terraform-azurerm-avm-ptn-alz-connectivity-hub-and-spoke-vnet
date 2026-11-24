@@ -82,6 +82,7 @@ locals {
 module "direct" {
   source = "../../../../"
 
+  location             = "eastus"
   enable_telemetry     = false
   hub_virtual_networks = local.hub_virtual_networks
   tags                 = {}
@@ -97,6 +98,7 @@ module "template" {
 module "adapted" {
   source = "../../../../"
 
+  location             = "eastus"
   enable_telemetry     = false
   hub_virtual_networks = nonsensitive(module.template.configuration)
   tags                 = {}
