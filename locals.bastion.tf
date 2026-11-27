@@ -1,20 +1,20 @@
 locals {
-  bastions_enabled = { for key, value in var.hub_virtual_networks : key => value.enabled_resources.bastion }
+  bastions_enabled = { for key, value in local.hub_virtual_networks_by_key : key => nonsensitive(value.enabled_resources.bastion) }
 }
 
 locals {
   bastion_host_public_ips = {
-    for key, value in var.hub_virtual_networks : key => {
+    for key, value in local.hub_virtual_networks_by_key : key => {
       name                = coalesce(value.bastion.bastion_public_ip.name, local.default_names[key].bastion_host_public_ip_name)
       location            = value.location
       resource_group_name = coalesce(value.bastion.bastion_public_ip.resource_group_name, value.bastion.resource_group_name, local.hub_virtual_networks_resource_group_names[key])
       tags                = coalesce(value.bastion.bastion_public_ip.tags, var.tags, {})
       zones               = coalesce(value.bastion.bastion_public_ip.zones, local.availability_zones[key])
       public_ip_settings  = value.bastion.bastion_public_ip
-    } if local.bastions_enabled[key] && !value.bastion.private_only_enabled
+    } if local.bastions_enabled[key] && !nonsensitive(value.bastion.private_only_enabled)
   }
   bastion_hosts = {
-    for key, value in var.hub_virtual_networks : key => {
+    for key, value in local.hub_virtual_networks_by_key : key => {
       name     = coalesce(value.bastion.name, local.default_names[key].bastion_host_name)
       location = value.location
       # `parent_id` is preferred for placement. For backwards compatibility, the (deprecated) `resource_group_name`

@@ -1,4 +1,5 @@
 locals {
+  hub_virtual_networks_by_key = { for hub_key in nonsensitive(keys(var.hub_virtual_networks)) : hub_key => var.hub_virtual_networks[hub_key] }
   resource_group_names = {
     for k, v in var.hub_virtual_networks : k => provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", v.parent_id).resource_group_name
   }
